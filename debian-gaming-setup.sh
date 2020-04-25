@@ -104,13 +104,23 @@ then
     then
         if [ $driver_package = "1" ]
         then
+            echo 'It is recommended that you install nvidia-vulkan-icd as well in order to get better performance in applications that use it (such as Lutris and Wine). Would you like to do that as well [y/n]?'
+            read install_vulkan_nvidia
             if [ $use_backports = "y" ]
             then
                 apt-get update
-                apt-get install -t buster-backports nvidia-driver 
+                apt-get install -t buster-backports nvidia-driver
+                if [ $install_vulkan_nvidia = "y" ]
+                then
+                    apt-get install -t buster-backports nvidia-vulkan-icd
+                fi
             else
                 apt-get update
                 apt-get install nvidia-driver
+                if [ $install_vulkan_nvidia = "y" ]
+                then
+                    apt-get install nvidia-vulkan-icd
+                fi
             fi
         elif [ $driver_package = "2" ]
         then
@@ -129,8 +139,7 @@ then
             fi
         fi
     fi
-fi
-if [ $gpu = "AMD" ]
+elif [ $gpu = "AMD" ]
 then
     echo 'In order to proceed with the installation of the necessary packages to update your graphics drivers, you need to allow non-free packages in your apt sources by doing the following:'
     if [ $debian_version = "buster" ]
@@ -159,9 +168,44 @@ then
         apt-get install firmware-linux-nonfree libgl1-mesa-dri xserver-xorg-video-amdgpu
     fi
     echo 'It is recommended that you install Vulkan as well in order to get better performance in applications that use it (such as Lutris and Wine). Would you like to do that now [y/n]?'
-    read install_vulkan
-    if [ $install_vulkan = "y" ]
+    read install_vulkan_amd
+    if [ $install_vulkan_amd = "y" ]
     then
         apt-get install mesa-vulkan-drivers libvulkan1 vulkan-tools vulkan-utils vulkan-validationlayers
+    fi
+fi
+echo 'Steam is a video game digital distribution service by Valve, and is the largest digital distribution platform for PC gaming. It has official support for GNU/Linux, and has a custom version of Wine included for running Windows-only games and software. It is recommended that you install Steam, would you like to start the process of getting Steam installed now [y/n]?'
+read install_steam
+if [ $install_steam = "y" ]
+then
+    echo 'In order to install Steam, you need to enable multi-arch, which lets you install library packages from multiple architectures on the same machine. Would you like to do that now [y/n]?'
+    read enable_multi_arch
+    if [ $enable_multi_arch = "y" ]
+    then
+        dpkg --add-architecture i386
+        apt-get update
+        if [ $gpu = "Nvidia" ]
+        then
+            echo 'Since you enabled multi-arch, it is recommended that you install the following i386 graphics packages: nvidia-driver-libs-i386 and nvidia-vulkan-icd:i386, would you like to do that now [y/n]?'
+            read install_nvidia_i368_drivers
+            if [ $install_nvidia_i368_drivers = "y" ]
+            then
+                apt-get install nvidia-driver-libs-i386 nvidia-vulkan-icd:i386
+            fi    
+        elif [ $gpu = "AMD" ]
+        then
+            echo 'Since you enabled multi-arch, it is recommended that you install the following i386 graphics packages: libgl1:i386 and mesa-vulkan-drivers:i386, would you like to do that now [y/n]?'
+            read install_amd_i368_drivers
+            if [ $install_amd_i368_drivers = "y" ]
+            then
+                apt-get install libgl1:i386 mesa-vulkan-drivers:i386
+            fi  
+        fi
+    fi
+    echo 'Would you like to install the steam package now [y/n]?'
+    read install_steam_package
+    if [ $install_steam_package = "y" ]
+    then
+        apt-get install steam
     fi
 fi
