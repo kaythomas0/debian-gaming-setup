@@ -1,5 +1,5 @@
 #!/bin/bash
-echo Let\'s get all the tools you need to start gaming on debian.
+echo 'This script will help you get all the tools you need to start gaming on debian.'
 debian_version=$(cat /etc/debian_version)
 if [[ $debian_version == *"10"* ]]
 then
@@ -64,7 +64,13 @@ then
         echo 'deb http://deb.debian.org/debian/ sid main contrib non-free'
     fi
     echo 'Once you have modified your sources, you are ready to install the required graphics packages. Have you appended your apt source with non-free [y/n]?'
-    read foo
+    read appended_apt_sources
+    echo 'You should update apt now, would you like to do that now [y/n]?'
+    read update_apt
+    if [ $update_apt = "y" ]
+    then
+        apt update
+    fi
     echo 'You should update your linux kernel headers before installing your graphics drivers, would you like to do that now [y/n]?'
     read update_kernel_headers
     if [ $update_kernel_headers = "y" ]
@@ -125,5 +131,40 @@ then
                 echo -e 'Section "Device"\n\tIdentifier "My GPU"\n\tDriver "nvidia"\nEndSection' > /etc/X11/xorg.conf.d/20-nvidia.conf
             fi
         fi
+    fi
+fi
+if [ $gpu = "AMD" ]
+then
+    echo 'In order to proceed with the installation of the necessary packages to update your graphics drivers, you need to allow non-free packages in your apt sources by doing the following:'
+    if [ $debian_version = "buster" ]
+    then
+        echo 'Open /etc/apt/sources.list with your preferred text editor, and add/append the line:'
+        echo 'deb http://deb.debian.org/debian/ buster main contrib non-free'
+    elif [ $debian_version = "bullseye/sid" ]
+    then
+        echo 'Open /etc/apt/sources.list with your preferred text editor, and add/append this line if you are on testing:'
+        echo 'deb http://deb.debian.org/debian/ bullseye main contrib non-free'
+        echo 'Or this line if you are on sid:'
+        echo 'deb http://deb.debian.org/debian/ sid main contrib non-free'
+    fi
+    echo 'Once you have modified your sources, you are ready to install the required graphics packages. Have you appended your apt source with non-free [y/n]?'
+    read appended_apt_sources
+    echo 'You should update apt now, would you like to do that now [y/n]?'
+    read update_apt
+    if [ $update_apt = "y" ]
+    then
+        apt-get update
+    fi
+    echo 'You are ready to install the non-free Linux firmware (required for the AMD drivers), the Mesa graphics library, and AMD drivers. Would you like to do that now [y/n]?'
+    read install_amd_driver
+    if [ $install_amd_driver = "y" ]
+    then
+        apt-get install firmware-linux-nonfree libgl1-mesa-dri xserver-xorg-video-amdgpu
+    fi
+    echo 'It is recommended that you install Vulkan as well in order to get better performance in applications that use it (such as Lutris and Wine). Would you like to do that now [y/n]?'
+    read install_vulkan
+    if [ $install_vulkan = "y" ]
+    then
+        apt-get install mesa-vulkan-drivers libvulkan1 vulkan-tools vulkan-utils vulkan-validationlayers
     fi
 fi
