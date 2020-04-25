@@ -23,7 +23,7 @@ then
     fi
     echo Okay, you are running $debian_version
 fi
-echo 'Are you running on an [n]vidia, [a]md, or [i]ntel graphics card?'
+echo 'Are you running on an [n]vidia or [a]md graphics card?'
 read gpu
 if [ $gpu = "n" ]
 then
@@ -31,9 +31,6 @@ then
 elif [ $gpu = "a" ]
 then
     gpu="AMD"
-elif [ $gpu = "i" ]
-then
-    gpu="Intel"
 else
     echo "Invalid command. Exiting..."
     exit 1
@@ -64,10 +61,10 @@ then
         echo 'deb http://deb.debian.org/debian/ sid main contrib non-free'
     fi
     echo 'Once you have modified your sources, you are ready to install the required graphics packages. Have you appended your apt source with non-free [y/n]?'
-    read appended_apt_sources
+    read appended_apt_sources_1
     echo 'You should update apt now, would you like to do that now [y/n]?'
-    read update_apt
-    if [ $update_apt = "y" ]
+    read update_apt_1
+    if [ $update_apt_1 = "y" ]
     then
         apt update
     fi
@@ -139,7 +136,7 @@ then
     if [ $debian_version = "buster" ]
     then
         echo 'Open /etc/apt/sources.list with your preferred text editor, and add/append the line:'
-        echo 'deb http://deb.debian.org/debian/ buster main contrib non-free'
+        echo 'deb http://deb.dappended_apt_sourcesebian.org/debian/ buster main contrib non-free'
     elif [ $debian_version = "bullseye/sid" ]
     then
         echo 'Open /etc/apt/sources.list with your preferred text editor, and add/append this line if you are on testing:'
@@ -148,10 +145,10 @@ then
         echo 'deb http://deb.debian.org/debian/ sid main contrib non-free'
     fi
     echo 'Once you have modified your sources, you are ready to install the required graphics packages. Have you appended your apt source with non-free [y/n]?'
-    read appended_apt_sources
+    read appended_apt_sources_2
     echo 'You should update apt now, would you like to do that now [y/n]?'
-    read update_apt
-    if [ $update_apt = "y" ]
+    read update_apt_2
+    if [ $update_apt_2 = "y" ]
     then
         apt-get update
     fi
