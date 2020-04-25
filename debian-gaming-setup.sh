@@ -39,32 +39,49 @@ else
     exit 1
 fi
 echo To get the best gaming performance you should install the latest graphics drivers.
-if [ $gpu = "Nvidia" ] && [ $debian_version = "buster" ]
+if [ $gpu = "Nvidia" ]
 then
-    echo 'Since you are running stable, it is recommended that you use buster-backports to install your graphics drivers in order to get the latest versions.'
-    echo 'Would you like to use buster-backports to install your graphics drivers [y/n]?'
-    read use_backports
+    if [ $debian_version = "buster" ]
+    then
+        echo 'Since you are running stable, it is recommended that you use buster-backports to install your graphics drivers in order to get the latest versions.'
+        echo 'Would you like to use buster-backports to install your graphics drivers [y/n]?'
+        read use_backports
+    fi
     echo 'In order to proceed with the installation of the necessary packages to update your graphics drivers, you need to allow non-free packages in your apt sources by doing the following:'
     if [ $use_backports = "y" ]
     then
         echo 'Open /etc/apt/sources.list with your preferred text editor, and add/append the line:'
         echo 'deb http://deb.debian.org/debian buster-backports main contrib non-free'
-    else
+    elif [ $debian_version = "buster" ]
+    then
         echo 'Open /etc/apt/sources.list with your preferred text editor, and add/append the line:'
         echo 'deb http://deb.debian.org/debian/ buster main contrib non-free'
+    elif [ $debian_version = "bullseye/sid" ]
+    then
+        echo 'Open /etc/apt/sources.list with your preferred text editor, and add/append this line if you are on testing:'
+        echo 'deb http://deb.debian.org/debian/ bullseye main contrib non-free'
+        echo 'Or this line if you are on sid:'
+        echo 'deb http://deb.debian.org/debian/ sid main contrib non-free'
     fi
     echo 'Once you have modified your sources, you are ready to install the required graphics packages. Have you appended your apt source with non-free [y/n]?'
     read foo
-    echo 'Are you using the linux kernel from buster-backports (this should not be the case on a typical installation of stable) [y/n]?'
-    read use_kernel_backports
     echo 'You should update your linux kernel headers before installing your graphics drivers, would you like to do that now [y/n]?'
     read update_kernel_headers
-    if [ $update_kernel_headers = "y" ] && [ $use_kernel_backports = "y" ]
+    if [ $update_kernel_headers = "y" ]
     then
-        apt-get install -t buster-backports linux-headers-$(uname -r|sed 's/[^-]*-[^-]*-//')
-    elif [ $update_kernel_headers = "y" ]
-    then
-        apt-get install linux-headers-$(uname -r|sed 's/[^-]*-[^-]*-//')
+        if [ $debian_version = "buster" ]
+        then
+            echo 'Are you using the linux kernel from buster-backports (by default, a standard installation of debian stable would not use the linux kernel from buster-backports) [y/n]?'
+            read use_kernel_backports
+        else
+            use_kernel_backports="n"
+        fi
+        if [ $use_kernel_backports = "y" ]
+        then
+            apt-get install -t buster-backports linux-headers-$(uname -r|sed 's/[^-]*-[^-]*-//')
+        else
+            apt-get install linux-headers-$(uname -r|sed 's/[^-]*-[^-]*-//')
+        fi
     fi
     echo 'The nvidia-detect package can be used to identify the GPU and required driver package. Would you like to install and run this package now [y/n]?'
     read install_nvidia_detect
@@ -89,17 +106,17 @@ then
                 apt-get update
                 apt-get install -t buster-backports nvidia-driver 
             else
-                apt update
-                apt install nvidia-driver
+                apt-get update
+                apt-get install nvidia-driver
             fi
         elif [ $driver_package = "2" ]
         then
-            apt update
-            apt install nvidia-legacy-390xx-driver
+            apt-get update
+            apt-get install nvidia-legacy-390xx-driver
         elif [ $driver_package = "3" ]
         then
-            apt update
-            apt install nvidia-legacy-340xx-driver
+            apt-get update
+            apt-get install nvidia-legacy-340xx-driver
             echo 'You need to create an Xorg configuration file. This can be done automatically by this script, would you like to do that now [y/n]?'
             read create_xorg_conf
             if [ $create_xorg_conf = "y" ]
