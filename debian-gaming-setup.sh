@@ -1,21 +1,20 @@
-#!/bin/bash
-echo 'This script will help you get all the tools you need to start gaming on debian.'
+#!/usr/bin/env bash
+echo 'This script will help you get all the tools you need to start gaming on Debian.'
+
+# Grab Debian version
 debian_version=$(cat /etc/debian_version)
 if [[ $debian_version == *"10"* ]]; then
     debian_version="buster"
 fi
 echo It looks like your version of Debian is $debian_version. Is that correct [y/n]?
 read version_confirmation
-if [ $version_confirmation = "n" ] || [ $version_confirmation = "no" ]; then
-    echo 'Are you running [s]table (buster), [t]esting (bullseye), or [u]nstable (sid)?'
+if [ $version_confirmation = "n" ]; then
+    echo 'Are you running [s]table (Buster), [t]esting (Bullseye), or [u]nstable (Sid)?'
     read version_input
     if [ $version_input = "s" ]; then
         debian_version="buster"
     elif [ $version_input = "t" ] || [ $version_input = "u" ]; then
         debian_version="bullseye/sid"
-    else
-        echo "Invalid command. Exiting..."
-        exit 1
     fi
     echo Okay, you are running $debian_version
 fi
@@ -25,14 +24,11 @@ if [ $gpu = "n" ]; then
     gpu="Nvidia"
 elif [ $gpu = "a" ]; then
     gpu="AMD"
-else
-    echo 'Invalid command. Exiting...'
-    exit 1
 fi
 echo To get the best gaming performance you should install the latest graphics drivers.
 if [ $gpu = "Nvidia" ]; then
     if [ $debian_version = "buster" ]; then
-        echo 'Since you are running stable, it is recommended that you use buster-backports to install your graphics drivers in order to get the latest versions.'
+        echo 'Since you are running Stable, it is recommended that you use buster-backports to install your graphics drivers in order to get the latest versions.'
         echo 'Would you like to use buster-backports to install your graphics drivers [y/n]?'
         read use_backports
     fi
@@ -44,23 +40,23 @@ if [ $gpu = "Nvidia" ]; then
         echo 'Open /etc/apt/sources.list with your preferred text editor, and add/append the line:'
         echo 'deb http://deb.debian.org/debian/ buster main contrib non-free'
     elif [ $debian_version = "bullseye/sid" ]; then
-        echo 'Open /etc/apt/sources.list with your preferred text editor, and add/append this line if you are on testing:'
+        echo 'Open /etc/apt/sources.list with your preferred text editor, and add/append this line if you are on Testing:'
         echo 'deb http://deb.debian.org/debian/ bullseye main contrib non-free'
-        echo 'Or this line if you are on sid:'
+        echo 'Or this line if you are on Sid:'
         echo 'deb http://deb.debian.org/debian/ sid main contrib non-free'
     fi
     echo 'Once you have modified your sources, you are ready to install the required graphics packages. Have you appended your apt source with non-free [y/n]?'
     read appended_apt_sources_1
-    echo 'You should update apt now, would you like to do that now [y/n]?'
+    echo 'You should update apt, would you like to do that now [y/n]?'
     read update_apt_1
     if [ $update_apt_1 = "y" ]; then
-        apt update
+        apt-get update
     fi
     echo 'You should update your linux kernel headers before installing your graphics drivers, would you like to do that now [y/n]?'
     read update_kernel_headers
     if [ $update_kernel_headers = "y" ]; then
         if [ $debian_version = "buster" ]; then
-            echo 'Are you using the linux kernel from buster-backports (by default, a standard installation of debian stable would not use the linux kernel from buster-backports) [y/n]?'
+            echo 'Are you using the linux kernel from buster-backports (by default, a standard installation of Debian Stable would not use the linux kernel from buster-backports) [y/n]?'
             read use_kernel_backports
         else
             use_kernel_backports="n"
@@ -86,7 +82,7 @@ if [ $gpu = "Nvidia" ]; then
     read install_nvidia_driver
     if [ $install_nvidia_driver = "y" ]; then
         if [ $driver_package = "1" ]; then
-            echo 'It is recommended that you install nvidia-vulkan-icd as well in order to get better performance in applications that use it (such as Lutris and Wine). Would you like to do that as well [y/n]?'
+            echo 'It is recommended that you install nvidia-vulkan-icd as well in order to get better performance in applications that use Vulkan (such as Lutris and Wine). Would you like to do that as well [y/n]?'
             read install_vulkan_nvidia
             if [ $use_backports = "y" ]; then
                 apt-get update
@@ -107,7 +103,7 @@ if [ $gpu = "Nvidia" ]; then
         elif [ $driver_package = "3" ]; then
             apt-get update
             apt-get install nvidia-legacy-340xx-driver
-            echo 'You need to create an Xorg configuration file. This can be done automatically by this script, would you like to do that now [y/n]?'
+            echo 'You need to create an xorg configuration file. This can be done automatically right now, would you like to do that [y/n]?'
             read create_xorg_conf
             if [ $create_xorg_conf = "y" ]; then
                 mkdir -p /etc/X11/xorg.conf.d
@@ -128,7 +124,7 @@ elif [ $gpu = "AMD" ]; then
     fi
     echo 'Once you have modified your sources, you are ready to install the required graphics packages. Have you appended your apt source with non-free [y/n]?'
     read appended_apt_sources_2
-    echo 'You should update apt now, would you like to do that now [y/n]?'
+    echo 'You should update apt, would you like to do that now [y/n]?'
     read update_apt_2
     if [ $update_apt_2 = "y" ]; then
         apt-get update
@@ -176,10 +172,10 @@ echo 'Wine is a tool that allows you to run Windows applications on Linux. It is
 read install_wine
 if [ $install_wine = "y" ]; then
     echo 'There are three main branches of Wine: Stable, Development, and Staging. Stable is, as the name implies, the most stable branch, with the least amount of features. Wine development is rapid, with new releases in the development branch every two weeks or so. Staging contains bug fixes and features which have not been integrated into the development branch yet. The idea of Wine Staging is to provide experimental features faster to end users and to give developers the possibility to discuss and improve their patches before they are integrated into the main branch.'
-    echo 'Which version of Wine would you like to install, [s]table, [d]evelopment, or [st]aging?'
+    echo 'Which version of Wine would you like to install: [s]table, [d]evelopment, or [st]aging?'
     read wine_version
     if [ $wine_version = "st" ]; then
-        echo 'Since Wine Staging is not in the official debian repository, installing it would mean you need to add the Wine HQ repository key and use that repository to install and update Wine. If you do not want to do this, you can choose to install stable or development. Are you okay installing Wine Staging from the Wine HQ repository [y/n]?'
+        echo 'Since Wine Staging is not in the official Debian repository, installing it would mean you need to add the Wine HQ repository key and use that repository to install and update Wine. If you do not want to do this, you can choose to install the stable or development branch of Wine. Are you okay installing Wine Staging from the Wine HQ repository [y/n]?'
         read install_wine_staging
         if [$install_wine_staging = "n" ]; then
             echo 'Would you like to install [s]table or [d]evelopment?'
@@ -227,11 +223,11 @@ if [ $install_lutris = "y" ]; then
     echo 'Lutris requires you have Wine installed on your system. If you do not have Wine, you will not be able to continue with this installation process. Do you have Wine installed on your system [y/n]?'
     read installed_wine
     if [ $installed_wine = "y" ]; then
-        echo 'Lutris is not in the official Debian repository. According to the Lutris website, the way to install Lutris from an auto-updating repository is from the openSUSE Build Service Repository, which requires adding a key for this repository. If this is not something you want to do, you can also download the .deb file from the openSUSE website and install Lutris using that, or download the tar.xz package from Lutris and run the project directly from the extracted archive. Would you like to [1]use the openSUSE Build Service Repository, [2]Download and install the .deb file from the openSUSE website, or [3]download the tar.xz package from Lutris and run the project directly from the extracted archive?'
+        echo 'Lutris is not in the official Debian repository. According to the Lutris website, the way to install Lutris from an auto-updating repository is using the openSUSE Build Service Repository, which requires adding a key for this repository. If this is not something you want to do, you can also download the .deb file from the openSUSE website and install Lutris using that, or download the tar.xz package from Lutris and run the project directly from the extracted archive. Would you like to [1]use the openSUSE Build Service Repository, [2]download and install the .deb file from the openSUSE website, or [3]download the tar.xz package from Lutris and run the project directly from the extracted archive?'
         read lutris_installation_choice
         if [ $lutris_installation_choice = "1" ]; then
             if [ $debian_version = "buster" ]; then
-                echo 'Would you like to add the http://download.opensuse.org/repositories/home:/strycore/Debian_10/ repository and key to your apt sources, and install lutris now [y/n]?'
+                echo 'Would you like to add the http://download.opensuse.org/repositories/home:/strycore/Debian_10/ repository and key to your apt sources, and install Lutris now [y/n]?'
                 read install_lutris_package
                 if [ $install_lutris_package = "y" ]; then
                     echo 'deb http://download.opensuse.org/repositories/home:/strycore/Debian_10/ /' >/etc/apt/sources.list.d/home:strycore.list
@@ -244,7 +240,7 @@ if [ $install_lutris = "y" ]; then
                 echo 'Are you running [1]Debian Testing (Bullseye), or [2]Debian Unstable (Sid)?'
                 read testing_or_unstable
                 if [ $testing_or_unstable = "1" ]; then
-                    echo 'Would you like to add the http://download.opensuse.org/repositories/home:/strycore/Debian_Testing/ repository and key to your apt sources, and install lutris now [y/n]?'
+                    echo 'Would you like to add the http://download.opensuse.org/repositories/home:/strycore/Debian_Testing/ repository and key to your apt sources, and install Lutris now [y/n]?'
                     read install_lutris_package
                     if [ $install_lutris_package = "y" ]; then
                         echo 'deb http://download.opensuse.org/repositories/home:/strycore/Debian_Testing/ /' >/etc/apt/sources.list.d/home:strycore.list
@@ -254,7 +250,7 @@ if [ $install_lutris = "y" ]; then
                         apt-get install lutris
                     fi
                 elif [ $testing_or_unstable = "2" ]; then
-                    echo 'Would you like to add the http://download.opensuse.org/repositories/home:/strycore/Debian_Unstable/ repository and key to your apt sources, and install lutris now [y/n]?'
+                    echo 'Would you like to add the http://download.opensuse.org/repositories/home:/strycore/Debian_Unstable/ repository and key to your apt sources, and install Lutris now [y/n]?'
                     read install_lutris_package
                     if [ $install_lutris_package = "y" ]; then
                         echo 'deb http://download.opensuse.org/repositories/home:/strycore/Debian_Unstable/ /' >/etc/apt/sources.list.d/home:strycore.list
