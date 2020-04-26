@@ -18,6 +18,8 @@ if [ $version_confirmation = "n" ]; then
     fi
     echo Okay, you are running $debian_version
 fi
+
+# Grab graphics card
 echo 'Are you running on an [n]vidia or [a]md graphics card?'
 read gpu
 if [ $gpu = "n" ]; then
@@ -25,7 +27,11 @@ if [ $gpu = "n" ]; then
 elif [ $gpu = "a" ]; then
     gpu="AMD"
 fi
+
+# Install graphics drivers
 echo To get the best gaming performance you should install the latest graphics drivers.
+
+# Nvidia drivers
 if [ $gpu = "Nvidia" ]; then
     if [ $debian_version = "buster" ]; then
         echo 'Since you are running Stable, it is recommended that you use buster-backports to install your graphics drivers in order to get the latest versions.'
@@ -111,6 +117,8 @@ if [ $gpu = "Nvidia" ]; then
             fi
         fi
     fi
+
+# AMD drivers
 elif [ $gpu = "AMD" ]; then
     echo 'In order to proceed with the installation of the necessary packages to update your graphics drivers, you need to allow non-free packages in your apt sources by doing the following:'
     if [ $debian_version = "buster" ]; then
@@ -140,6 +148,8 @@ elif [ $gpu = "AMD" ]; then
         apt-get install mesa-vulkan-drivers libvulkan1 vulkan-tools vulkan-utils vulkan-validationlayers
     fi
 fi
+
+# Steam installation
 echo 'Steam is a video game digital distribution service by Valve, and is the largest digital distribution platform for PC gaming. It has official support for GNU/Linux, and has a custom version of Wine included for running Windows-only games and software. It is recommended that you install Steam, would you like to start the process of getting Steam installed now [y/n]?'
 read install_steam
 if [ $install_steam = "y" ]; then
@@ -168,6 +178,8 @@ if [ $install_steam = "y" ]; then
         apt-get install steam
     fi
 fi
+
+# Wine installation
 echo 'Wine is a tool that allows you to run Windows applications on Linux. It is required for many applications such as Lutris. It is recommended that you install Wine, would you like to start the process of getting Wine installed now [y/n]?'
 read install_wine
 if [ $install_wine = "y" ]; then
@@ -217,6 +229,8 @@ if [ $install_wine = "y" ]; then
         fi
     fi
 fi
+
+# Lutris installation
 echo 'Lutris is a FOSS game manager for Linux-based operating systems. It uses Wine and other tools like DXVK to make managing and running games much easier on Linux. It is recommended that you install Lutris, would you like to start the process of getting Lutris installed now [y/n]?'
 read install_lutris
 if [ $install_lutris = "y" ]; then
