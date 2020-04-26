@@ -16,7 +16,7 @@ if [[ $version_confirmation =~ ^([nN][oO]|[nN])$ ]]; then
     elif [[ $version_input =~ ^([tT][eE][sS][tT][iI][nN][gG]|[tT])$ ]] || [[ $version_input =~ ^([uU][nN][sS][tT][aA][bB][lL][eE]|[uU])$ ]]; then
         debian_version="bullseye/sid"
     fi
-    echo Okay, you are running $debian_version
+    echo Okay, you are running $debian_version.
 fi
 
 # Grab graphics card
@@ -27,9 +27,10 @@ if [[ $gpu =~ ^([nN][vV][iI][dD][iI][aA]|[nN])$ ]]; then
 elif [[ $gpu =~ ^([aA][mM][dD]|[aA])$ ]]; then
     gpu="AMD"
 fi
+echo Okay, you are running an $gpu graphics card.
 
 # Install graphics drivers
-echo To get the best gaming performance you should install the latest graphics drivers.
+echo 'To get the best gaming performance you should install the latest graphics drivers.'
 
 # Nvidia drivers
 if [ $gpu = "Nvidia" ]; then
@@ -118,6 +119,7 @@ if [ $gpu = "Nvidia" ]; then
             fi
         fi
     fi
+    echo 'If these installs ran successfully, then you have installed all the necessary Nvidia graphics drivers.'
 
 # AMD drivers
 elif [ $gpu = "AMD" ]; then
@@ -148,6 +150,7 @@ elif [ $gpu = "AMD" ]; then
     if [[ $install_vulkan_amd =~ ^([yY][eE][sS]|[yY])$ ]]; then
         apt-get install mesa-vulkan-drivers libvulkan1 vulkan-tools vulkan-utils vulkan-validationlayers
     fi
+    echo 'If these installs ran successfully, then you have installed all the necessary AMD graphics drivers.'
 fi
 
 # Steam installation
@@ -178,6 +181,7 @@ if [[ $install_steam =~ ^([yY][eE][sS]|[yY])$ ]]; then
     if [[ $install_steam_package =~ ^([yY][eE][sS]|[yY])$ ]]; then
         apt-get install steam
     fi
+    echo 'If these installs ran successfully, then you have setup Steam.'
 fi
 
 # Wine installation
@@ -196,7 +200,6 @@ if [[ $install_wine =~ ^([yY][eE][sS]|[yY])$ ]]; then
             read wine_version_2
             if [[ $wine_version_2 =~ ^([sS][tT][aA][bB][lL][eE]|[sS])$ ]]; then
                 wine_version="s"
-            fi
             elif [[ $wine_version_2 =~ ^([dD][eE][vV][eE][lL][oO][pP][mM][eE][nN][tT]|[dD])$ ]]; then
                 wine_version="d"
             fi
@@ -235,6 +238,7 @@ if [[ $install_wine =~ ^([yY][eE][sS]|[yY])$ ]]; then
             fi
         fi
     fi
+    echo 'If these installs ran successfully, then you have setup Wine.'
 fi
 
 # Lutris installation
@@ -291,4 +295,6 @@ if [[ $install_lutris =~ ^([yY][eE][sS]|[yY])$ ]]; then
             echo 'You can download the tar.xz package from Lutris and run the project directly from the extracted archive. To do that, go to the Lutris download page here: https://lutris.net/downloads/, navigate to the "Tarball" section, and follow the instructions there.'
         fi
     fi
+    echo 'If these installs ran successfully, then you have setup Lutris.'
 fi
+echo 'If all these installs ran successfully, then you have setup all the recommended things to get started gaming on Debian.'
