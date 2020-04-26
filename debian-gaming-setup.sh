@@ -32,7 +32,7 @@ elif [ $gpu = "a" ]
 then
     gpu="AMD"
 else
-    echo "Invalid command. Exiting..."
+    echo 'Invalid command. Exiting...'
     exit 1
 fi
 echo To get the best gaming performance you should install the latest graphics drivers.
@@ -92,10 +92,10 @@ then
     then
         apt-get install nvidia-detect
         nvidia-detect
-        echo "Did nvidia-detect recommend you install the [1]nvidia-driver, [2]nvidia-legacy-390xx-driver, or [3]nvidia-legacy-340xx-driver package?"
+        echo 'Did nvidia-detect recommend you install the [1]nvidia-driver, [2]nvidia-legacy-390xx-driver, or [3]nvidia-legacy-340xx-driver package?'
         read driver_package
     else
-        echo "Would you like to install the [1]nvidia-driver, [2]nvidia-legacy-390xx-driver, or [3]nvidia-legacy-340xx-driver package?"
+        echo 'Would you like to install the [1]nvidia-driver, [2]nvidia-legacy-390xx-driver, or [3]nvidia-legacy-340xx-driver package?'
         read driver_package
     fi
     echo 'You should install the nvidia-driver package to update your graphics drivers, would you like to do that now [y/n]?'
@@ -265,6 +265,72 @@ then
                 apt update
                 apt install --install-recommends winehq-staging
             fi
+        fi
+    fi
+fi
+echo 'Lutris is a FOSS game manager for Linux-based operating systems. It uses Wine and other tools like DXVK to make managing and running games much easier on Linux. It is recommended that you install Lutris, would you like to start the process of getting Lutris installed now [y/n]?'
+read install_lutris
+if [ $install_lutris = "y" ]
+then
+    echo 'Lutris requires you have Wine installed on your system. If you do not have Wine, you will not be able to continue with this installation process. Do you have Wine installed on your system [y/n]?'
+    read installed_wine
+    if [ $installed_wine = "y" ]
+    then
+        echo 'Lutris is not in the official Debian repository. According to the Lutris website, the way to install Lutris from an auto-updating repository is from the openSUSE Build Service Repository, which requires adding a key for this repository. If this is not something you want to do, you can also download the .deb file from the openSUSE website and install Lutris using that, or download the tar.xz package from Lutris and run the project directly from the extracted archive. Would you like to [1]use the openSUSE Build Service Repository, [2]Download and install the .deb file from the openSUSE website, or [3]download the tar.xz package from Lutris and run the project directly from the extracted archive?'
+        read lutris_installation_choice
+        if [ $lutris_installation_choice = "1" ]
+        then
+            if [ $debian_version = "buster" ]
+            then
+                echo 'Would you like to add the http://download.opensuse.org/repositories/home:/strycore/Debian_10/ repository and key to your apt sources, and install lutris now [y/n]?'
+                read install_lutris_package
+                if [ $install_lutris_package = "y" ]
+                then
+                    echo 'deb http://download.opensuse.org/repositories/home:/strycore/Debian_10/ /' > /etc/apt/sources.list.d/home:strycore.list
+                    wget -nv https://download.opensuse.org/repositories/home:strycore/Debian_10/Release.key -O Release.key
+                    apt-key add - < Release.key
+                    apt-get update
+                    apt-get install lutris
+                fi
+            elif [ $debian_version = "bullseye/sid "]
+            then
+                echo 'Are you running [1]Debian Testing (Bullseye), or [2]Debian Unstable (Sid)?'
+                read testing_or_unstable
+                if [ $testing_or_unstable = "1" ]
+                then
+                    echo 'Would you like to add the http://download.opensuse.org/repositories/home:/strycore/Debian_Testing/ repository and key to your apt sources, and install lutris now [y/n]?'
+                    read install_lutris_package
+                    if [ $install_lutris_package = "y" ]
+                    then
+                        echo 'deb http://download.opensuse.org/repositories/home:/strycore/Debian_Testing/ /' > /etc/apt/sources.list.d/home:strycore.list
+                        wget -nv https://download.opensuse.org/repositories/home:strycore/Debian_Testing/Release.key -O Release.key
+                        apt-key add - < Release.key
+                        apt-get update
+                        apt-get install lutris
+                    fi
+                elif [ $testing_or_unstable = "2" ]
+                then
+                    echo 'Would you like to add the http://download.opensuse.org/repositories/home:/strycore/Debian_Unstable/ repository and key to your apt sources, and install lutris now [y/n]?'
+                    read install_lutris_package
+                    if [ $install_lutris_package = "y" ]
+                    then
+                        echo 'deb http://download.opensuse.org/repositories/home:/strycore/Debian_Unstable/ /' > /etc/apt/sources.list.d/home:strycore.list
+                        wget -nv https://download.opensuse.org/repositories/home:strycore/Debian_Unstable/Release.key -O Release.key
+                        apt-key add - < Release.key
+                        apt-get update
+                        apt-get install lutris
+                    fi
+                fi
+            fi
+        elif [ $lutris_installation_choice = "2" ]
+        then
+            echo 'You can download the Lutris .deb file for your version of Debian directly from the openSUSE build service site here: https://software.opensuse.org/download.html?project=home%3Astrycore&package=lutris'
+            echo 'Go to the link, click "Grab binary packages directly", and download the Lutris .deb file for your version of Debian.'
+            echo 'Navigate to the directory where you downloaded the .deb file, and install it by running the following command (replacing the version number with the version you downloaded):'
+            echo 'sudo apt install ./lutris_0.5.6_amd64'
+        elif [ $lutris_installation_choice = "3" ]
+        then
+            echo 'You can download the tar.xz package from Lutris and run the project directly from the extracted archive. To do that, go to the Lutris download page here: https://lutris.net/downloads/, navigate to the "Tarball" section, and follow the instructions there.'
         fi
     fi
 fi
