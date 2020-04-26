@@ -43,13 +43,13 @@ if [ $gpu = "Nvidia" ]; then
     if [[ $use_backports =~ ^([yY][eE][sS]|[yY])$ ]]; then
         use_backports="y"
         echo 'Open /etc/apt/sources.list with your preferred text editor, and add/append the line:'
-        echo 'deb http://deb.debian.org/debian buster-backports main contrib non-free'
+        echo -e '\e[32mdeb http://deb.debian.org/debian buster-backports main contrib non-free\e[0m'
     elif [ $debian_version = "buster" ]; then
         echo 'Open /etc/apt/sources.list with your preferred text editor, and add/append the line:'
-        echo 'deb http://deb.debian.org/debian/ buster main contrib non-free'
+        echo -e '\e[32mdeb http://deb.debian.org/debian/ buster main contrib non-free\e[0m'
     elif [ $debian_version = "bullseye/sid" ]; then
         echo 'Open /etc/apt/sources.list with your preferred text editor, and add/append this line if you are on Testing:'
-        echo 'deb http://deb.debian.org/debian/ bullseye main contrib non-free'
+        echo -e '\e[32mdeb http://deb.debian.org/debian/ bullseye main contrib non-free\e[0m'
         echo 'Or this line if you are on Sid:'
         echo 'deb http://deb.debian.org/debian/ sid main contrib non-free'
     fi
@@ -126,12 +126,12 @@ elif [ $gpu = "AMD" ]; then
     echo 'In order to proceed with the installation of the necessary packages to update your graphics drivers, you need to allow non-free packages in your apt sources by doing the following:'
     if [ $debian_version = "buster" ]; then
         echo 'Open /etc/apt/sources.list with your preferred text editor, and add/append the line:'
-        echo 'deb http://deb.dappended_apt_sourcesebian.org/debian/ buster main contrib non-free'
+        echo -e '\e[32mdeb http://deb.dappended_apt_sourcesebian.org/debian/ buster main contrib non-free\e[0m'
     elif [ $debian_version = "bullseye/sid" ]; then
         echo 'Open /etc/apt/sources.list with your preferred text editor, and add/append this line if you are on testing:'
-        echo 'deb http://deb.debian.org/debian/ bullseye main contrib non-free'
+        echo -e '\e[32mdeb http://deb.debian.org/debian/ bullseye main contrib non-free\e[0m'
         echo 'Or this line if you are on sid:'
-        echo 'deb http://deb.debian.org/debian/ sid main contrib non-free'
+        echo -e '\e[32mdeb http://deb.debian.org/debian/ sid main contrib non-free\e[0m'
     fi
     echo 'Once you have modified your sources, you are ready to install the required graphics packages. Have you appended your apt source with non-free [y/n]?'
     read appended_apt_sources_2
@@ -290,7 +290,7 @@ if [[ $install_lutris =~ ^([yY][eE][sS]|[yY])$ ]]; then
             echo 'You can download the Lutris .deb file for your version of Debian directly from the openSUSE build service site here: https://software.opensuse.org/download.html?project=home%3Astrycore&package=lutris'
             echo 'Go to the link, click "Grab binary packages directly", and download the Lutris .deb file for your version of Debian.'
             echo 'Navigate to the directory where you downloaded the .deb file, and install it by running the following command (replacing the version number with the version you downloaded):'
-            echo 'sudo apt install ./lutris_0.5.6_amd64'
+            echo -e '\e[32msudo apt install ./lutris_0.5.6_amd64\e[0m'
         elif [ $lutris_installation_choice = "3" ]; then
             echo 'You can download the tar.xz package from Lutris and run the project directly from the extracted archive. To do that, go to the Lutris download page here: https://lutris.net/downloads/, navigate to the "Tarball" section, and follow the instructions there.'
         fi
