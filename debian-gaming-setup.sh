@@ -179,8 +179,8 @@ read install_steam
 if [ $install_steam = "y" ]
 then
     echo 'In order to install Steam, you need to enable multi-arch, which lets you install library packages from multiple architectures on the same machine. Would you like to do that now [y/n]?'
-    read enable_multi_arch
-    if [ $enable_multi_arch = "y" ]
+    read enable_multi_arch_1
+    if [ $enable_multi_arch_1 = "y" ]
     then
         dpkg --add-architecture i386
         apt-get update
@@ -207,5 +207,64 @@ then
     if [ $install_steam_package = "y" ]
     then
         apt-get install steam
+    fi
+fi
+echo 'Wine is a tool that allows you to run Windows applications on Linux. It is required for many applications such as Lutris. It is recommended that you install Wine, would you like to start the process of getting Wine installed now [y/n]?'
+read install_wine
+if [ $install_wine = "y" ]
+then
+    echo 'There are three main branches of Wine: Stable, Development, and Staging. Stable is, as the name implies, the most stable branch, with the least amount of features. Wine development is rapid, with new releases in the development branch every two weeks or so. Staging contains bug fixes and features which have not been integrated into the development branch yet. The idea of Wine Staging is to provide experimental features faster to end users and to give developers the possibility to discuss and improve their patches before they are integrated into the main branch.'
+    echo 'Which version of Wine would you like to install, [s]table, [d]evelopment, or [st]aging?'
+    read wine_version
+    if [ $wine_version = "st" ]
+    then
+        echo 'Since Wine Staging is not in the official debian repository, installing it would mean you need to add the Wine HQ repository key and use that repository to install and update Wine. If you do not want to do this, you can choose to install stable or development. Are you okay installing Wine Staging from the Wine HQ repository [y/n]?'
+        read install_wine_staging
+        if [$install_wine_staging = "n" ]
+        then
+            echo 'Would you like to install [s]table or [d]evelopment?'
+            read wine_version_2
+            wine_version=$wine_version_2
+        fi
+    fi
+    echo 'In order to install Wine, you need to enable multi-arch, which lets you install library packages from multiple architectures on the same machine. Would you like to do that now (you do not have to do this again if you have already done this step when installing Steam) [y/n]?'
+    read enable_multi_arch_2
+    if [ $enable_multi_arch_2 = "y" ]
+    then
+        dpkg --add-architecture i386
+        apt-get update
+    fi
+    echo 'Would you like to install the necessary Wine package now [y/n]?'
+    read install_wine_package
+    if [ $install_wine_package = "y" ]
+    then
+        if [ $wine_version = "s" ]
+        then
+            apt-get install wine
+        elif [ $wine_version = "d" ]
+        then
+            apt-get install wine-development
+        elif [ $wine_version = "st" ]
+        then
+            wget -nc https://dl.winehq.org/wine-builds/winehq.key
+            apt-key add winehq.key
+            if [ $debian_version = "buster" ]
+            then
+                echo 'Add the following line to your /etc/apt/sources.list file:'
+                echo 'deb https://dl.winehq.org/wine-builds/debian/ buster main'
+                echo 'Have you added this line to your /etc/apt/sources.list file [y/n]?'
+                read added_winehq_repo
+                apt update
+                apt install --install-recommends winehq-staging
+            elif [ $debian_version = "bullseye/sid" ]
+            then
+                echo 'Add the following line to your /etc/apt/sources.list file:'
+                echo 'deb https://dl.winehq.org/wine-builds/debian/ bullseye main'
+                echo 'Have you added this line to your /etc/apt/sources.list file [y/n]?'
+                read added_winehq_repo
+                apt update
+                apt install --install-recommends winehq-staging
+            fi
+        fi
     fi
 fi
