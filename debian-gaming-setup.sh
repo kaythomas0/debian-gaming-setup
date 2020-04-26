@@ -1,70 +1,70 @@
 #!/usr/bin/env bash
-echo 'This script will help you get all the tools you need to start gaming on Debian.'
+printf 'This script will help you get all the tools you need to start gaming on Debian.\n'
 
 # Grab Debian version
 debian_version=$(cat /etc/debian_version)
 if [[ $debian_version == *"10"* ]]; then
     debian_version="buster"
 fi
-echo It looks like your version of Debian is $debian_version. Is that correct [y/n]?
+printf "It looks like your version of Debian is %s. Is that correct [y/n]? " $debian_version
 read version_confirmation
 if [[ $version_confirmation =~ ^([nN][oO]|[nN])$ ]]; then
-    echo 'Are you running [s]table, [t]esting, or [u]nstable?'
+    printf 'Are you running [s]table, [t]esting, or [u]nstable? '
     read version_input
     if [[ $version_input =~ ^([sS][tT][aA][bB][lL][eE]|[sS])$ ]]; then
         debian_version="buster"
     elif [[ $version_input =~ ^([tT][eE][sS][tT][iI][nN][gG]|[tT])$ ]] || [[ $version_input =~ ^([uU][nN][sS][tT][aA][bB][lL][eE]|[uU])$ ]]; then
         debian_version="bullseye/sid"
     fi
-    echo Okay, you are running $debian_version.
+    printf "Okay, you are running %s.\n" $debian_version
 fi
 
 # Grab graphics card
-echo 'Are you running on an [n]vidia or [a]md graphics card?'
+printf 'Are you running on an [n]vidia or [a]md graphics card? '
 read gpu
 if [[ $gpu =~ ^([nN][vV][iI][dD][iI][aA]|[nN])$ ]]; then
     gpu="Nvidia"
 elif [[ $gpu =~ ^([aA][mM][dD]|[aA])$ ]]; then
     gpu="AMD"
 fi
-echo Okay, you are running an $gpu graphics card.
+printf "Okay, you are running an %s graphics card.\n" $gpu
 
 # Install graphics drivers
-echo 'To get the best gaming performance you should install the latest graphics drivers.'
+printf 'To get the best gaming performance you should install the latest graphics drivers.\n'
 
 # Nvidia drivers
 if [ $gpu = "Nvidia" ]; then
     if [ $debian_version = "buster" ]; then
-        echo 'Since you are running Stable, it is recommended that you use buster-backports to install your graphics drivers in order to get the latest versions.'
-        echo 'Would you like to use buster-backports to install your graphics drivers [y/n]?'
+        printf 'Since you are running Stable, it is recommended that you use buster-backports to install your graphics drivers in order to get the latest versions.\n'
+        printf 'Would you like to use buster-backports to install your graphics drivers [y/n]? '
         read use_backports
     fi
-    echo 'In order to proceed with the installation of the necessary packages to update your graphics drivers, you need to allow non-free packages in your apt sources by doing the following:'
+    printf 'In order to proceed with the installation of the necessary packages to update your graphics drivers, you need to allow non-free packages in your apt sources by doing the following:\n'
     if [[ $use_backports =~ ^([yY][eE][sS]|[yY])$ ]]; then
         use_backports="y"
-        echo 'Open /etc/apt/sources.list with your preferred text editor, and add/append the line:'
-        echo -e '\e[32mdeb http://deb.debian.org/debian buster-backports main contrib non-free\e[0m'
+        printf 'Open /etc/apt/sources.list with your preferred text editor, and add/append the line:\n'
+        printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian buster-backports main contrib non-free"
     elif [ $debian_version = "buster" ]; then
-        echo 'Open /etc/apt/sources.list with your preferred text editor, and add/append the line:'
-        echo -e '\e[32mdeb http://deb.debian.org/debian/ buster main contrib non-free\e[0m'
+        printf 'Open /etc/apt/sources.list with your preferred text editor, and add/append the line:\n'
+        printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian buster main contrib non-free"
     elif [ $debian_version = "bullseye/sid" ]; then
-        echo 'Open /etc/apt/sources.list with your preferred text editor, and add/append this line if you are on Testing:'
-        echo -e '\e[32mdeb http://deb.debian.org/debian/ bullseye main contrib non-free\e[0m'
-        echo 'Or this line if you are on Sid:'
-        echo 'deb http://deb.debian.org/debian/ sid main contrib non-free'
+        printf 'Open /etc/apt/sources.list with your preferred text editor, and add/append this line if you are on Testing:\n'
+        printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian/ bullseye main contrib non-free"
+        printf 'Or this line if you are on Sid:\n'
+        printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian/ sid main contrib non-free"
     fi
-    echo 'Once you have modified your sources, you are ready to install the required graphics packages. Have you appended your apt source with non-free [y/n]?'
+    printf 'Once you have modified your sources, you are ready to install the required graphics packages. Have you appended your apt source with non-free [y/n]? '
     read appended_apt_sources_1
-    echo 'You should update apt, would you like to do that now [y/n]?'
+    printf 'You should update apt, would you like to do that now [y/n]? '
     read update_apt_1
     if [[ $update_apt_1 =~ ^([yY][eE][sS]|[yY])$ ]]; then
         apt-get update
     fi
-    echo 'You should update your linux kernel headers before installing your graphics drivers, would you like to do that now [y/n]?'
+    printf 'You should update your linux kernel headers before installing your graphics drivers, would you like to do that now [y/n]? '
     read update_kernel_headers
     if [[ $update_kernel_headers =~ ^([yY][eE][sS]|[yY])$ ]]; then
         if [ $debian_version = "buster" ]; then
-            echo 'Are you using the linux kernel from buster-backports (by default, a standard installation of Debian Stable would not use the linux kernel from buster-backports) [y/n]?'
+            printf 'Are you using the linux kernel from buster-backports (by default, a standard installation of Debian Stable would not use the linux kernel from buster-backports) [y/n]? '
             read use_kernel_backports
         else
             use_kernel_backports="n"
@@ -75,22 +75,22 @@ if [ $gpu = "Nvidia" ]; then
             apt-get install linux-headers-$(uname -r | sed 's/[^-]*-[^-]*-//')
         fi
     fi
-    echo 'The nvidia-detect package can be used to identify the GPU and required driver package. Would you like to install and run this package now [y/n]?'
+    printf 'The nvidia-detect package can be used to identify the GPU and required driver package. Would you like to install and run this package now [y/n]? '
     read install_nvidia_detect
     if [[ $install_nvidia_detect =~ ^([yY][eE][sS]|[yY])$ ]]; then
         apt-get install nvidia-detect
         nvidia-detect
-        echo 'Did nvidia-detect recommend you install the [1]nvidia-driver, [2]nvidia-legacy-390xx-driver, or [3]nvidia-legacy-340xx-driver package?'
+        printf 'Did nvidia-detect recommend you install the [1]nvidia-driver, [2]nvidia-legacy-390xx-driver, or [3]nvidia-legacy-340xx-driver package? '
         read driver_package
     else
-        echo 'Would you like to install the [1]nvidia-driver, [2]nvidia-legacy-390xx-driver, or [3]nvidia-legacy-340xx-driver package?'
+        printf 'Would you like to install the [1]nvidia-driver, [2]nvidia-legacy-390xx-driver, or [3]nvidia-legacy-340xx-driver package? '
         read driver_package
     fi
-    echo 'You should install the nvidia-driver package to update your graphics drivers, would you like to do that now [y/n]?'
+    printf 'You should install the nvidia-driver package to update your graphics drivers, would you like to do that now [y/n]? '
     read install_nvidia_driver
     if [[ $install_nvidia_driver =~ ^([yY][eE][sS]|[yY])$ ]]; then
         if [ $driver_package = "1" ]; then
-            echo 'It is recommended that you install nvidia-vulkan-icd as well in order to get better performance in applications that use Vulkan (such as Lutris and Wine). Would you like to do that as well [y/n]?'
+            printf 'It is recommended that you install nvidia-vulkan-icd as well in order to get better performance in applications that use Vulkan (such as Lutris and Wine). Would you like to do that as well [y/n]? '
             read install_vulkan_nvidia
             if [ $use_backports = "y" ]; then
                 apt-get update
@@ -111,7 +111,7 @@ if [ $gpu = "Nvidia" ]; then
         elif [ $driver_package = "3" ]; then
             apt-get update
             apt-get install nvidia-legacy-340xx-driver
-            echo 'You need to create an xorg configuration file. This can be done automatically right now, would you like to do that [y/n]?'
+            printf 'You need to create an xorg configuration file. This can be done automatically right now, would you like to do that [y/n]? '
             read create_xorg_conf
             if [[ $create_xorg_conf =~ ^([yY][eE][sS]|[yY])$ ]]; then
                 mkdir -p /etc/X11/xorg.conf.d
@@ -119,84 +119,84 @@ if [ $gpu = "Nvidia" ]; then
             fi
         fi
     fi
-    echo 'If these installs ran successfully, then you have installed all the necessary Nvidia graphics drivers.'
+    printf 'If these installs ran successfully, then you have installed all the necessary Nvidia graphics drivers.\n'
 
 # AMD drivers
 elif [ $gpu = "AMD" ]; then
-    echo 'In order to proceed with the installation of the necessary packages to update your graphics drivers, you need to allow non-free packages in your apt sources by doing the following:'
+    printf 'In order to proceed with the installation of the necessary packages to update your graphics drivers, you need to allow non-free packages in your apt sources by doing the following:\n'
     if [ $debian_version = "buster" ]; then
-        echo 'Open /etc/apt/sources.list with your preferred text editor, and add/append the line:'
-        echo -e '\e[32mdeb http://deb.dappended_apt_sourcesebian.org/debian/ buster main contrib non-free\e[0m'
+        printf 'Open /etc/apt/sources.list with your preferred text editor, and add/append the line:\n'
+        printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian buster main contrib non-free"
     elif [ $debian_version = "bullseye/sid" ]; then
-        echo 'Open /etc/apt/sources.list with your preferred text editor, and add/append this line if you are on testing:'
-        echo -e '\e[32mdeb http://deb.debian.org/debian/ bullseye main contrib non-free\e[0m'
-        echo 'Or this line if you are on sid:'
-        echo -e '\e[32mdeb http://deb.debian.org/debian/ sid main contrib non-free\e[0m'
+        printf 'Open /etc/apt/sources.list with your preferred text editor, and add/append this line if you are on Testing:\n'
+        printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian/ bullseye main contrib non-free"
+        printf 'Or this line if you are on Sid:\n'
+        printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian/ sid main contrib non-free"
     fi
-    echo 'Once you have modified your sources, you are ready to install the required graphics packages. Have you appended your apt source with non-free [y/n]?'
+    printf 'Once you have modified your sources, you are ready to install the required graphics packages. Have you appended your apt source with non-free [y/n]? '
     read appended_apt_sources_2
-    echo 'You should update apt, would you like to do that now [y/n]?'
+    printf 'You should update apt, would you like to do that now [y/n]? '
     read update_apt_2
     if [[ $update_apt_2 =~ ^([yY][eE][sS]|[yY])$ ]]; then
         apt-get update
     fi
-    echo 'You are ready to install the non-free Linux firmware (required for the AMD drivers), the Mesa graphics library, and AMD drivers. Would you like to do that now [y/n]?'
+    printf 'You are ready to install the non-free Linux firmware (required for the AMD drivers), the Mesa graphics library, and AMD drivers. Would you like to do that now [y/n]? '
     read install_amd_driver
     if [[ $install_amd_driver =~ ^([yY][eE][sS]|[yY])$ ]]; then
         apt-get install firmware-linux-nonfree libgl1-mesa-dri xserver-xorg-video-amdgpu
     fi
-    echo 'It is recommended that you install Vulkan as well in order to get better performance in applications that use it (such as Lutris and Wine). Would you like to do that now [y/n]?'
+    printf 'It is recommended that you install Vulkan as well in order to get better performance in applications that use it (such as Lutris and Wine). Would you like to do that now [y/n]? '
     read install_vulkan_amd
     if [[ $install_vulkan_amd =~ ^([yY][eE][sS]|[yY])$ ]]; then
         apt-get install mesa-vulkan-drivers libvulkan1 vulkan-tools vulkan-utils vulkan-validationlayers
     fi
-    echo 'If these installs ran successfully, then you have installed all the necessary AMD graphics drivers.'
+    printf 'If these installs ran successfully, then you have installed all the necessary AMD graphics drivers.\n'
 fi
 
 # Steam installation
-echo 'Steam is a video game digital distribution service by Valve, and is the largest digital distribution platform for PC gaming. It has official support for GNU/Linux, and has a custom version of Wine included for running Windows-only games and software. It is recommended that you install Steam, would you like to start the process of getting Steam installed now [y/n]?'
+printf 'Steam is a video game digital distribution service by Valve, and is the largest digital distribution platform for PC gaming. It has official support for GNU/Linux, and has a custom version of Wine included for running Windows-only games and software. It is recommended that you install Steam, would you like to start the process of getting Steam installed now [y/n]? '
 read install_steam
 if [[ $install_steam =~ ^([yY][eE][sS]|[yY])$ ]]; then
-    echo 'In order to install Steam, you need to enable multi-arch, which lets you install library packages from multiple architectures on the same machine. Would you like to do that now [y/n]?'
+    printf 'In order to install Steam, you need to enable multi-arch, which lets you install library packages from multiple architectures on the same machine. Would you like to do that now [y/n]? '
     read enable_multi_arch_1
     if [[ $enable_multi_arch_1 =~ ^([yY][eE][sS]|[yY])$ ]]; then
         dpkg --add-architecture i386
         apt-get update
         if [ $gpu = "Nvidia" ]; then
-            echo 'Since you enabled multi-arch, it is recommended that you install the following i386 graphics packages: nvidia-driver-libs-i386 and nvidia-vulkan-icd:i386, would you like to do that now [y/n]?'
+            printf 'Since you enabled multi-arch, it is recommended that you install the following i386 graphics packages: nvidia-driver-libs-i386 and nvidia-vulkan-icd:i386, would you like to do that now [y/n]? '
             read install_nvidia_i368_drivers
             if [[ $install_nvidia_i368_drivers =~ ^([yY][eE][sS]|[yY])$ ]]; then
                 apt-get install nvidia-driver-libs-i386 nvidia-vulkan-icd:i386
             fi
         elif [ $gpu = "AMD" ]; then
-            echo 'Since you enabled multi-arch, it is recommended that you install the following i386 graphics packages: libgl1:i386 and mesa-vulkan-drivers:i386, would you like to do that now [y/n]?'
+            printf 'Since you enabled multi-arch, it is recommended that you install the following i386 graphics packages: libgl1:i386 and mesa-vulkan-drivers:i386, would you like to do that now [y/n]? '
             read install_amd_i368_drivers
             if [[ $install_amd_i368_drivers =~ ^([yY][eE][sS]|[yY])$ ]]; then
                 apt-get install libgl1:i386 mesa-vulkan-drivers:i386
             fi
         fi
     fi
-    echo 'Would you like to install the steam package now [y/n]?'
+    printf 'Would you like to install the steam package now [y/n]? '
     read install_steam_package
     if [[ $install_steam_package =~ ^([yY][eE][sS]|[yY])$ ]]; then
         apt-get install steam
     fi
-    echo 'If these installs ran successfully, then you have setup Steam.'
+    printf 'If these installs ran successfully, then you have setup Steam.\n'
 fi
 
 # Wine installation
-echo 'Wine is a tool that allows you to run Windows applications on Linux. It is required for many applications such as Lutris. It is recommended that you install Wine, would you like to start the process of getting Wine installed now [y/n]?'
+printf 'Wine is a tool that allows you to run Windows applications on Linux. It is required for many applications such as Lutris. It is recommended that you install Wine, would you like to start the process of getting Wine installed now [y/n]? '
 read install_wine
 if [[ $install_wine =~ ^([yY][eE][sS]|[yY])$ ]]; then
-    echo 'There are three main branches of Wine: Stable, Development, and Staging. Stable is, as the name implies, the most stable branch, with the least amount of features. Wine development is rapid, with new releases in the development branch every two weeks or so. Staging contains bug fixes and features which have not been integrated into the development branch yet. The idea of Wine Staging is to provide experimental features faster to end users and to give developers the possibility to discuss and improve their patches before they are integrated into the main branch.'
-    echo 'Which version of Wine would you like to install: [s]table, [d]evelopment, or [st]aging?'
+    printf 'There are three main branches of Wine: Stable, Development, and Staging. Stable is, as the name implies, the most stable branch, with the least amount of features. Wine development is rapid, with new releases in the development branch every two weeks or so. Staging contains bug fixes and features which have not been integrated into the development branch yet. The idea of Wine Staging is to provide experimental features faster to end users and to give developers the possibility to discuss and improve their patches before they are integrated into the main branch.\n'
+    printf 'Which version of Wine would you like to install: [s]table, [d]evelopment, or [st]aging? '
     read wine_version
     if [[ $wine_version =~ ^([sS][tT][aA][gG][iI][nN][gG]|[sS][tT])$ ]]; then
         wine_version="st"
-        echo 'Since Wine Staging is not in the official Debian repository, installing it would mean you need to add the Wine HQ repository key and use that repository to install and update Wine. If you do not want to do this, you can choose to install the stable or development branch of Wine. Are you okay installing Wine Staging from the Wine HQ repository [y/n]?'
+        printf 'Since Wine Staging is not in the official Debian repository, installing it would mean you need to add the Wine HQ repository key and use that repository to install and update Wine. If you do not want to do this, you can choose to install the stable or development branch of Wine. Are you okay installing Wine Staging from the Wine HQ repository [y/n]? '
         read install_wine_staging
         if [[ $install_wine_staging =~ ^([nN][oO]|[nN])$ ]]; then
-            echo 'Would you like to install [s]table or [d]evelopment?'
+            printf 'Would you like to install [s]table or [d]evelopment? '
             read wine_version_2
             if [[ $wine_version_2 =~ ^([sS][tT][aA][bB][lL][eE]|[sS])$ ]]; then
                 wine_version="s"
@@ -205,13 +205,13 @@ if [[ $install_wine =~ ^([yY][eE][sS]|[yY])$ ]]; then
             fi
         fi
     fi
-    echo 'In order to install Wine, you need to enable multi-arch, which lets you install library packages from multiple architectures on the same machine. Would you like to do that now (you do not have to do this again if you have already done this step when installing Steam) [y/n]?'
+    printf 'In order to install Wine, you need to enable multi-arch, which lets you install library packages from multiple architectures on the same machine. Would you like to do that now (you do not have to do this again if you have already done this step when installing Steam) [y/n]? '
     read enable_multi_arch_2
     if [[ $enable_multi_arch_2 =~ ^([yY][eE][sS]|[yY])$ ]]; then
         dpkg --add-architecture i386
         apt-get update
     fi
-    echo 'Would you like to install the necessary Wine package now [y/n]?'
+    printf 'Would you like to install the necessary Wine package now [y/n]? '
     read install_wine_package
     if [[ $install_wine_package =~ ^([yY][eE][sS]|[yY])$ ]]; then
         if [ $wine_version = "s" ]; then
@@ -222,37 +222,38 @@ if [[ $install_wine =~ ^([yY][eE][sS]|[yY])$ ]]; then
             wget -nc https://dl.winehq.org/wine-builds/winehq.key
             apt-key add winehq.key
             if [ $debian_version = "buster" ]; then
-                echo 'Add the following line to your /etc/apt/sources.list file:'
-                echo 'deb https://dl.winehq.org/wine-builds/debian/ buster main'
-                echo 'Have you added this line to your /etc/apt/sources.list file [y/n]?'
+                printf 'Add the following line to your /etc/apt/sources.list file:\n'
+                printf "\e[32m%s\e[0m\n" "deb https://dl.winehq.org/wine-builds/debian/ buster main"
+                printf 'Have you added this line to your /etc/apt/sources.list file [y/n]? '
                 read added_winehq_repo
                 apt update
                 apt install --install-recommends winehq-staging
             elif [ $debian_version = "bullseye/sid" ]; then
-                echo 'Add the following line to your /etc/apt/sources.list file:'
-                echo 'deb https://dl.winehq.org/wine-builds/debian/ bullseye main'
-                echo 'Have you added this line to your /etc/apt/sources.list file [y/n]?'
+                printf 'Add the following line to your /etc/apt/sources.list file:\n'
+                printf "\e[32m%s\e[0m\n" "deb https://dl.winehq.org/wine-builds/debian/ bullseye main"
+                printf 'Have you added this line to your /etc/apt/sources.list file [y/n]? '
                 read added_winehq_repo
                 apt update
                 apt install --install-recommends winehq-staging
             fi
         fi
     fi
-    echo 'If these installs ran successfully, then you have setup Wine.'
+    printf 'If these installs ran successfully, then you have setup Wine.\n'
 fi
 
 # Lutris installation
-echo 'Lutris is a FOSS game manager for Linux-based operating systems. It uses Wine and other tools like DXVK to make managing and running games much easier on Linux. It is recommended that you install Lutris, would you like to start the process of getting Lutris installed now [y/n]?'
+printf 'Lutris is a FOSS game manager for Linux-based operating systems. It uses Wine and other tools like DXVK to make managing and running games much easier on Linux. It is recommended that you install Lutris, would you like to start the process of getting Lutris installed now [y/n]? '
 read install_lutris
 if [[ $install_lutris =~ ^([yY][eE][sS]|[yY])$ ]]; then
-    echo 'Lutris requires you have Wine installed on your system. If you do not have Wine, you will not be able to continue with this installation process. Do you have Wine installed on your system [y/n]?'
+    printf 'Lutris requires you have Wine installed on your system. If you do not have Wine, you will not be able to continue with this installation process. Do you have Wine installed on your system [y/n]? '
     read installed_wine
     if [[ $installed_wine =~ ^([yY][eE][sS]|[yY])$ ]]; then
-        echo 'Lutris is not in the official Debian repository. According to the Lutris website, the way to install Lutris from an auto-updating repository is using the openSUSE Build Service Repository, which requires adding a key for this repository. If this is not something you want to do, you can also download the .deb file from the openSUSE website and install Lutris using that, or download the tar.xz package from Lutris and run the project directly from the extracted archive. Would you like to [1]use the openSUSE Build Service Repository, [2]download and install the .deb file from the openSUSE website, or [3]download the tar.xz package from Lutris and run the project directly from the extracted archive?'
+        printf 'Lutris is not in the official Debian repository. According to the Lutris website, the way to install Lutris from an auto-updating repository is using the openSUSE Build Service Repository, which requires adding a key for this repository. If this is not something you want to do, you can also download the .deb file from the openSUSE website and install Lutris using that, or download the tar.xz package from Lutris and run the project directly from the extracted archive.\n'
+        printf 'Would you like to [1]use the openSUSE Build Service Repository, [2]download and install the .deb file from the openSUSE website, or [3]download the tar.xz package from Lutris and run the project directly from the extracted archive? '
         read lutris_installation_choice
         if [ $lutris_installation_choice = "1" ]; then
             if [ $debian_version = "buster" ]; then
-                echo 'Would you like to add the http://download.opensuse.org/repositories/home:/strycore/Debian_10/ repository and key to your apt sources, and install Lutris now [y/n]?'
+                printf 'Would you like to add the http://download.opensuse.org/repositories/home:/strycore/Debian_10/ repository and key to your apt sources, and install Lutris now [y/n]? '
                 read install_lutris_package
                 if [[ $install_lutris_package =~ ^([yY][eE][sS]|[yY])$ ]]; then
                     echo 'deb http://download.opensuse.org/repositories/home:/strycore/Debian_10/ /' >/etc/apt/sources.list.d/home:strycore.list
@@ -262,10 +263,10 @@ if [[ $install_lutris =~ ^([yY][eE][sS]|[yY])$ ]]; then
                     apt-get install lutris
                 fi
             elif [ $debian_version = "bullseye/sid "]; then
-                echo 'Are you running Debian [t]esting or [u]nstable?'
+                printf 'Are you running Debian [t]esting or [u]nstable? '
                 read testing_or_unstable
                 if [[ $testing_or_unstable =~ ^([tT][eE][sS][tT][iI][nN][gG]|[tT])$ ]]; then
-                    echo 'Would you like to add the http://download.opensuse.org/repositories/home:/strycore/Debian_Testing/ repository and key to your apt sources, and install Lutris now [y/n]?'
+                    printf 'Would you like to add the http://download.opensuse.org/repositories/home:/strycore/Debian_Testing/ repository and key to your apt sources, and install Lutris now [y/n]? '
                     read install_lutris_package
                     if [[ $install_lutris_package =~ ^([yY][eE][sS]|[yY])$ ]]; then
                         echo 'deb http://download.opensuse.org/repositories/home:/strycore/Debian_Testing/ /' >/etc/apt/sources.list.d/home:strycore.list
@@ -275,7 +276,7 @@ if [[ $install_lutris =~ ^([yY][eE][sS]|[yY])$ ]]; then
                         apt-get install lutris
                     fi
                 elif [[ $testing_or_unstable =~ ^([uU][nN][sS][tT][aA][bB][lL][eE]|[uU])$ ]]; then
-                    echo 'Would you like to add the http://download.opensuse.org/repositories/home:/strycore/Debian_Unstable/ repository and key to your apt sources, and install Lutris now [y/n]?'
+                    printf 'Would you like to add the http://download.opensuse.org/repositories/home:/strycore/Debian_Unstable/ repository and key to your apt sources, and install Lutris now [y/n]? '
                     read install_lutris_package
                     if [[ $install_lutris_package =~ ^([yY][eE][sS]|[yY])$ ]]; then
                         echo 'deb http://download.opensuse.org/repositories/home:/strycore/Debian_Unstable/ /' >/etc/apt/sources.list.d/home:strycore.list
@@ -287,14 +288,14 @@ if [[ $install_lutris =~ ^([yY][eE][sS]|[yY])$ ]]; then
                 fi
             fi
         elif [ $lutris_installation_choice = "2" ]; then
-            echo 'You can download the Lutris .deb file for your version of Debian directly from the openSUSE build service site here: https://software.opensuse.org/download.html?project=home%3Astrycore&package=lutris'
-            echo 'Go to the link, click "Grab binary packages directly", and download the Lutris .deb file for your version of Debian.'
-            echo 'Navigate to the directory where you downloaded the .deb file, and install it by running the following command (replacing the version number with the version you downloaded):'
-            echo -e '\e[32msudo apt install ./lutris_0.5.6_amd64\e[0m'
+            printf 'You can download the Lutris .deb file for your version of Debian directly from the openSUSE build service site here: https://software.opensuse.org/download.html?project=home%3Astrycore&package=lutris\n'
+            printf 'Go to the link, click "Grab binary packages directly", and download the Lutris .deb file for your version of Debian.\n'
+            printf 'Navigate to the directory where you downloaded the .deb file, and install it by running the following command (replacing the version number with the version you downloaded):\n'
+            printf "\e[32m%s\e[0m\n" "sudo apt install ./lutris_0.5.6_amd64"
         elif [ $lutris_installation_choice = "3" ]; then
-            echo 'You can download the tar.xz package from Lutris and run the project directly from the extracted archive. To do that, go to the Lutris download page here: https://lutris.net/downloads/, navigate to the "Tarball" section, and follow the instructions there.'
+            printf 'You can download the tar.xz package from Lutris and run the project directly from the extracted archive. To do that, go to the Lutris download page here: https://lutris.net/downloads/, navigate to the "Tarball" section, and follow the instructions there.\n'
         fi
     fi
-    echo 'If these installs ran successfully, then you have setup Lutris.'
+    printf 'If these installs ran successfully, then you have setup Lutris.\n'
 fi
-echo 'If all these installs ran successfully, then you have setup all the recommended things to get started gaming on Debian.'
+printf 'If all these installs ran successfully, then you have setup all the recommended things to get started gaming on Debian.\n'
