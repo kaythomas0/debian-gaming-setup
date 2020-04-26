@@ -118,8 +118,10 @@ if [ $gpu = "Nvidia" ]; then
                 echo -e 'Section "Device"\n\tIdentifier "My GPU"\n\tDriver "nvidia"\nEndSection' >/etc/X11/xorg.conf.d/20-nvidia.conf
             fi
         fi
+        printf 'If these installations ran successfully, then you have installed all the necessary Nvidia graphics drivers.\n'
+    else
+        printf 'Nvidia graphics drivers installation aborted.\n'
     fi
-    printf 'If these installs ran successfully, then you have installed all the necessary Nvidia graphics drivers.\n'
 
 # AMD drivers
 elif [ $gpu = "AMD" ]; then
@@ -144,13 +146,15 @@ elif [ $gpu = "AMD" ]; then
     read install_amd_driver
     if [[ $install_amd_driver =~ ^([yY][eE][sS]|[yY])$ ]]; then
         apt-get install firmware-linux-nonfree libgl1-mesa-dri xserver-xorg-video-amdgpu
+        printf 'It is recommended that you install Vulkan as well in order to get better performance in applications that use it (such as Lutris and Wine). Would you like to do that now [y/n]? '
+        read install_vulkan_amd
+        if [[ $install_vulkan_amd =~ ^([yY][eE][sS]|[yY])$ ]]; then
+            apt-get install mesa-vulkan-drivers libvulkan1 vulkan-tools vulkan-utils vulkan-validationlayers
+        fi
+        printf 'If these installations ran successfully, then you have installed all the necessary AMD graphics drivers.\n'
+    else
+        printf 'AMD graphics drivers installation aborted.\n'
     fi
-    printf 'It is recommended that you install Vulkan as well in order to get better performance in applications that use it (such as Lutris and Wine). Would you like to do that now [y/n]? '
-    read install_vulkan_amd
-    if [[ $install_vulkan_amd =~ ^([yY][eE][sS]|[yY])$ ]]; then
-        apt-get install mesa-vulkan-drivers libvulkan1 vulkan-tools vulkan-utils vulkan-validationlayers
-    fi
-    printf 'If these installs ran successfully, then you have installed all the necessary AMD graphics drivers.\n'
 fi
 
 # Steam installation
@@ -180,8 +184,10 @@ if [[ $install_steam =~ ^([yY][eE][sS]|[yY])$ ]]; then
     read install_steam_package
     if [[ $install_steam_package =~ ^([yY][eE][sS]|[yY])$ ]]; then
         apt-get install steam
+        printf 'If these installations ran successfully, then you have setup Steam.\n'
+    else
+        printf 'Steam installation aborted.\n'
     fi
-    printf 'If these installs ran successfully, then you have setup Steam.\n'
 fi
 
 # Wine installation
@@ -237,8 +243,10 @@ if [[ $install_wine =~ ^([yY][eE][sS]|[yY])$ ]]; then
                 apt install --install-recommends winehq-staging
             fi
         fi
+        printf 'If these installations ran successfully, then you have setup Wine.\n'
+    else
+        printf 'Wine installation aborted.\n'
     fi
-    printf 'If these installs ran successfully, then you have setup Wine.\n'
 fi
 
 # Lutris installation
@@ -261,6 +269,9 @@ if [[ $install_lutris =~ ^([yY][eE][sS]|[yY])$ ]]; then
                     apt-key add - <Release.key
                     apt-get update
                     apt-get install lutris
+                    printf 'If these installations ran successfully, then you have setup Lutris.\n'
+                else
+                    printf 'Lutris installation aborted.\n'
                 fi
             elif [ $debian_version = "bullseye/sid "]; then
                 printf 'Are you running Debian [t]esting or [u]nstable? '
@@ -274,6 +285,9 @@ if [[ $install_lutris =~ ^([yY][eE][sS]|[yY])$ ]]; then
                         apt-key add - <Release.key
                         apt-get update
                         apt-get install lutris
+                        printf 'If these installations ran successfully, then you have setup Lutris.\n'
+                    else
+                        printf 'Lutris installation aborted.\n'
                     fi
                 elif [[ $testing_or_unstable =~ ^([uU][nN][sS][tT][aA][bB][lL][eE]|[uU])$ ]]; then
                     printf 'Would you like to add the http://download.opensuse.org/repositories/home:/strycore/Debian_Unstable/ repository and key to your apt sources, and install Lutris now [y/n]? '
@@ -284,6 +298,9 @@ if [[ $install_lutris =~ ^([yY][eE][sS]|[yY])$ ]]; then
                         apt-key add - <Release.key
                         apt-get update
                         apt-get install lutris
+                        printf 'If these installations ran successfully, then you have setup Lutris.\n'
+                    else
+                        printf 'Lutris installation aborted.\n'
                     fi
                 fi
             fi
@@ -296,6 +313,5 @@ if [[ $install_lutris =~ ^([yY][eE][sS]|[yY])$ ]]; then
             printf 'You can download the tar.xz package from Lutris and run the project directly from the extracted archive. To do that, go to the Lutris download page here: https://lutris.net/downloads/, navigate to the "Tarball" section, and follow the instructions there.\n'
         fi
     fi
-    printf 'If these installs ran successfully, then you have setup Lutris.\n'
 fi
 printf 'If all these installs ran successfully, then you have setup all the recommended things to get started gaming on Debian.\n'
