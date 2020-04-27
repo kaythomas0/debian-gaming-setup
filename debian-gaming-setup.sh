@@ -210,6 +210,10 @@ if [[ $install_wine =~ ^([yY][eE][sS]|[yY])$ ]]; then
                 wine_version="d"
             fi
         fi
+    elif [[ $wine_version =~ ^([sS][tT][aA][bB][lL][eE]|[sS])$ ]]; then
+        wine_version="s"
+    elif [[ $wine_version =~ ^([dD][eE][vV][eE][lL][oO][pP][mM][eE][nN][tT]|[dD])$ ]]; then
+        wine_version="d"
     fi
     printf 'In order to install Wine, you need to enable multi-arch, which lets you install\nlibrary packages from multiple architectures on the same machine. Would you\nlike to do that now (you do not have to do this again if you have already done\nthis step when installing Steam) [y/n]? '
     read enable_multi_arch_2
