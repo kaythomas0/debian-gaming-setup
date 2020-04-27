@@ -42,8 +42,9 @@ if [ $gpu = "Nvidia" ]; then
     printf 'In order to proceed with the installation of the necessary packages to update\nyour graphics drivers, you need to allow non-free packages in your apt sources\nby doing the following:\n'
     if [[ $use_backports =~ ^([yY][eE][sS]|[yY])$ ]]; then
         use_backports="y"
-        printf 'Open /etc/apt/sources.list with your preferred text editor, and add/append the\nline:\n'
+        printf 'Open /etc/apt/sources.list with your preferred text editor, and add/append the\nfollowing lines:\n'
         printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian buster-backports main contrib non-free"
+        printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian buster main contrib non-free"
     elif [ $debian_version = "buster" ]; then
         printf 'Open /etc/apt/sources.list with your preferred text editor, and add/append the\nline:\n'
         printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian buster main contrib non-free"
@@ -59,6 +60,7 @@ if [ $gpu = "Nvidia" ]; then
     read update_apt_1
     if [[ $update_apt_1 =~ ^([yY][eE][sS]|[yY])$ ]]; then
         apt-get update
+        printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
     fi
     printf 'You should update your linux kernel headers before installing your graphics\ndrivers, would you like to do that now [y/n]? '
     read update_kernel_headers
@@ -74,19 +76,21 @@ if [ $gpu = "Nvidia" ]; then
         else
             apt-get install linux-headers-$(uname -r | sed 's/[^-]*-[^-]*-//')
         fi
+            printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
     fi
     printf 'The nvidia-detect package can be used to identify the GPU and required driver\npackage. Would you like to install and run this package now [y/n]? '
     read install_nvidia_detect
     if [[ $install_nvidia_detect =~ ^([yY][eE][sS]|[yY])$ ]]; then
         apt-get install nvidia-detect
         nvidia-detect
+        printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
         printf 'Did nvidia-detect recommend you install the [1]nvidia-driver,\n[2]nvidia-legacy-390xx-driver, or [3]nvidia-legacy-340xx-driver package? '
         read driver_package
     else
         printf 'Would you like to install the [1]nvidia-driver, [2]nvidia-legacy-390xx-driver,\nor [3]nvidia-legacy-340xx-driver package? '
         read driver_package
     fi
-    printf 'You should install the nvidia-driver package to update your graphics drivers,\nwould you like to do that now [y/n]? '
+    printf 'You should install your selected driver package to update your graphics drivers,\nwould you like to do that now [y/n]? '
     read install_nvidia_driver
     if [[ $install_nvidia_driver =~ ^([yY][eE][sS]|[yY])$ ]]; then
         if [ $driver_package = "1" ]; then
@@ -105,17 +109,21 @@ if [ $gpu = "Nvidia" ]; then
                     apt-get install nvidia-vulkan-icd
                 fi
             fi
+            printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
         elif [ $driver_package = "2" ]; then
             apt-get update
             apt-get install nvidia-legacy-390xx-driver
+            printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
         elif [ $driver_package = "3" ]; then
             apt-get update
             apt-get install nvidia-legacy-340xx-driver
+            printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
             printf 'You need to create an xorg configuration file. This can be done automatically\nright now, would you like to do that [y/n]? '
             read create_xorg_conf
             if [[ $create_xorg_conf =~ ^([yY][eE][sS]|[yY])$ ]]; then
                 mkdir -p /etc/X11/xorg.conf.d
                 echo -e 'Section "Device"\n\tIdentifier "My GPU"\n\tDriver "nvidia"\nEndSection' >/etc/X11/xorg.conf.d/20-nvidia.conf
+                printf 'Xorg configuration file created.'
             fi
         fi
         printf 'If these installations ran successfully, then you have installed all the\nnecessary Nvidia graphics drivers.\n'
@@ -141,15 +149,18 @@ elif [ $gpu = "AMD" ]; then
     read update_apt_2
     if [[ $update_apt_2 =~ ^([yY][eE][sS]|[yY])$ ]]; then
         apt-get update
+        printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
     fi
     printf 'You are ready to install the non-free Linux firmware (required for the AMD\ndrivers), the Mesa graphics library, and AMD drivers. Would you like to do that\nnow [y/n]? '
     read install_amd_driver
     if [[ $install_amd_driver =~ ^([yY][eE][sS]|[yY])$ ]]; then
         apt-get install firmware-linux-nonfree libgl1-mesa-dri xserver-xorg-video-amdgpu
+        printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
         printf 'It is recommended that you install Vulkan as well in order to get better\nperformance in applications that use it (such as Lutris and Wine). Would you\nlike to do that now [y/n]? '
         read install_vulkan_amd
         if [[ $install_vulkan_amd =~ ^([yY][eE][sS]|[yY])$ ]]; then
             apt-get install mesa-vulkan-drivers libvulkan1 vulkan-tools vulkan-utils vulkan-validationlayers
+            printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
         fi
         printf 'If these installations ran successfully, then you have installed all the\nnecessary AMD graphics drivers.\n'
     else
@@ -166,24 +177,28 @@ if [[ $install_steam =~ ^([yY][eE][sS]|[yY])$ ]]; then
     if [[ $enable_multi_arch_1 =~ ^([yY][eE][sS]|[yY])$ ]]; then
         dpkg --add-architecture i386
         apt-get update
+        printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
         if [ $gpu = "Nvidia" ]; then
             printf 'Since you enabled multi-arch, it is recommended that you install the following\ni386 graphics packages: nvidia-driver-libs-i386 and nvidia-vulkan-icd:i386,\nwould you like to do that now [y/n]? '
             read install_nvidia_i368_drivers
             if [[ $install_nvidia_i368_drivers =~ ^([yY][eE][sS]|[yY])$ ]]; then
                 apt-get install nvidia-driver-libs-i386 nvidia-vulkan-icd:i386
             fi
+            printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
         elif [ $gpu = "AMD" ]; then
             printf 'Since you enabled multi-arch, it is recommended that you install the following\ni386 graphics packages: libgl1:i386 and mesa-vulkan-drivers:i386, would you\nlike to do that now [y/n]? '
             read install_amd_i368_drivers
             if [[ $install_amd_i368_drivers =~ ^([yY][eE][sS]|[yY])$ ]]; then
                 apt-get install libgl1:i386 mesa-vulkan-drivers:i386
             fi
+            printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
         fi
     fi
     printf 'Would you like to install the steam package now [y/n]? '
     read install_steam_package
     if [[ $install_steam_package =~ ^([yY][eE][sS]|[yY])$ ]]; then
         apt-get install steam
+        printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
         printf 'If these installations ran successfully, then you have setup Steam.\n'
     else
         printf 'Steam installation aborted.\n'
@@ -220,32 +235,36 @@ if [[ $install_wine =~ ^([yY][eE][sS]|[yY])$ ]]; then
     if [[ $enable_multi_arch_2 =~ ^([yY][eE][sS]|[yY])$ ]]; then
         dpkg --add-architecture i386
         apt-get update
+        printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
     fi
     printf 'Would you like to install the necessary Wine package now [y/n]? '
     read install_wine_package
     if [[ $install_wine_package =~ ^([yY][eE][sS]|[yY])$ ]]; then
         if [ $wine_version = "s" ]; then
             apt-get install wine
+            printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
         elif [ $wine_version = "d" ]; then
             apt-get install wine-development
+            printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
         elif [ $wine_version = "st" ]; then
             wget -nc https://dl.winehq.org/wine-builds/winehq.key
             apt-key add winehq.key
             if [ $debian_version = "buster" ]; then
                 printf 'Add the following line to your /etc/apt/sources.list file:\n'
                 printf "\e[32m%s\e[0m\n" "deb https://dl.winehq.org/wine-builds/debian/ buster main"
-                printf 'Have you added this line to your /etc/apt/sources.list file [y/n]? '
+                printf 'Press enter once you have added this line. '
                 read added_winehq_repo
                 apt update
                 apt install --install-recommends winehq-staging
             elif [ $debian_version = "bullseye/sid" ]; then
                 printf 'Add the following line to your /etc/apt/sources.list file:\n'
                 printf "\e[32m%s\e[0m\n" "deb https://dl.winehq.org/wine-builds/debian/ bullseye main"
-                printf 'Have you added this line to your /etc/apt/sources.list file [y/n]? '
+                printf 'Press enter once you have added this line. '
                 read added_winehq_repo
                 apt update
                 apt install --install-recommends winehq-staging
             fi
+            printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
         fi
         printf 'If these installations ran successfully, then you have setup Wine.\n'
     else
@@ -273,6 +292,7 @@ if [[ $install_lutris =~ ^([yY][eE][sS]|[yY])$ ]]; then
                     apt-key add - <Release.key
                     apt-get update
                     apt-get install lutris
+                    printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
                     printf 'If these installations ran successfully, then you have setup Lutris.\n'
                 else
                     printf 'Lutris installation aborted.\n'
@@ -289,6 +309,7 @@ if [[ $install_lutris =~ ^([yY][eE][sS]|[yY])$ ]]; then
                         apt-key add - <Release.key
                         apt-get update
                         apt-get install lutris
+                        printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
                         printf 'If these installations ran successfully, then you have setup Lutris.\n'
                     else
                         printf 'Lutris installation aborted.\n'
@@ -302,6 +323,7 @@ if [[ $install_lutris =~ ^([yY][eE][sS]|[yY])$ ]]; then
                         apt-key add - <Release.key
                         apt-get update
                         apt-get install lutris
+                        printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
                         printf 'If these installations ran successfully, then you have setup Lutris.\n'
                     else
                         printf 'Lutris installation aborted.\n'
