@@ -53,7 +53,7 @@ if [ $gpu = "Nvidia" ]; then
         printf 'Or this line if you are on Sid:\n'
         printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian/ sid main contrib non-free"
     fi
-    printf 'Once you have modified your sources, you are ready to install the required\ngraphics packages. Have you appended your apt source with non-free [y/n]? '
+    printf 'Once you have modified your sources, you are ready to install the required\ngraphics packages. Press enter once you have appended your apt source with\nnon-free.'
     read appended_apt_sources_1
     printf 'You should update apt, would you like to do that now [y/n]? '
     read update_apt_1
@@ -135,7 +135,7 @@ elif [ $gpu = "AMD" ]; then
         printf 'Or this line if you are on Sid:\n'
         printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian/ sid main contrib non-free"
     fi
-    printf 'Once you have modified your sources, you are ready to install the required\ngraphics packages. Have you appended your apt source with non-free [y/n]? '
+    printf 'Once you have modified your sources, you are ready to install the required\ngraphics packages. Press enter once you have appended your apt source with\nnon-free.'
     read appended_apt_sources_2
     printf 'You should update apt, would you like to do that now [y/n]? '
     read update_apt_2
