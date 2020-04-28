@@ -87,7 +87,11 @@ if [ $gpu = "Nvidia" ]; then
         printf 'Did nvidia-detect recommend you install the [1]nvidia-driver,\n[2]nvidia-legacy-390xx-driver, or [3]nvidia-legacy-340xx-driver package? '
         read driver_package
     else
-        printf 'Would you like to install the [1]nvidia-driver, [2]nvidia-legacy-390xx-driver,\nor [3]nvidia-legacy-340xx-driver package? '
+        printf 'You can install the [1]nvidia-driver, [2]nvidia-legacy-390xx-driver,\nor [3]nvidia-legacy-340xx-driver package.\n'
+        printf '[1]nvidia-driver is for support of GeForce 600 series and newer GPUs.\n'
+        printf '[2]nvidia-legacy-390xx-driver is for support of GeForce 400 and 500 series.\n'
+        printf '[3]nvidia-legacy-340xx-driver is for support of GeForce 8 through 300 series\nGPUs.\n'
+        printf 'Which package would you like to install? '
         read driver_package
     fi
     printf 'You should install your selected driver package to update your graphics drivers,\nwould you like to do that now [y/n]? '
