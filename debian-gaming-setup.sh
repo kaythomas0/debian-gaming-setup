@@ -353,3 +353,4 @@ if [[ $install_lutris =~ ^([yY][eE][sS]|[yY])$ ]]; then
     fi
 fi
 printf 'If all these installs ran successfully, then you have setup all the recommended\nthings to get started gaming on Debian.\n'
+exit 0
