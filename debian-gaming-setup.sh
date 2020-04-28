@@ -1,4 +1,12 @@
 #!/usr/bin/env bash
+
+if [ "$1" = "-h" -o "$1" = "--help" ]; then
+	echo "Usage: debian-gaming-setup"
+	echo "        Starts an interactive shell script for installing recommended"
+	echo "        tools to game efficiently on Debian."
+	exit 0
+fi
+
 printf 'This script will help you get all the tools you need to start gaming on Debian.\n'
 
 # Grab Debian version
