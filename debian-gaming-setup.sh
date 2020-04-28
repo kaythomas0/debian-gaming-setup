@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 if [ "$1" = "-h" -o "$1" = "--help" ]; then
-    echo "Usage: debian-gaming-setup"
-    echo "        Starts an interactive shell script for installing recommended"
-    echo "        tools to game efficiently on Debian."
+    printf "Usage: debian-gaming-setup\n"
+    printf "       Starts an interactive shell script for installing recommended\n"
+    printf "       tools to game efficiently on Debian.\n"
     exit 0
 fi
 
