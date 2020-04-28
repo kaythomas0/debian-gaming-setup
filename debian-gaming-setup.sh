@@ -14,67 +14,67 @@ debian_version=$(cat /etc/debian_version)
 if [[ $debian_version == *"10"* ]]; then
     debian_version="buster"
 fi
-printf "It looks like your version of Debian is %s. Is that correct [y/n]? " $debian_version
+printf "\nIt looks like your version of Debian is %s. Is that correct [y/n]? " $debian_version
 read version_confirmation
 if [[ $version_confirmation =~ ^([nN][oO]|[nN])$ ]]; then
-    printf 'Are you running [s]table, [t]esting, or [u]nstable? '
+    printf '\nAre you running [s]table, [t]esting, or [u]nstable? '
     read version_input
     if [[ $version_input =~ ^([sS][tT][aA][bB][lL][eE]|[sS])$ ]]; then
         debian_version="buster"
     elif [[ $version_input =~ ^([tT][eE][sS][tT][iI][nN][gG]|[tT])$ ]] || [[ $version_input =~ ^([uU][nN][sS][tT][aA][bB][lL][eE]|[uU])$ ]]; then
         debian_version="bullseye/sid"
     fi
-    printf "Okay, you are running %s.\n" $debian_version
+    printf "\nOkay, you are running %s.\n" $debian_version
 fi
 
 # Grab graphics card
-printf 'Are you running on an [n]vidia or [a]md graphics card? '
+printf '\nAre you running on an [n]vidia or [a]md graphics card? '
 read gpu
 if [[ $gpu =~ ^([nN][vV][iI][dD][iI][aA]|[nN])$ ]]; then
     gpu="Nvidia"
 elif [[ $gpu =~ ^([aA][mM][dD]|[aA])$ ]]; then
     gpu="AMD"
 fi
-printf "Okay, you are running an %s graphics card.\n" $gpu
+printf "\nOkay, you are running an %s graphics card.\n" $gpu
 
 # Install graphics drivers
-printf 'To get the best gaming performance you should install the latest graphics\ndrivers.\n'
+printf '\nTo get the best gaming performance you should install the latest graphics\ndrivers.\n'
 
 # Nvidia drivers
 if [ $gpu = "Nvidia" ]; then
     if [ $debian_version = "buster" ]; then
-        printf 'Since you are running Stable, it is recommended that you use buster-backports\nto install your graphics drivers in order to get the latest versions.\n'
-        printf 'Would you like to use buster-backports to install your graphics drivers [y/n]? '
+        printf '\nSince you are running Stable, it is recommended that you use buster-backports\nto install your graphics drivers in order to get the latest versions.\n'
+        printf '\nWould you like to use buster-backports to install your graphics drivers [y/n]? '
         read use_backports
     fi
-    printf 'In order to proceed with the installation of the necessary packages to update\nyour graphics drivers, you need to allow non-free packages in your apt sources\nby doing the following:\n'
+    printf '\nIn order to proceed with the installation of the necessary packages to update\nyour graphics drivers, you need to allow non-free packages in your apt sources\nby doing the following:\n'
     if [[ $use_backports =~ ^([yY][eE][sS]|[yY])$ ]]; then
         use_backports="y"
-        printf 'Open /etc/apt/sources.list with your preferred text editor, and add/append the\nfollowing lines:\n'
+        printf '\nOpen /etc/apt/sources.list with your preferred text editor, and add/append the\nfollowing lines:\n'
         printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian buster-backports main contrib non-free"
         printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian buster main contrib non-free"
     elif [ $debian_version = "buster" ]; then
-        printf 'Open /etc/apt/sources.list with your preferred text editor, and add/append the\nline:\n'
+        printf '\nOpen /etc/apt/sources.list with your preferred text editor, and add/append the\nline:\n'
         printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian buster main contrib non-free"
     elif [ $debian_version = "bullseye/sid" ]; then
-        printf 'Open /etc/apt/sources.list with your preferred text editor, and add/append\nthis line if you are on Testing:\n'
+        printf '\nOpen /etc/apt/sources.list with your preferred text editor, and add/append\nthis line if you are on Testing:\n'
         printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian/ bullseye main contrib non-free"
         printf 'Or this line if you are on Sid:\n'
         printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian/ sid main contrib non-free"
     fi
-    printf 'Once you have modified your sources, you are ready to install the required\ngraphics packages. Press enter once you have appended your apt source with\nnon-free.'
+    printf '\nOnce you have modified your sources, you are ready to install the required\ngraphics packages. Press enter once you have appended your apt source with\nnon-free.'
     read appended_apt_sources_1
-    printf 'You should update apt, would you like to do that now [y/n]? '
+    printf '\nYou should update apt, would you like to do that now [y/n]? '
     read update_apt_1
     if [[ $update_apt_1 =~ ^([yY][eE][sS]|[yY])$ ]]; then
         apt-get update
         printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
     fi
-    printf 'You should update your linux kernel headers before installing your graphics\ndrivers, would you like to do that now [y/n]? '
+    printf '\nYou should update your linux kernel headers before installing your graphics\ndrivers, would you like to do that now [y/n]? '
     read update_kernel_headers
     if [[ $update_kernel_headers =~ ^([yY][eE][sS]|[yY])$ ]]; then
         if [ $debian_version = "buster" ]; then
-            printf 'Are you using the linux kernel from buster-backports (by default, a standard\ninstallation of Debian Stable would not use the linux kernel from\nbuster-backports) [y/n]? '
+            printf '\nAre you using the linux kernel from buster-backports (by default, a standard\ninstallation of Debian Stable would not use the linux kernel from\nbuster-backports) [y/n]? '
             read use_kernel_backports
         else
             use_kernel_backports="n"
@@ -86,7 +86,7 @@ if [ $gpu = "Nvidia" ]; then
         fi
             printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
     fi
-    printf 'The nvidia-detect package can be used to identify the GPU and required driver\npackage. Would you like to install and run this package now [y/n]? '
+    printf '\nThe nvidia-detect package can be used to identify the GPU and required driver\npackage. Would you like to install and run this package now [y/n]? '
     read install_nvidia_detect
     if [[ $install_nvidia_detect =~ ^([yY][eE][sS]|[yY])$ ]]; then
         apt-get install nvidia-detect
@@ -95,18 +95,18 @@ if [ $gpu = "Nvidia" ]; then
         printf 'Did nvidia-detect recommend you install the [1]nvidia-driver,\n[2]nvidia-legacy-390xx-driver, or [3]nvidia-legacy-340xx-driver package? '
         read driver_package
     else
-        printf 'You can install the [1]nvidia-driver, [2]nvidia-legacy-390xx-driver,\nor [3]nvidia-legacy-340xx-driver package.\n'
+        printf '\nYou can install the [1]nvidia-driver, [2]nvidia-legacy-390xx-driver,\nor [3]nvidia-legacy-340xx-driver package.\n'
         printf '[1]nvidia-driver is for support of GeForce 600 series and newer GPUs.\n'
         printf '[2]nvidia-legacy-390xx-driver is for support of GeForce 400 and 500 series.\n'
         printf '[3]nvidia-legacy-340xx-driver is for support of GeForce 8 through 300 series\nGPUs.\n'
         printf 'Which package would you like to install? '
         read driver_package
     fi
-    printf 'You should install your selected driver package to update your graphics drivers,\nwould you like to do that now [y/n]? '
+    printf '\nYou should install your selected driver package to update your graphics drivers,\nwould you like to do that now [y/n]? '
     read install_nvidia_driver
     if [[ $install_nvidia_driver =~ ^([yY][eE][sS]|[yY])$ ]]; then
         if [ $driver_package = "1" ]; then
-            printf 'It is recommended that you install nvidia-vulkan-icd as well in order to get\nbetter performance in applications that use Vulkan (such as Lutris and Wine).\nWould you like to do that as well [y/n]? '
+            printf '\nIt is recommended that you install nvidia-vulkan-icd as well in order to get\nbetter performance in applications that use Vulkan (such as Lutris and Wine).\nWould you like to do that as well [y/n]? '
             read install_vulkan_nvidia
             if [ $use_backports = "y" ]; then
                 apt-get update
@@ -138,9 +138,9 @@ if [ $gpu = "Nvidia" ]; then
                 printf 'Xorg configuration file created.'
             fi
         fi
-        printf 'If these installations ran successfully, then you have installed all the\nnecessary Nvidia graphics drivers.\n'
+        printf '\nIf these installations ran successfully, then you have installed all the\nnecessary Nvidia graphics drivers.\n'
     else
-        printf 'Nvidia graphics drivers installation aborted.\n'
+        printf '\nNvidia graphics drivers installation aborted.\n'
     fi
 
 # AMD drivers
