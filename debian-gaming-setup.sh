@@ -28,12 +28,54 @@ if [[ $version_confirmation =~ ^([nN][oO]|[nN])$ ]]; then
 fi
 
 # Grab graphics card
-printf '\nAre you running on an [n]vidia or [a]md graphics card? '
-read gpu
-if [[ $gpu =~ ^([nN][vV][iI][dD][iI][aA]|[nN])$ ]]; then
-    gpu="Nvidia"
-elif [[ $gpu =~ ^([aA][mM][dD]|[aA])$ ]]; then
-    gpu="AMD"
+gpu=""
+# Check if the lspci package isn't installed
+if ! (lspci --version) >/dev/null 2>&1; then
+    printf '\nAre you running on an [n]vidia or [a]md graphics card? '
+    read gpu_check
+    if [[ $gpu_check =~ ^([nN][vV][iI][dD][iI][aA]|[nN])$ ]]; then
+        gpu="Nvidia"
+    elif [[ $gpu_check =~ ^([aA][mM][dD]|[aA])$ ]]; then
+        gpu="AMD"
+    fi
+elif [[ "$(lspci | grep -i 'vga\|3d\|2d')" =~ [nN][vV][iI][dD][iI][aA] ]]; then
+    printf 'Nvidia graphics card detected. Are you running an nvidia graphics card [y/n]? '
+    read nvidia_check_1
+    if [[ $nvidia_check_1 =~ ^([nN][oO]|[nN])$ ]]; then
+        printf 'Are you running an AMD graphics card [y/n]? '
+        read amd_check_1
+        if [[ $amd_check_1 =~ ^([nN][oO]|[nN])$ ]]; then
+            printf 'Sorry, this script only supports Nvidia and AMD graphics cards.'
+            exit 0
+        else
+            gpu="AMD"
+        fi
+    else
+        gpu="Nvidia"
+    fi
+elif [[ "$(lspci | grep -i 'vga\|3d\|2d')" =~ [aA][mM][dD] ]]; then
+    printf 'AMD graphics card detected. Are you running an AMD graphics card [y/n]? '
+    read amd_check_2
+    if [[ $amd_check_2 =~ ^([nN][oO]|[nN])$ ]]; then
+        printf 'Are you running an Nvidia graphics card [y/n]? '
+        read nvidia_check_2
+        if [[ $nvidia_check_2 =~ ^([nN][oO]|[nN])$ ]]; then
+            printf 'Sorry, this script only supports Nvidia and AMD graphics cards.'
+            exit 0
+        else
+            gpu="Nvidia"
+        fi
+    else
+        gpu="AMD"
+    fi
+else
+    printf '\nAre you running on an [n]vidia or [a]md graphics card? '
+    read gpu_check
+    if [[ $gpu_check =~ ^([nN][vV][iI][dD][iI][aA]|[nN])$ ]]; then
+        gpu="Nvidia"
+    elif [[ $gpu_check =~ ^([aA][mM][dD]|[aA])$ ]]; then
+        gpu="AMD"
+    fi
 fi
 printf "\nOkay, you are running an %s graphics card.\n" $gpu
 
