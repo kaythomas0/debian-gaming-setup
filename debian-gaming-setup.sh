@@ -283,61 +283,93 @@ install_nvidia_tools_gui() {
         nvidia-detect
         local driver_package
         driver_package="$(zenity --width="$gui_width" --height=300 --list --title="Which package did nvidia-detect recommend you install?" --column="Package" "nvidia-driver" "nvidia-legacy-390xx-driver" "nvidia-legacy-340xx-driver")"
+        echo $driver_package
     else
         local driver_package
         driver_package="$(zenity --width="$gui_width" --height=300 --list --title="Which driver package would you like to install?" --column="Package" --column="Info" "nvidia-driver" "GeForce 600 series and newer" "nvidia-legacy-390xx-driver" "GeForce 400 and 500 series" "nvidia-legacy-340xx-driver" "GeForce 8 through 300 series")"
+        echo $driver_package
     fi
     if zenity --width="$gui_width" --height="$gui_height" --question --text="You should install your selected driver package to update your graphics drivers, would you like to do that now?"; then
-
-    fi
-
-    printf '\nYou should install your selected driver package to update your graphics drivers,\nwould you like to do that now [y/n]? '
-    local install_nvidia_driver
-    read -r install_nvidia_driver
-    if [[ $install_nvidia_driver =~ ^([yY][eE][sS]|[yY])$ ]]; then
-        if [ "$driver_package" = "1" ]; then
-            printf '\nIt is recommended that you install nvidia-vulkan-icd as well in order to get\nbetter performance in applications that use Vulkan (such as Lutris and Wine).\nWould you like to do that as well [y/n]? '
-            local install_vulkan_nvidia
-            read -r install_vulkan_nvidia
-            if [ $use_backports = "y" ]; then
-                apt-get update
-                apt-get install -t buster-backports nvidia-driver
-                if [[ $install_vulkan_nvidia =~ ^([yY][eE][sS]|[yY])$ ]]; then
+        if [ "$driver_package" = "nvidia-driver" ]; then
+            if zenity --width="$gui_width" --height="$gui_height" --question --text="It is recommended that you install nvidia-vulkan-icd as well in order to get better performance in applications that use Vulkan (such as Lutris and Wine). Would you like to do that as well?"; then
+                if [ $use_backports = "y" ]; then
+                    apt-get update
+                    apt-get install -t buster-backports nvidia-driver
                     apt-get install -t buster-backports nvidia-vulkan-icd
-                fi
-                printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
-            else
-                apt-get update
-                apt-get install nvidia-driver
-                if [[ $install_vulkan_nvidia =~ ^([yY][eE][sS]|[yY])$ ]]; then
+                else
+                    apt-get update
+                    apt-get install nvidia-driver
                     apt-get install nvidia-vulkan-icd
                 fi
-                printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
+            else
+                if [ $use_backports = "y" ]; then
+                    apt-get update
+                    apt-get install -t buster-backports nvidia-driver
+                else
+                    apt-get update
+                    apt-get install nvidia-driver
+                fi
             fi
-        elif [ "$driver_package" = "2" ]; then
+        elif [ "$driver_package" = "nvidia-legacy-390xx-driver" ]; then
             apt-get update
             apt-get install nvidia-legacy-390xx-driver
-            printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
-        elif [ "$driver_package" = "3" ]; then
+        elif [ "$driver_package" = "nvidia-legacy-340xx-driver" ]; then
             apt-get update
             apt-get install nvidia-legacy-340xx-driver
-            printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
-            printf 'You need to create an xorg configuration file. This can be done automatically\nright now, would you like to do that [y/n]? '
-            local create_xorg_conf
-            read -r create_xorg_conf
-            if [[ $create_xorg_conf =~ ^([yY][eE][sS]|[yY])$ ]]; then
+            if zenity --width="$gui_width" --height="$gui_height" --question --text="You need to create an xorg configuration file. This can be done automatically\nright now, would you like to do that?"; then
                 mkdir -p /etc/X11/xorg.conf.d
                 echo -e 'Section "Device"\n\tIdentifier "My GPU"\n\tDriver "nvidia"\nEndSection' >/etc/X11/xorg.conf.d/20-nvidia.conf
-                printf 'Xorg configuration file created.'
+                zenity --width="$gui_width" --height="$gui_height" --info --text="Xorg configuration file created."
             fi
         fi
-        printf '\nIf these installations ran successfully, then you have installed all the\nnecessary Nvidia graphics drivers.\n'
+        zenity --width="$gui_width" --height="$gui_height" --info --text="If these installations ran successfully, then you have installed all the necessary Nvidia graphics drivers."
     else
-        printf '\nNvidia graphics drivers installation aborted.\n'
+        zenity --width="$gui_width" --height="$gui_height" --info --text="Nvidia graphics drivers installation aborted."
     fi
 }
 
 install_amd_tools() {
+    printf '\nIn order to proceed with the installation of the necessary packages to update\nyour graphics drivers, you need to allow non-free packages in your apt sources\nby doing the following:\n'
+    if [ $debian_version = "buster" ]; then
+        printf '\nOpen /etc/apt/sources.list with your preferred text editor, and add/append the\nline:\n'
+        printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian buster main contrib non-free"
+    elif [ $debian_version = "bullseye/sid" ]; then
+        printf '\nOpen /etc/apt/sources.list with your preferred text editor, and add/append\nthis line if you are on Testing:\n'
+        printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian/ bullseye main contrib non-free"
+        printf 'Or this line if you are on Sid:\n'
+        printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian/ sid main contrib non-free"
+    fi
+    printf '\nOnce you have modified your sources, you are ready to install the required\ngraphics packages. Press enter once you have appended your apt source with\nnon-free.'
+    local appended_apt_sources_2
+    # shellcheck disable=SC2034  # Unused variable left for readability
+    read -r appended_apt_sources_2
+    printf '\nYou should update apt, would you like to do that now [y/n]? '
+    local update_apt_2
+    read -r update_apt_2
+    if [[ $update_apt_2 =~ ^([yY][eE][sS]|[yY])$ ]]; then
+        apt-get update
+        printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
+    fi
+    printf 'You are ready to install the non-free Linux firmware (required for the AMD\ndrivers), the Mesa graphics library, and AMD drivers. Would you like to do that\nnow [y/n]? '
+    local install_amd_driver
+    read -r install_amd_driver
+    if [[ $install_amd_driver =~ ^([yY][eE][sS]|[yY])$ ]]; then
+        apt-get install firmware-linux-nonfree libgl1-mesa-dri xserver-xorg-video-amdgpu
+        printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
+        printf 'It is recommended that you install Vulkan as well in order to get better\nperformance in applications that use it (such as Lutris and Wine). Would you\nlike to do that now [y/n]? '
+        local install_vulkan_amd
+        read -r install_vulkan_amd
+        if [[ $install_vulkan_amd =~ ^([yY][eE][sS]|[yY])$ ]]; then
+            apt-get install mesa-vulkan-drivers libvulkan1 vulkan-tools vulkan-utils vulkan-validationlayers
+            printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
+        fi
+        printf 'If these installations ran successfully, then you have installed all the\nnecessary AMD graphics drivers.\n'
+    else
+        printf '\nAMD graphics drivers installation aborted.\n'
+    fi
+}
+
+install_amd_tools_gui() {
     printf '\nIn order to proceed with the installation of the necessary packages to update\nyour graphics drivers, you need to allow non-free packages in your apt sources\nby doing the following:\n'
     if [ $debian_version = "buster" ]; then
         printf '\nOpen /etc/apt/sources.list with your preferred text editor, and add/append the\nline:\n'
