@@ -20,7 +20,7 @@ confirm_debian_version() {
 confirm_debian_version_gui() {
     if ! zenity --width="$gui_width" --height="$gui_height" --question --text="It looks like your version of Debian is $debian_version. Is that correct?"; then
         local version_input
-        version_input="$(zenity --width="$gui_width" --height=300 --list --title="Which version of Debian are you running?" --column="Debian Release" "Stable (Buster)" "Testing (Bullseye)" "Unstable (Sid)")"
+        version_input="$(zenity --width="$gui_width" --height="$gui_list_height" --list --title="Which version of Debian are you running?" --column="Debian Release" "Stable (Buster)" "Testing (Bullseye)" "Unstable (Sid)")"
         if [ "$version_input" = "Stable (Buster)" ]; then
             debian_version="buster"
         elif [ "$version_input" = "Testing (Bullseye)" ] || [ "$version_input" = "Unstable (Sid)" ]; then
@@ -87,7 +87,7 @@ grab_graphics_card() {
 
 gpu_prompt_gui() {
     local gpu_check
-    gpu_check="$(zenity --width="$gui_width" --height="$gui_height" --list --title="Are you running on an Nvidia or AMD graphics card?" --column="Debian Release" "Nvidia" "AMD")"
+    gpu_check="$(zenity --width="$gui_width" --height="$gui_list_height" --list --title="Are you running on an Nvidia or AMD graphics card?" --column="Debian Release" "Nvidia" "AMD")"
     if [[ "$gpu_check" = "Nvidia" ]]; then
         gpu="Nvidia"
     elif [[ "$gpu_check" = "AMD" ]]; then
@@ -282,10 +282,10 @@ install_nvidia_tools_gui() {
         apt-get install nvidia-detect
         nvidia-detect
         local driver_package
-        driver_package="$(zenity --width="$gui_width" --height=300 --list --title="Which package did nvidia-detect recommend you install?" --column="Package" "nvidia-driver" "nvidia-legacy-390xx-driver" "nvidia-legacy-340xx-driver")"
+        driver_package="$(zenity --width="$gui_width" --height="$gui_list_height" --list --title="Which package did nvidia-detect recommend you install?" --column="Package" "nvidia-driver" "nvidia-legacy-390xx-driver" "nvidia-legacy-340xx-driver")"
     else
         local driver_package
-        driver_package="$(zenity --width="$gui_width" --height=300 --list --title="Which driver package would you like to install?" --column="Package" --column="Info" "nvidia-driver" "GeForce 600 series and newer" "nvidia-legacy-390xx-driver" "GeForce 400 and 500 series" "nvidia-legacy-340xx-driver" "GeForce 8 through 300 series")"
+        driver_package="$(zenity --width="$gui_width" --height="$gui_list_height" --list --title="Which driver package would you like to install?" --column="Package" --column="Info" "nvidia-driver" "GeForce 600 series and newer" "nvidia-legacy-390xx-driver" "GeForce 400 and 500 series" "nvidia-legacy-340xx-driver" "GeForce 8 through 300 series")"
     fi
     if zenity --width="$gui_width" --height="$gui_height" --question --text="You should install your selected driver package to update your graphics drivers, would you like to do that now?"; then
         if [ "$driver_package" = "nvidia-driver" ]; then
@@ -630,6 +630,7 @@ if [ "$1" = "-g" ] || [ "$1" = "--gui" ]; then
     gui=true
     gui_width=500
     gui_height=100
+    gui_list_height=300
 fi
 
 if [ $gui = true ]; then
