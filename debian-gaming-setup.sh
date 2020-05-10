@@ -283,11 +283,9 @@ install_nvidia_tools_gui() {
         nvidia-detect
         local driver_package
         driver_package="$(zenity --width="$gui_width" --height=300 --list --title="Which package did nvidia-detect recommend you install?" --column="Package" "nvidia-driver" "nvidia-legacy-390xx-driver" "nvidia-legacy-340xx-driver")"
-        echo $driver_package
     else
         local driver_package
         driver_package="$(zenity --width="$gui_width" --height=300 --list --title="Which driver package would you like to install?" --column="Package" --column="Info" "nvidia-driver" "GeForce 600 series and newer" "nvidia-legacy-390xx-driver" "GeForce 400 and 500 series" "nvidia-legacy-340xx-driver" "GeForce 8 through 300 series")"
-        echo $driver_package
     fi
     if zenity --width="$gui_width" --height="$gui_height" --question --text="You should install your selected driver package to update your graphics drivers, would you like to do that now?"; then
         if [ "$driver_package" = "nvidia-driver" ]; then
@@ -438,44 +436,24 @@ setup_steam() {
 
 setup_steam_gui() {
     if zenity --width="$gui_width" --height="$gui_height" --question --text="Steam is a video game digital distribution service by Valve, and is the largest digital distribution platform for PC gaming. It has official support for GNU/Linux, and has a custom version of Wine included for running Windows-only games and software. It is recommended that you install Steam, would you like to start the process of getting Steam installed now?"; then
-
-    fi
-
-    if [[ $install_steam =~ ^([yY][eE][sS]|[yY])$ ]]; then
-        printf '\nIn order to install Steam, you need to enable multi-arch, which lets you\ninstall library packages from multiple architectures on the same machine. Would\nyou like to do that now [y/n]? '
-        local enable_multi_arch_1
-        read -r enable_multi_arch_1
-        if [[ $enable_multi_arch_1 =~ ^([yY][eE][sS]|[yY])$ ]]; then
+        if zenity --width="$gui_width" --height="$gui_height" --question --text="In order to install Steam, you need to enable multi-arch, which lets you install library packages from multiple architectures on the same machine. Would you like to do that now?"; then
             dpkg --add-architecture i386
             apt-get update
-            printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
-            if [ $gpu = "Nvidia" ]; then
-                printf 'Since you enabled multi-arch, it is recommended that you install the following\ni386 graphics packages: nvidia-driver-libs-i386 and nvidia-vulkan-icd:i386,\nwould you like to do that now [y/n]? '
-                local install_nvidia_i368_drivers
-                read -r install_nvidia_i368_drivers
-                if [[ $install_nvidia_i368_drivers =~ ^([yY][eE][sS]|[yY])$ ]]; then
+            if [ "$gpu" = "Nvidia" ]; then
+                if zenity --width="$gui_width" --height="$gui_height" --question --text="Since you enabled multi-arch, it is recommended that you install the following i386 graphics packages: nvidia-driver-libs-i386 and nvidia-vulkan-icd:i386, would you like to do that now?"; then
                     apt-get install nvidia-driver-libs-i386 nvidia-vulkan-icd:i386
-                    printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
                 fi
-            elif [ $gpu = "AMD" ]; then
-                printf 'Since you enabled multi-arch, it is recommended that you install the following\ni386 graphics packages: libgl1:i386 and mesa-vulkan-drivers:i386, would you\nlike to do that now [y/n]? '
-                local install_amd_i368_drivers
-                read -r install_amd_i368_drivers
-                if [[ $install_amd_i368_drivers =~ ^([yY][eE][sS]|[yY])$ ]]; then
+            elif [ "$gpu" = "AMD" ]; then
+                if zenity --width="$gui_width" --height="$gui_height" --question --text="Since you enabled multi-arch, it is recommended that you install the following i386 graphics packages: libgl1:i386 and mesa-vulkan-drivers:i386, would you like to do that now?"; then
                     apt-get install libgl1:i386 mesa-vulkan-drivers:i386
-                    printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
                 fi
             fi
         fi
-        printf 'Would you like to install the steam package now [y/n]? '
-        local install_steam_package
-        read -r install_steam_package
-        if [[ $install_steam_package =~ ^([yY][eE][sS]|[yY])$ ]]; then
+        if zenity --width="$gui_width" --height="$gui_height" --question --text="Would you like to install the steam package now?"; then
             apt-get install steam
-            printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
-            printf 'If these installations ran successfully, then you have setup Steam.\n'
+            zenity --width="$gui_width" --height="$gui_height" --info --text="If these installations ran successfully, then you have setup Steam."
         else
-            printf '\nSteam installation aborted.\n'
+            zenity --width="$gui_width" --height="$gui_height" --info --text="Steam installation aborted."
         fi
     fi
 }
@@ -707,7 +685,11 @@ else
 fi
 
 # Steam installation
-setup_steam
+if [ $gui = true ]; then
+    setup_steam_gui
+else
+    setup_steam
+fi
 
 # Wine installation
 setup_wine
