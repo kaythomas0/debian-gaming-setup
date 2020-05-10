@@ -370,51 +370,77 @@ install_amd_tools() {
 }
 
 install_amd_tools_gui() {
-    printf '\nIn order to proceed with the installation of the necessary packages to update\nyour graphics drivers, you need to allow non-free packages in your apt sources\nby doing the following:\n'
-    if [ $debian_version = "buster" ]; then
-        printf '\nOpen /etc/apt/sources.list with your preferred text editor, and add/append the\nline:\n'
-        printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian buster main contrib non-free"
+    zenity --width="$gui_width" --height="$gui_height" --info --text="In order to proceed with the installation of the necessary packages to update your graphics drivers, you need to allow non-free packages in your apt sources by doing the following:"
+    if [ "$use_backports" = "y" ]; then
+        zenity --width="$gui_width" --height="$gui_height" --info --text="Open /etc/apt/sources.list with your preferred text editor, and add/append the following lines:\ndeb http://deb.debian.org/debian buster-backports main contrib non-free\ndeb http://deb.debian.org/debian buster main contrib non-free"
+    elif [ $debian_version = "buster" ]; then
+        zenity --width="$gui_width" --height="$gui_height" --info --text="Open /etc/apt/sources.list with your preferred text editor, and add/append the line:\ndeb http://deb.debian.org/debian buster main contrib non-free"
     elif [ $debian_version = "bullseye/sid" ]; then
-        printf '\nOpen /etc/apt/sources.list with your preferred text editor, and add/append\nthis line if you are on Testing:\n'
-        printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian/ bullseye main contrib non-free"
-        printf 'Or this line if you are on Sid:\n'
-        printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian/ sid main contrib non-free"
+        zenity --width="$gui_width" --height="$gui_height" --info --text="Open /etc/apt/sources.list with your preferred text editor, and add/append this line if you are on Testing:\ndeb http://deb.debian.org/debian/ bullseye main contrib non-free\nOr this line if you are on Sid:\ndeb http://deb.debian.org/debian/ sid main contrib non-free"
     fi
-    printf '\nOnce you have modified your sources, you are ready to install the required\ngraphics packages. Press enter once you have appended your apt source with\nnon-free.'
-    local appended_apt_sources_2
-    # shellcheck disable=SC2034  # Unused variable left for readability
-    read -r appended_apt_sources_2
-    printf '\nYou should update apt, would you like to do that now [y/n]? '
-    local update_apt_2
-    read -r update_apt_2
-    if [[ $update_apt_2 =~ ^([yY][eE][sS]|[yY])$ ]]; then
+    zenity --width="$gui_width" --height="$gui_height" --info --text="Once you have modified your sources, you are ready to install the required graphics packages. Press OK once you have appended your apt source with non-free."
+    if zenity --width="$gui_width" --height="$gui_height" --question --text="You should update apt, would you like to do that now?"; then
         apt-get update
-        printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
     fi
-    printf 'You are ready to install the non-free Linux firmware (required for the AMD\ndrivers), the Mesa graphics library, and AMD drivers. Would you like to do that\nnow [y/n]? '
-    local install_amd_driver
-    read -r install_amd_driver
-    if [[ $install_amd_driver =~ ^([yY][eE][sS]|[yY])$ ]]; then
+    if zenity --width="$gui_width" --height="$gui_height" --question --text="You are ready to install the non-free Linux firmware (required for the AMD\ rivers), the Mesa graphics library, and AMD drivers. Would you like to do that now?"; then
         apt-get install firmware-linux-nonfree libgl1-mesa-dri xserver-xorg-video-amdgpu
-        printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
-        printf 'It is recommended that you install Vulkan as well in order to get better\nperformance in applications that use it (such as Lutris and Wine). Would you\nlike to do that now [y/n]? '
-        local install_vulkan_amd
-        read -r install_vulkan_amd
-        if [[ $install_vulkan_amd =~ ^([yY][eE][sS]|[yY])$ ]]; then
+        if zenity --width="$gui_width" --height="$gui_height" --question --text="It is recommended that you install Vulkan as well in order to get better performance in applications that use it (such as Lutris and Wine). Would you like to do that now?"; then
             apt-get install mesa-vulkan-drivers libvulkan1 vulkan-tools vulkan-utils vulkan-validationlayers
-            printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
         fi
-        printf 'If these installations ran successfully, then you have installed all the\nnecessary AMD graphics drivers.\n'
+        zenity --width="$gui_width" --height="$gui_height" --info --text="If these installations ran successfully, then you have installed all the necessary AMD graphics drivers."
     else
-        printf '\nAMD graphics drivers installation aborted.\n'
+        zenity --width="$gui_width" --height="$gui_height" --info --text="AMD graphics drivers installation aborted."
     fi
 }
 
 setup_steam() {
-    # Steam installation
     printf '\nSteam is a video game digital distribution service by Valve, and is the largest\ndigital distribution platform for PC gaming. It has official support for\nGNU/Linux, and has a custom version of Wine included for running Windows-only\ngames and software. It is recommended that you install Steam, would you like to\nstart the process of getting Steam installed now [y/n]? '
     local install_steam
     read -r install_steam
+    if [[ $install_steam =~ ^([yY][eE][sS]|[yY])$ ]]; then
+        printf '\nIn order to install Steam, you need to enable multi-arch, which lets you\ninstall library packages from multiple architectures on the same machine. Would\nyou like to do that now [y/n]? '
+        local enable_multi_arch_1
+        read -r enable_multi_arch_1
+        if [[ $enable_multi_arch_1 =~ ^([yY][eE][sS]|[yY])$ ]]; then
+            dpkg --add-architecture i386
+            apt-get update
+            printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
+            if [ $gpu = "Nvidia" ]; then
+                printf 'Since you enabled multi-arch, it is recommended that you install the following\ni386 graphics packages: nvidia-driver-libs-i386 and nvidia-vulkan-icd:i386,\nwould you like to do that now [y/n]? '
+                local install_nvidia_i368_drivers
+                read -r install_nvidia_i368_drivers
+                if [[ $install_nvidia_i368_drivers =~ ^([yY][eE][sS]|[yY])$ ]]; then
+                    apt-get install nvidia-driver-libs-i386 nvidia-vulkan-icd:i386
+                    printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
+                fi
+            elif [ $gpu = "AMD" ]; then
+                printf 'Since you enabled multi-arch, it is recommended that you install the following\ni386 graphics packages: libgl1:i386 and mesa-vulkan-drivers:i386, would you\nlike to do that now [y/n]? '
+                local install_amd_i368_drivers
+                read -r install_amd_i368_drivers
+                if [[ $install_amd_i368_drivers =~ ^([yY][eE][sS]|[yY])$ ]]; then
+                    apt-get install libgl1:i386 mesa-vulkan-drivers:i386
+                    printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
+                fi
+            fi
+        fi
+        printf 'Would you like to install the steam package now [y/n]? '
+        local install_steam_package
+        read -r install_steam_package
+        if [[ $install_steam_package =~ ^([yY][eE][sS]|[yY])$ ]]; then
+            apt-get install steam
+            printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
+            printf 'If these installations ran successfully, then you have setup Steam.\n'
+        else
+            printf '\nSteam installation aborted.\n'
+        fi
+    fi
+}
+
+setup_steam_gui() {
+    if zenity --width="$gui_width" --height="$gui_height" --question --text="Steam is a video game digital distribution service by Valve, and is the largest digital distribution platform for PC gaming. It has official support for GNU/Linux, and has a custom version of Wine included for running Windows-only games and software. It is recommended that you install Steam, would you like to start the process of getting Steam installed now?"; then
+
+    fi
+
     if [[ $install_steam =~ ^([yY][eE][sS]|[yY])$ ]]; then
         printf '\nIn order to install Steam, you need to enable multi-arch, which lets you\ninstall library packages from multiple architectures on the same machine. Would\nyou like to do that now [y/n]? '
         local enable_multi_arch_1
@@ -670,7 +696,11 @@ if [ "$gpu" = "Nvidia" ]; then
     fi
 # AMD drivers
 elif [ "$gpu" = "AMD" ]; then
-    install_amd_tools
+    if [ $gui = true ]; then
+        install_amd_tools_gui
+    else
+        install_amd_tools
+    fi
 else
     printf '\nError: invalid gpu variable assignment, exiting...'
     exit 1
