@@ -658,6 +658,60 @@ setup_lutris() {
     fi
 }
 
+setup_lutris_gui() {
+    if zenity --width="$gui_width" --height="$gui_height" --question --text="Lutris is a FOSS game manager for Linux-based operating systems. It uses Wine and other tools like DXVK to make managing and running games much easier on Linux. It is recommended that you install Lutris, would you like to start the process of getting Lutris installed now?"; then
+        if zenity --width="$gui_width" --height="$gui_height" --question --text="Lutris requires you have Wine installed on your system. If you do not have Wine, you will not be able to continue with this installation process. Do you have Wine installed on your system?"; then
+            zenity --width="$gui_width" --height="$gui_height" --info --text="Lutris is not in the official Debian repository. According to the Lutris website, the way to install Lutris from an auto-updating repository is using the openSUSE Build Service Repository, which requires adding a key for this repository. If this is not something you want to do, you can also download the .deb file from the openSUSE website and install Lutris using that, or download the tar.xz package from Lutris and run the project directly from the extracted archive."
+            local lutris_installation_choice
+            lutris_installation_choice="$(zenity --width="$gui_width" --height="$gui_list_height" --list --title="How would you like to install Lutris?" --column="Lutris Installation" "Use the openSUSE Build Service Repository" "Download and install the .deb file from the openSUSE website" "Download the tar.xz package from Lutris and run the project directly")"
+            if [ "$lutris_installation_choice" = "Use the openSUSE Build Service Repository" ]; then
+                if [ "$debian_version" = "buster" ]; then
+                    if zenity --width="$gui_width" --height="$gui_height" --question --text="Would you like to add the http://download.opensuse.org/repositories/home:/strycore/Debian_10/ repository and key to your apt sources, and install Lutris now?"; then
+                        echo 'deb http://download.opensuse.org/repositories/home:/strycore/Debian_10/ /' >/etc/apt/sources.list.d/home:strycore.list
+                        wget -nv https://download.opensuse.org/repositories/home:strycore/Debian_10/Release.key -O Release.key
+                        apt-key add - <Release.key
+                        apt-get update
+                        apt-get install lutris
+                        zenity --width="$gui_width" --height="$gui_height" --info --text="If these installations ran successfully, then you have setup Lutris."
+                    else
+                        zenity --width="$gui_width" --height="$gui_height" --info --text="Lutris installation aborted."
+                    fi
+                elif [ $debian_version = "bullseye/sid" ]; then
+                    local testing_or_unstable
+                    testing_or_unstable="$(zenity --width="$gui_width" --height="$gui_list_height" --list --title="Are you running Debian Testing or Unstable?" --column="Debian Version" "Testing" "Unstable")"
+                    if [ "$testing_or_unstable" = "Testing" ]; then
+                        if zenity --width="$gui_width" --height="$gui_height" --question --text="Would you like to add the http://download.opensuse.org/repositories/home:/strycore/Debian_Testing/ repository and key to your apt sources, and install Lutris now?"; then
+                            echo 'deb http://download.opensuse.org/repositories/home:/strycore/Debian_Testing/ /' >/etc/apt/sources.list.d/home:strycore.list
+                            wget -nv https://download.opensuse.org/repositories/home:strycore/Debian_Testing/Release.key -O Release.key
+                            apt-key add - <Release.key
+                            apt-get update
+                            apt-get install lutris
+                            zenity --width="$gui_width" --height="$gui_height" --info --text="If these installations ran successfully, then you have setup Lutris."
+                        else
+                            zenity --width="$gui_width" --height="$gui_height" --info --text="Lutris installation aborted."
+                        fi
+                    elif [ "$testing_or_unstable" = "Unstable" ]; then
+                        if zenity --width="$gui_width" --height="$gui_height" --question --text="Would you like to add the http://download.opensuse.org/repositories/home:/strycore/Debian_Unstable/ repository and key to your apt sources, and install Lutris now?"; then
+                            echo 'deb http://download.opensuse.org/repositories/home:/strycore/Debian_Unstable/ /' >/etc/apt/sources.list.d/home:strycore.list
+                            wget -nv https://download.opensuse.org/repositories/home:strycore/Debian_Unstable/Release.key -O Release.key
+                            apt-key add - <Release.key
+                            apt-get update
+                            apt-get install lutris
+                            zenity --width="$gui_width" --height="$gui_height" --info --text="If these installations ran successfully, then you have setup Lutris."
+                        else
+                            zenity --width="$gui_width" --height="$gui_height" --info --text="Lutris installation aborted."
+                        fi
+                    fi
+                fi
+            elif [ "$lutris_installation_choice" = "Download and install the .deb file from the openSUSE website" ]; then
+                zenity --width="$gui_width" --height="$gui_height" --info --text="You can download the Lutris .deb file for your version of Debian directly from the openSUSE build service site here:\nhttps://software.opensuse.org/download.html?project=home%3Astrycore&amp;package=lutris\nGo to the link, click 'Grab binary packages directly', and download the Lutris .deb file for your version of Debian. Navigate to the directory where you downloaded the .deb file, and install it by running the following command (replacing the version number with the version you downloaded):\nsudo apt install ./lutris_0.5.6_amd64"
+            elif [ "$lutris_installation_choice" = "Download the tar.xz package from Lutris and run the project directly" ]; then
+                zenity --width="$gui_width" --height="$gui_height" --info --text="You can download the tar.xz package from Lutris and run the project directly from the extracted archive. To do that, go to the Lutris download page here: https://lutris.net/downloads/, navigate to the 'Tarball' section, and follow the instructions there."
+            fi
+        fi
+    fi
+}
+
 # Help flag
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
     printf "Usage: debian-gaming-setup [OPTIONS]\n\n"
@@ -745,7 +799,15 @@ else
 fi
 
 # Lutris installation
-setup_lutris
+if [ $gui = true ]; then
+    setup_lutris_gui
+else
+    setup_lutris
+fi
 
-printf '\nIf all these installations ran successfully, then you have setup all the recommended\ntools to get started gaming on Debian.\n'
+if [ $gui = true ]; then
+    zenity --width="$gui_width" --height="$gui_height" --info --text="If all these installations ran successfully, then you have setup all the recommended tools to get started gaming on Debian."
+else
+    printf '\nIf all these installations ran successfully, then you have setup all the recommended\ntools to get started gaming on Debian.\n'
+fi
 exit 0
