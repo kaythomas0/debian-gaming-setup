@@ -536,6 +536,51 @@ setup_wine() {
     fi
 }
 
+setup_wine_gui() {
+    if zenity --width="$gui_width" --height="$gui_height" --question --text="Wine is a tool that allows you to run Windows applications on Linux. It is required for many applications such as Lutris. It is recommended that you install Wine, would you like to start the process of getting Wine installed now?"; then
+        zenity --width="$gui_width" --height="$gui_height" --info --text="There are three main branches of Wine: Stable, Development, and Staging. Stable is, as the name implies, the most stable branch, with the least amount of features. Wine development is rapid, with new releases in the development branch every two weeks or so. Staging contains bug fixes and features which have not been integrated into the development branch yet. The idea of Wine Staging is to provide experimental features faster to end users and to give developers the possibility to discuss and improve their patches before they are integrated into the main branch."
+        local wine_version
+        wine_version="$(zenity --width="$gui_width" --height="$gui_list_height" --list --title="Which version of Wine would you like to install?" --column="Wine Branch" "Stable" "Development" "Staging")"
+        if [ "$wine_version" = "Staging" ]; then
+            if ! zenity --width="$gui_width" --height="$gui_height" --question --text="Since Wine Staging is not in the official Debian repository, installing it would mean you need to add the Wine HQ repository key and use that repository to install and update Wine. If you do not want to do this, you can choose to install the stable or development branch of Wine. Are you okay installing Wine Staging from the Wine HQ repository?"; then
+                local wine_version_2
+                wine_version_2="$(zenity --width="$gui_width" --height="$gui_list_height" --list --title="Would you like to install Stable or Development?" --column="Wine Branch" "Stable" "Development")"
+                if [ "$wine_version_2" = "Stable" ]; then
+                    wine_version="Stable"
+                elif [ "$wine_version_2" = "Development" ]; then
+                    wine_version="Development"
+                fi
+            fi
+        fi
+        if zenity --width="$gui_width" --height="$gui_height" --question --text="In order to install Wine, you need to enable multi-arch, which lets you install library packages from multiple architectures on the same machine. Would you like to do that now (you do not have to do this again if you have already done this step when installing Steam) [y/n]? "; then
+            dpkg --add-architecture i386
+            apt-get update
+        fi
+        if zenity --width="$gui_width" --height="$gui_height" --question --text="Would you like to install the necessary Wine package now?"; then
+            if [ "$wine_version" = "Stable" ]; then
+                apt-get install wine
+            elif [ "$wine_version" = "Development" ]; then
+                apt-get install wine-development
+            elif [ "$wine_version" = "Staging" ]; then
+                wget -nc https://dl.winehq.org/wine-builds/winehq.key
+                apt-key add winehq.key
+                if [ "$debian_version" = "buster" ]; then
+                    zenity --width="$gui_width" --height="$gui_height" --info --text="Add the following line to your /etc/apt/sources.list file:\ndeb https://dl.winehq.org/wine-builds/debian/ buster main\nPress enter once you have added this line."
+                    apt update
+                    apt install -install-recommends winehq-staging
+                elif [ $debian_version = "bullseye/sid" ]; then
+                    zenity --width="$gui_width" --height="$gui_height" --info --text="Add the following line to your /etc/apt/sources.list file:\ndeb https://dl.winehq.org/wine-builds/debian/ bullseye main\nPress enter once you have added this line."
+                    apt update
+                    apt install -install-recommends winehq-staging
+                fi
+            fi
+            zenity --width="$gui_width" --height="$gui_height" --info --text="If these installations ran successfully, then you have setup Wine."
+        else
+            zenity --width="$gui_width" --height="$gui_height" --info --text="Wine installation aborted."
+        fi
+    fi
+}
+
 setup_lutris() {
     printf '\nLutris is a FOSS game manager for Linux-based operating systems. It uses Wine\nand other tools like DXVK to make managing and running games much easier on\nLinux. It is recommended that you install Lutris, would you like to start the\nprocess of getting Lutris installed now [y/n]? '
     local install_lutris
@@ -693,7 +738,11 @@ else
 fi
 
 # Wine installation
-setup_wine
+if [ $gui = true ]; then
+    setup_wine_gui
+else
+    setup_wine
+fi
 
 # Lutris installation
 setup_lutris
