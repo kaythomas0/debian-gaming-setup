@@ -726,6 +726,10 @@ fi
 gui=false
 # GUI flag
 if [ "$1" = "-g" ] || [ "$1" = "--gui" ]; then
+    if ! (zenity --version) >/dev/null 2>&1; then
+        printf 'The zenity package is required to run with the gui flag.\nPlease install zenity by running:\nsudo apt install zenity\nAnd try again.\n'
+        exit 1
+    fi
     gui=true
     gui_width=500
     gui_height=100
