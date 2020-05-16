@@ -797,6 +797,88 @@ setup_lutris_gui() {
     fi
 }
 
+main() {
+    if [ "$gui" = true ]; then
+        zenity --width="$gui_width" --height="$gui_height" --info --text="This script will help you get all the tools you need to start gaming on Debian."
+    else
+        printf 'This script will help you get all the tools you need to start gaming on Debian.\n'
+    fi
+
+    # Grab Debian version
+    debian_version=$(cat /etc/debian_version)
+    if [[ $debian_version == *"10"* ]]; then
+        debian_version="buster"
+    fi
+
+    if [ "$gui" = true ]; then
+        confirm_debian_version_gui
+    else
+        confirm_debian_version
+    fi
+
+    # Grab graphics card
+    gpu=""
+    if [ "$gui" = true ]; then
+        grab_graphics_card_gui
+    else
+        grab_graphics_card
+    fi
+
+    # Install graphics drivers
+    if [ "$gui" = true ]; then
+        zenity --width="$gui_width" --height="$gui_height" --info --text="To get the best gaming performance you should install the latest graphics drivers."
+    else
+        printf '\nTo get the best gaming performance you should install the latest graphics\ndrivers.\n'
+    fi
+
+    # Nvidia drivers
+    if [ "$gpu" = "Nvidia" ]; then
+        if [ "$gui" = true ]; then
+            install_nvidia_tools_gui
+        else
+            install_nvidia_tools
+        fi
+    # AMD drivers
+    elif [ "$gpu" = "AMD" ]; then
+        if [ "$gui" = true ]; then
+            install_amd_tools_gui
+        else
+            install_amd_tools
+        fi
+    else
+        printf '\nError: invalid gpu variable assignment, exiting...'
+        exit 1
+    fi
+
+    # Steam installation
+    if [ "$gui" = true ]; then
+        setup_steam_gui
+    else
+        setup_steam
+    fi
+
+    # Wine installation
+    if [ "$gui" = true ]; then
+        setup_wine_gui
+    else
+        setup_wine
+    fi
+
+    # Lutris installation
+    if [ "$gui" = true ]; then
+        setup_lutris_gui
+    else
+        setup_lutris
+    fi
+
+    if [ "$gui" = true ]; then
+        zenity --width="$gui_width" --height="$gui_height" --info --text="If all these installations ran successfully, then you have setup all the recommended tools to get started gaming on Debian."
+    else
+        printf '\nIf all these installations ran successfully, then you have setup all the recommended\ntools to get started gaming on Debian.\n'
+    fi
+    exit 0
+}
+
 # Help flag
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
     printf "Usage: debian-gaming-setup [OPTIONS]\n\n"
@@ -808,8 +890,8 @@ if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
     exit 0
 fi
 
-gui=false
 # GUI flag
+gui=false
 if [ "$1" = "-g" ] || [ "$1" = "--gui" ]; then
     if ! (zenity --version) >/dev/null 2>&1; then
         printf 'The zenity package is required to run with the gui flag.\nPlease install zenity by running:\nsudo apt install zenity\nAnd try again.\n'
@@ -821,82 +903,8 @@ if [ "$1" = "-g" ] || [ "$1" = "--gui" ]; then
     gui_list_height=300
 fi
 
-if [ $gui = true ]; then
-    zenity --width="$gui_width" --height="$gui_height" --info --text="This script will help you get all the tools you need to start gaming on Debian."
-else
-    printf 'This script will help you get all the tools you need to start gaming on Debian.\n'
-fi
-
-# Grab Debian version
-debian_version=$(cat /etc/debian_version)
-if [[ $debian_version == *"10"* ]]; then
-    debian_version="buster"
-fi
-
-if [ $gui = true ]; then
-    confirm_debian_version_gui
-else
-    confirm_debian_version
-fi
-
-# Grab graphics card
-gpu=""
-if [ $gui = true ]; then
-    grab_graphics_card_gui
-else
-    grab_graphics_card
-fi
-
-# Install graphics drivers
-if [ $gui = true ]; then
-    zenity --width="$gui_width" --height="$gui_height" --info --text="To get the best gaming performance you should install the latest graphics drivers."
-else
-    printf '\nTo get the best gaming performance you should install the latest graphics\ndrivers.\n'
-fi
-
-# Nvidia drivers
-if [ "$gpu" = "Nvidia" ]; then
-    if [ $gui = true ]; then
-        install_nvidia_tools_gui
-    else
-        install_nvidia_tools
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    if ! main; then
+        exit 1
     fi
-# AMD drivers
-elif [ "$gpu" = "AMD" ]; then
-    if [ $gui = true ]; then
-        install_amd_tools_gui
-    else
-        install_amd_tools
-    fi
-else
-    printf '\nError: invalid gpu variable assignment, exiting...'
-    exit 1
 fi
-
-# Steam installation
-if [ $gui = true ]; then
-    setup_steam_gui
-else
-    setup_steam
-fi
-
-# Wine installation
-if [ $gui = true ]; then
-    setup_wine_gui
-else
-    setup_wine
-fi
-
-# Lutris installation
-if [ $gui = true ]; then
-    setup_lutris_gui
-else
-    setup_lutris
-fi
-
-if [ $gui = true ]; then
-    zenity --width="$gui_width" --height="$gui_height" --info --text="If all these installations ran successfully, then you have setup all the recommended tools to get started gaming on Debian."
-else
-    printf '\nIf all these installations ran successfully, then you have setup all the recommended\ntools to get started gaming on Debian.\n'
-fi
-exit 0
