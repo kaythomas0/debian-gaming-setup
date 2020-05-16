@@ -79,25 +79,44 @@ install_nvidia_tools() {
         local use_backports
         read -r use_backports
     fi
-    printf '\nIn order to proceed with the installation of the necessary packages to update\nyour graphics drivers, you need to allow non-free packages in your apt sources\nby doing the following:\n'
-    if [[ $use_backports =~ ^([yY][eE][sS]|[yY])$ ]]; then
-        use_backports="y"
-        printf '\nOpen /etc/apt/sources.list with your preferred text editor, and add/append the\nfollowing lines:\n'
-        printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian buster-backports main contrib non-free"
-        printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian buster main contrib non-free"
-    elif [ $debian_version = "buster" ]; then
-        printf '\nOpen /etc/apt/sources.list with your preferred text editor, and add/append the\nline:\n'
-        printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian buster main contrib non-free"
-    elif [ $debian_version = "bullseye/sid" ]; then
-        printf '\nOpen /etc/apt/sources.list with your preferred text editor, and add/append\nthis line if you are on Testing:\n'
-        printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian/ bullseye main contrib non-free"
-        printf 'Or this line if you are on Sid:\n'
-        printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian/ sid main contrib non-free"
+    printf '\nIn order to proceed with the installation of the necessary packages to update\nyour graphics drivers, you need to allow non-free packages in your apt sources.\nIf you have not modified your /etc/apt/sources.list file, this can be done\nautomatically. If you have made modifications to this file, you should do it\nmanually. Would you like to do this [a]utomatically, [m]anually, or [s]kip? '
+    local modify_apt_sources
+    read -r modify_apt_sources
+    if [ "$modify_apt_sources" = "a" ]; then
+        if [[ $use_backports =~ ^([yY][eE][sS]|[yY])$ ]]; then
+            use_backports="y"
+            sed -i 's/deb http:\/\/deb.debian.org\/debian buster main/deb http:\/\/deb.debian.org\/debian buster main contrib non-free/g' /etc/apt/sources.list
+            echo "deb http://deb.debian.org/debian buster-backports main contrib non-free" | sudo tee -a /etc/apt/sources.list.d/backports.list
+        elif [ $debian_version = "buster" ]; then
+            sed -i 's/deb http:\/\/deb.debian.org\/debian buster main/deb http:\/\/deb.debian.org\/debian buster main contrib non-free/g' /etc/apt/sources.list
+        elif [ $debian_version = "bullseye/sid" ]; then
+            printf '\nAre you running Debian [t]esting or [u]nstable? '
+            local testing_or_unstable
+            read -r testing_or_unstable
+            if [[ $testing_or_unstable =~ ^([tT][eE][sS][tT][iI][nN][gG]|[tT])$ ]]; then
+                sed -i 's/deb http:\/\/deb.debian.org\/debian bullseye main/deb http:\/\/deb.debian.org\/debian bullseye main contrib non-free/g' /etc/apt/sources.list
+            elif [[ $testing_or_unstable =~ ^([uU][nN][sS][tT][aA][bB][lL][eE]|[uU])$ ]]; then
+                sed -i 's/deb http:\/\/deb.debian.org\/debian sid main/deb http:\/\/deb.debian.org\/debian sid main contrib non-free/g' /etc/apt/sources.list
+            fi
+        fi
+    elif [ "$modify_apt_sources" = "m" ]; then
+        if [[ $use_backports =~ ^([yY][eE][sS]|[yY])$ ]]; then
+            use_backports="y"
+            printf '\nOpen /etc/apt/sources.list with your preferred text editor, and add/append the\nfollowing lines:\n'
+            printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian buster-backports main contrib non-free"
+            printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian buster main contrib non-free"
+        elif [ $debian_version = "buster" ]; then
+            printf '\nOpen /etc/apt/sources.list with your preferred text editor, and add/append the\nline:\n'
+            printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian buster main contrib non-free"
+        elif [ $debian_version = "bullseye/sid" ]; then
+            printf '\nOpen /etc/apt/sources.list with your preferred text editor, and add/append\nthis line if you are on Testing:\n'
+            printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian/ bullseye main contrib non-free"
+            printf 'Or this line if you are on Sid:\n'
+            printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian/ sid main contrib non-free"
+        fi
+    elif [ "$modify_apt_sources" = "s" ]; then
+        printf '\nSkipping apt sources modification...\n'
     fi
-    printf '\nOnce you have modified your sources, you are ready to install the required\ngraphics packages. Press enter once you have appended your apt source with\nnon-free.'
-    local appended_apt_sources_1
-    # shellcheck disable=SC2034  # Unused variable left for readability
-    read -r appended_apt_sources_1
     printf '\nYou should update apt, would you like to do that now [y/n]? '
     local update_apt_1
     read -r update_apt_1
@@ -189,20 +208,35 @@ install_nvidia_tools() {
 }
 
 install_amd_tools() {
-    printf '\nIn order to proceed with the installation of the necessary packages to update\nyour graphics drivers, you need to allow non-free packages in your apt sources\nby doing the following:\n'
-    if [ $debian_version = "buster" ]; then
-        printf '\nOpen /etc/apt/sources.list with your preferred text editor, and add/append the\nline:\n'
-        printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian buster main contrib non-free"
-    elif [ $debian_version = "bullseye/sid" ]; then
-        printf '\nOpen /etc/apt/sources.list with your preferred text editor, and add/append\nthis line if you are on Testing:\n'
-        printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian/ bullseye main contrib non-free"
-        printf 'Or this line if you are on Sid:\n'
-        printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian/ sid main contrib non-free"
+    printf '\nIn order to proceed with the installation of the necessary packages to update\nyour graphics drivers, you need to allow non-free packages in your apt sources.\nIf you have not modified your /etc/apt/sources.list file, this can be done\nautomatically. If you have made modifications to this file, you should do it\nmanually. Would you like to do this [a]utomatically, [m]anually, or [s]kip? '
+    local modify_apt_sources
+    read -r modify_apt_sources
+    if [ "$modify_apt_sources" = "a" ]; then
+        if [ $debian_version = "buster" ]; then
+            sed -i 's/deb http:\/\/deb.debian.org\/debian buster main/deb http:\/\/deb.debian.org\/debian buster main contrib non-free/g' /etc/apt/sources.list
+        elif [ $debian_version = "bullseye/sid" ]; then
+            printf '\nAre you running Debian [t]esting or [u]nstable? '
+            local testing_or_unstable
+            read -r testing_or_unstable
+            if [[ $testing_or_unstable =~ ^([tT][eE][sS][tT][iI][nN][gG]|[tT])$ ]]; then
+                sed -i 's/deb http:\/\/deb.debian.org\/debian bullseye main/deb http:\/\/deb.debian.org\/debian bullseye main contrib non-free/g' /etc/apt/sources.list
+            elif [[ $testing_or_unstable =~ ^([uU][nN][sS][tT][aA][bB][lL][eE]|[uU])$ ]]; then
+                sed -i 's/deb http:\/\/deb.debian.org\/debian sid main/deb http:\/\/deb.debian.org\/debian sid main contrib non-free/g' /etc/apt/sources.list
+            fi
+        fi
+    elif [ "$modify_apt_sources" = "m" ]; then
+        if [ $debian_version = "buster" ]; then
+            printf '\nOpen /etc/apt/sources.list with your preferred text editor, and add/append the\nline:\n'
+            printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian buster main contrib non-free"
+        elif [ $debian_version = "bullseye/sid" ]; then
+            printf '\nOpen /etc/apt/sources.list with your preferred text editor, and add/append\nthis line if you are on Testing:\n'
+            printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian/ bullseye main contrib non-free"
+            printf 'Or this line if you are on Sid:\n'
+            printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian/ sid main contrib non-free"
+        fi
+    elif [ "$modify_apt_sources" = "s" ]; then
+        printf '\nSkipping apt sources modification...\n'
     fi
-    printf '\nOnce you have modified your sources, you are ready to install the required\ngraphics packages. Press enter once you have appended your apt source with\nnon-free.'
-    local appended_apt_sources_2
-    # shellcheck disable=SC2034  # Unused variable left for readability
-    read -r appended_apt_sources_2
     printf '\nYou should update apt, would you like to do that now [y/n]? '
     local update_apt_2
     read -r update_apt_2
