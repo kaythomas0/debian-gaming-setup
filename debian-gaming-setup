@@ -141,7 +141,7 @@ install_nvidia_tools() {
         if [[ $use_backports =~ ^([yY][eE][sS]|[yY])$ ]]; then
             use_backports="y"
             sed -i 's/deb http:\/\/deb.debian.org\/debian buster main/deb http:\/\/deb.debian.org\/debian buster main contrib non-free/g' /etc/apt/sources.list
-            echo "deb http://deb.debian.org/debian buster-backports main contrib non-free" | sudo tee -a /etc/apt/sources.list.d/backports.list
+            echo "deb http://deb.debian.org/debian buster-backports main contrib non-free" >>/etc/apt/sources.list
         elif [ $debian_version = "buster" ]; then
             sed -i 's/deb http:\/\/deb.debian.org\/debian buster main/deb http:\/\/deb.debian.org\/debian buster main contrib non-free/g' /etc/apt/sources.list
         elif [ $debian_version = "bullseye/sid" ]; then
