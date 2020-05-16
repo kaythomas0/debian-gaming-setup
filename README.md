@@ -16,13 +16,13 @@ An interactive shell script for installing recommended tools to game efficiently
 ## Running the script
 1. `./debian-gaming-setup`
 
-### GUI mode
+### GUI mode (recommended for users not comfortable with the terminal)
 If you prefer to have a graphical user interface:
 1. Install the `zenity` package: `sudo apt install zenity`
 2. Run the script with the gui flag: `./debian-gaming-setup --gui`
 
 ---
 
-[1] Exact list of supported AMD GPUs for the xserver-xorg-video-amdgpu package is unclear. At least the following chip families should be supported: Bonaire, Hawaii, Kaveri, Kabini Mullins, Iceland, Tonga, Carrizo, Fiji, and Stoney. However, newer AMD GPUs *should* work. See [xserver-xorg-video-amdgpu package](https://packages.debian.org/buster/xserver-xorg-video-amdgpu) and [AtiHowTo Debian wiki page](https://wiki.debian.org/AtiHowTo)
+[1] Exact list of supported AMD GPUs for the xserver-xorg-video-amdgpu package is unclear. At least the following chip families should be supported: Bonaire, Hawaii, Kaveri, Kabini Mullins, Iceland, Tonga, Carrizo, Fiji, and Stoney. However, newer AMD GPUs *should* work. See [xserver-xorg-video-amdgpu package](https://packages.debian.org/buster/xserver-xorg-video-amdgpu) and [AtiHowTo Debian wiki page](https://wiki.debian.org/AtiHowTo).
 
 [2] Navi GPUs may have problems as they are very new. Debian Testing or Unstable is recommended for Navi GPUs.
