@@ -154,6 +154,7 @@ install_nvidia_tools() {
                 sed -i 's/deb http:\/\/deb.debian.org\/debian sid main/deb http:\/\/deb.debian.org\/debian sid main contrib non-free/g' /etc/apt/sources.list
             fi
         fi
+        printf '\n/etc/apt/sources.list modified.\n'
     elif [ "$modify_apt_sources" = "m" ]; then
         if [[ $use_backports =~ ^([yY][eE][sS]|[yY])$ ]]; then
             use_backports="y"
@@ -169,6 +170,10 @@ install_nvidia_tools() {
             printf 'Or this line if you are on Sid:\n'
             printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian/ sid main contrib non-free"
         fi
+        printf '\nOnce you have modified your sources, you are ready to install the required\ngraphics packages. Press enter once you have appended your apt source with\nnon-free.'
+        local appended_apt_sources
+        # shellcheck disable=SC2034  # Unused variable left for readability
+        read -r appended_apt_sources
     elif [ "$modify_apt_sources" = "s" ]; then
         printf '\nSkipping apt sources modification...\n'
     fi
@@ -289,7 +294,7 @@ install_nvidia_tools_gui() {
                 sed -i 's/deb http:\/\/deb.debian.org\/debian sid main/deb http:\/\/deb.debian.org\/debian sid main contrib non-free/g' /etc/apt/sources.list
             fi
         fi
-        zenity --width="$gui_width" --height="$gui_height" --info --text="/etc/apt/sources.list modified"
+        zenity --width="$gui_width" --height="$gui_height" --info --text="/etc/apt/sources.list modified."
     elif [ "$modify_apt_sources" = "Manually" ]; then
         if [ "$use_backports" = "y" ]; then
             zenity --width="$gui_width" --height="$gui_height" --info --text="Open /etc/apt/sources.list with your preferred text editor, and add/append the following lines:\ndeb http://deb.debian.org/debian buster-backports main contrib non-free\ndeb http://deb.debian.org/debian buster main contrib non-free"
@@ -385,6 +390,7 @@ install_amd_tools() {
                 sed -i 's/deb http:\/\/deb.debian.org\/debian sid main/deb http:\/\/deb.debian.org\/debian sid main contrib non-free/g' /etc/apt/sources.list
             fi
         fi
+        printf '\n/etc/apt/sources.list modified.\n'
     elif [ "$modify_apt_sources" = "m" ]; then
         if [ $debian_version = "buster" ]; then
             printf '\nOpen /etc/apt/sources.list with your preferred text editor, and add/append the\nline:\n'
@@ -395,6 +401,10 @@ install_amd_tools() {
             printf 'Or this line if you are on Sid:\n'
             printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian/ sid main contrib non-free"
         fi
+        printf '\nOnce you have modified your sources, you are ready to install the required\ngraphics packages. Press enter once you have appended your apt source with\nnon-free.'
+        local appended_apt_sources
+        # shellcheck disable=SC2034  # Unused variable left for readability
+        read -r appended_apt_sources
     elif [ "$modify_apt_sources" = "s" ]; then
         printf '\nSkipping apt sources modification...\n'
     fi
@@ -441,7 +451,7 @@ install_amd_tools_gui() {
                 sed -i 's/deb http:\/\/deb.debian.org\/debian sid main/deb http:\/\/deb.debian.org\/debian sid main contrib non-free/g' /etc/apt/sources.list
             fi
         fi
-        zenity --width="$gui_width" --height="$gui_height" --info --text="/etc/apt/sources.list modified"
+        zenity --width="$gui_width" --height="$gui_height" --info --text="/etc/apt/sources.list modified."
     elif [ "$modify_apt_sources" = "Manually" ]; then
         if [ $debian_version = "buster" ]; then
             zenity --width="$gui_width" --height="$gui_height" --info --text="Open /etc/apt/sources.list with your preferred text editor, and add/append the line:\ndeb http://deb.debian.org/debian buster main contrib non-free"
