@@ -270,15 +270,38 @@ install_nvidia_tools_gui() {
             use_backports="y"
         fi
     fi
-    zenity --width="$gui_width" --height="$gui_height" --info --text="In order to proceed with the installation of the necessary packages to update your graphics drivers, you need to allow non-free packages in your apt sources by doing the following:"
-    if [ "$use_backports" = "y" ]; then
-        zenity --width="$gui_width" --height="$gui_height" --info --text="Open /etc/apt/sources.list with your preferred text editor, and add/append the following lines:\ndeb http://deb.debian.org/debian buster-backports main contrib non-free\ndeb http://deb.debian.org/debian buster main contrib non-free"
-    elif [ $debian_version = "buster" ]; then
-        zenity --width="$gui_width" --height="$gui_height" --info --text="Open /etc/apt/sources.list with your preferred text editor, and add/append the line:\ndeb http://deb.debian.org/debian buster main contrib non-free"
-    elif [ $debian_version = "bullseye/sid" ]; then
-        zenity --width="$gui_width" --height="$gui_height" --info --text="Open /etc/apt/sources.list with your preferred text editor, and add/append this line if you are on Testing:\ndeb http://deb.debian.org/debian/ bullseye main contrib non-free\nOr this line if you are on Sid:\ndeb http://deb.debian.org/debian/ sid main contrib non-free"
+    zenity --width="$gui_width" --height="$gui_height" --info --text="In order to proceed with the installation of the necessary packages to update your graphics drivers, you need to allow non-free packages in your apt sources. If you have not modified your /etc/apt/sources.list file, this can be done automatically. If you have made modifications to this file, you should do it manually."
+    local modify_apt_sources
+    modify_apt_sources="$(zenity --width="$gui_width" --height="$gui_list_height" --list --title="How would you like to update your sources.list file?" --column="Update Method" --column="Note" "Automatically" "If you have not modified your sources.list file" "Manually" "If you have modified your sources.list file" "Skip" "If you don't want to modify your sources.list file")"
+    if [ "$modify_apt_sources" = "Automatically" ]; then
+        if [ "$use_backports" = "y" ]; then
+            sed -i 's/deb http:\/\/deb.debian.org\/debian buster main/deb http:\/\/deb.debian.org\/debian buster main contrib non-free/g' /etc/apt/sources.list
+            echo "deb http://deb.debian.org/debian buster-backports main contrib non-free" >>/etc/apt/sources.list
+        elif [ $debian_version = "buster" ]; then
+            sed -i 's/deb http:\/\/deb.debian.org\/debian buster main/deb http:\/\/deb.debian.org\/debian buster main contrib non-free/g' /etc/apt/sources.list
+        elif [ $debian_version = "bullseye/sid" ]; then
+            printf '\nAre you running Debian [t]esting or [u]nstable? '
+            local testing_or_unstable
+            read -r testing_or_unstable
+            if [[ $testing_or_unstable =~ ^([tT][eE][sS][tT][iI][nN][gG]|[tT])$ ]]; then
+                sed -i 's/deb http:\/\/deb.debian.org\/debian bullseye main/deb http:\/\/deb.debian.org\/debian bullseye main contrib non-free/g' /etc/apt/sources.list
+            elif [[ $testing_or_unstable =~ ^([uU][nN][sS][tT][aA][bB][lL][eE]|[uU])$ ]]; then
+                sed -i 's/deb http:\/\/deb.debian.org\/debian sid main/deb http:\/\/deb.debian.org\/debian sid main contrib non-free/g' /etc/apt/sources.list
+            fi
+        fi
+        zenity --width="$gui_width" --height="$gui_height" --info --text="/etc/apt/sources.list modified"
+    elif [ "$modify_apt_sources" = "Manually" ]; then
+        if [ "$use_backports" = "y" ]; then
+            zenity --width="$gui_width" --height="$gui_height" --info --text="Open /etc/apt/sources.list with your preferred text editor, and add/append the following lines:\ndeb http://deb.debian.org/debian buster-backports main contrib non-free\ndeb http://deb.debian.org/debian buster main contrib non-free"
+        elif [ $debian_version = "buster" ]; then
+            zenity --width="$gui_width" --height="$gui_height" --info --text="Open /etc/apt/sources.list with your preferred text editor, and add/append the line:\ndeb http://deb.debian.org/debian buster main contrib non-free"
+        elif [ $debian_version = "bullseye/sid" ]; then
+            zenity --width="$gui_width" --height="$gui_height" --info --text="Open /etc/apt/sources.list with your preferred text editor, and add/append this line if you are on Testing:\ndeb http://deb.debian.org/debian/ bullseye main contrib non-free\nOr this line if you are on Sid:\ndeb http://deb.debian.org/debian/ sid main contrib non-free"
+        fi
+        zenity --width="$gui_width" --height="$gui_height" --info --text="Once you have modified your sources, you are ready to install the required graphics packages. Press OK once you have appended your apt source with non-free."
+    elif [ "$modify_apt_sources" = "Skip" ]; then
+        zenity --width="$gui_width" --height="$gui_height" --info --text="Skipping apt sources modification..."
     fi
-    zenity --width="$gui_width" --height="$gui_height" --info --text="Once you have modified your sources, you are ready to install the required graphics packages. Press OK once you have appended your apt source with non-free."
     if zenity --width="$gui_width" --height="$gui_height" --question --text="You should update apt, would you like to do that now?"; then
         apt-get update
     fi
@@ -402,15 +425,33 @@ install_amd_tools() {
 }
 
 install_amd_tools_gui() {
-    zenity --width="$gui_width" --height="$gui_height" --info --text="In order to proceed with the installation of the necessary packages to update your graphics drivers, you need to allow non-free packages in your apt sources by doing the following:"
-    if [ "$use_backports" = "y" ]; then
-        zenity --width="$gui_width" --height="$gui_height" --info --text="Open /etc/apt/sources.list with your preferred text editor, and add/append the following lines:\ndeb http://deb.debian.org/debian buster-backports main contrib non-free\ndeb http://deb.debian.org/debian buster main contrib non-free"
-    elif [ $debian_version = "buster" ]; then
-        zenity --width="$gui_width" --height="$gui_height" --info --text="Open /etc/apt/sources.list with your preferred text editor, and add/append the line:\ndeb http://deb.debian.org/debian buster main contrib non-free"
-    elif [ $debian_version = "bullseye/sid" ]; then
-        zenity --width="$gui_width" --height="$gui_height" --info --text="Open /etc/apt/sources.list with your preferred text editor, and add/append this line if you are on Testing:\ndeb http://deb.debian.org/debian/ bullseye main contrib non-free\nOr this line if you are on Sid:\ndeb http://deb.debian.org/debian/ sid main contrib non-free"
+    zenity --width="$gui_width" --height="$gui_height" --info --text="In order to proceed with the installation of the necessary packages to update your graphics drivers, you need to allow non-free packages in your apt sources. If you have not modified your /etc/apt/sources.list file, this can be done automatically. If you have made modifications to this file, you should do it manually."
+    local modify_apt_sources
+    modify_apt_sources="$(zenity --width="$gui_width" --height="$gui_list_height" --list --title="How would you like to update your sources.list file?" --column="Update Method" --column="Note" "Automatically" "If you have not modified your sources.list file" "Manually" "If you have modified your sources.list file" "Skip" "If you don't want to modify your sources.list file")"
+    if [ "$modify_apt_sources" = "Automatically" ]; then
+        if [ $debian_version = "buster" ]; then
+            sed -i 's/deb http:\/\/deb.debian.org\/debian buster main/deb http:\/\/deb.debian.org\/debian buster main contrib non-free/g' /etc/apt/sources.list
+        elif [ $debian_version = "bullseye/sid" ]; then
+            printf '\nAre you running Debian [t]esting or [u]nstable? '
+            local testing_or_unstable
+            read -r testing_or_unstable
+            if [[ $testing_or_unstable =~ ^([tT][eE][sS][tT][iI][nN][gG]|[tT])$ ]]; then
+                sed -i 's/deb http:\/\/deb.debian.org\/debian bullseye main/deb http:\/\/deb.debian.org\/debian bullseye main contrib non-free/g' /etc/apt/sources.list
+            elif [[ $testing_or_unstable =~ ^([uU][nN][sS][tT][aA][bB][lL][eE]|[uU])$ ]]; then
+                sed -i 's/deb http:\/\/deb.debian.org\/debian sid main/deb http:\/\/deb.debian.org\/debian sid main contrib non-free/g' /etc/apt/sources.list
+            fi
+        fi
+        zenity --width="$gui_width" --height="$gui_height" --info --text="/etc/apt/sources.list modified"
+    elif [ "$modify_apt_sources" = "Manually" ]; then
+        if [ $debian_version = "buster" ]; then
+            zenity --width="$gui_width" --height="$gui_height" --info --text="Open /etc/apt/sources.list with your preferred text editor, and add/append the line:\ndeb http://deb.debian.org/debian buster main contrib non-free"
+        elif [ $debian_version = "bullseye/sid" ]; then
+            zenity --width="$gui_width" --height="$gui_height" --info --text="Open /etc/apt/sources.list with your preferred text editor, and add/append this line if you are on Testing:\ndeb http://deb.debian.org/debian/ bullseye main contrib non-free\nOr this line if you are on Sid:\ndeb http://deb.debian.org/debian/ sid main contrib non-free"
+        fi
+        zenity --width="$gui_width" --height="$gui_height" --info --text="Once you have modified your sources, you are ready to install the required graphics packages. Press OK once you have appended your apt source with non-free."
+    elif [ "$modify_apt_sources" = "Skip" ]; then
+        zenity --width="$gui_width" --height="$gui_height" --info --text="Skipping apt sources modification..."
     fi
-    zenity --width="$gui_width" --height="$gui_height" --info --text="Once you have modified your sources, you are ready to install the required graphics packages. Press OK once you have appended your apt source with non-free."
     if zenity --width="$gui_width" --height="$gui_height" --question --text="You should update apt, would you like to do that now?"; then
         apt-get update
     fi
