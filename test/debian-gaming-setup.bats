@@ -62,3 +62,12 @@ profile_script="./debian-gaming-setup"
     assert_success
     assert_output --partial "Okay, you are running an AMD graphics card."
 }
+
+@test "grab_graphics_card allows choice of amd gpu 2" {
+    apt-get update
+    { echo "y"; } | apt-get install pciutils
+    source ${profile_script}
+    output="$({ echo "amd"; } | grab_graphics_card)"
+    assert_success
+    assert_output --partial "Okay, you are running an AMD graphics card."
+}
