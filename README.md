@@ -18,19 +18,18 @@ An interactive shell script for installing recommended tools to game efficiently
 
 ### GUI mode (recommended for users not comfortable with the terminal)
 If you prefer to have a graphical user interface:
-1. Install the `zenity` package: `sudo apt install zenity`
+1. Install the `zenity` package: `apt install zenity`
 2. Run the script with the gui flag: `./debian-gaming-setup --gui`
 
 ## Testing
 
 Testing is done inside a Docker container
 
-### Building the Docker image
-1. `cd test/libs/bats-core`
-2. `docker build --tag bats/bats:latest .`
+### Build the image
+1. `docker build --tag debian-bats:0.1 .`
 
-### Running the tests
-1. `docker run -it -v "${PWD}:/code" bats/bats:latest test`
+### Run the tests
+1. `docker container run -it debian-bats:0.1 ./test/debian-gaming-setup.bats`
 
 ---
 
