@@ -64,6 +64,7 @@ profile_script="./debian-gaming-setup"
 }
 
 @test "grab_graphics_card detects a gpu if pciutils is installed" {
+    skip
     apt-get -y update
     apt-get -y install pciutils
     source ${profile_script}
@@ -81,7 +82,7 @@ profile_script="./debian-gaming-setup"
 @test "install_nvidia_tools correctly installs nvidia tools using buster-backports, automatic apt modification, and nvidia-driver" {
     export debian_version="buster"
     source ${profile_script}
-    output="$({ echo "y"; echo "automatically"; echo "y"; echo "n"; echo "y"; echo "y"; echo 1; echo "y"; echo "y"; echo "y"; echo "1"; } | install_nvidia_tools)"
+    output="$({ echo "yes"; echo "automatically"; echo "yes"; echo "no"; echo "yes"; echo "yes"; echo "1"; echo "yes"; } | install_nvidia_tools)"
     assert_success
     assert_output --partial "Okay, you are running an AMD graphics card."
 }

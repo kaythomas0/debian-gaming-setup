@@ -221,6 +221,7 @@ install_nvidia_tools() {
         local driver_package
         read -r driver_package
     fi
+    printf "\nDRIVER PACKAGE: %s" "$driver_package"
     printf '\nYou should install your selected driver package to update your graphics drivers,\nwould you like to do that now [y/n]? '
     local install_nvidia_driver
     read -r install_nvidia_driver
