@@ -78,11 +78,19 @@ profile_script="./debian-gaming-setup"
     fi
 }
 
-@test "install_nvidia_tools correctly installs nvidia tools" {
+@test "install_nvidia_tools gets to install drivers step" {
     export debian_version="buster"
     source ${profile_script}
     # Don't update kernel headers, get to the step right before installing nvidia-driver
     output="$({ echo "yes"; echo "automatically"; echo "yes"; echo "no"; echo "no"; echo "1"; echo "yes"; echo "yes"; echo "n"; } | install_nvidia_tools)"
     assert_success
     assert_output --partial "necessary Nvidia graphics drivers."
+}
+
+@test "install_amd_tools gets to install drivers step" {
+    export debian_version="buster"
+    source ${profile_script}
+    output="$({ echo "skip"; echo "yes"; echo "yes"; echo "n"; echo "n"; } | install_amd_tools)"
+    assert_success
+    assert_output --partial "necessary AMD graphics drivers."
 }
