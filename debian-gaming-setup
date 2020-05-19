@@ -137,7 +137,7 @@ install_nvidia_tools() {
     printf '\nIn order to proceed with the installation of the necessary packages to update\nyour graphics drivers, you need to allow non-free packages in your apt sources.\nIf you have not modified your /etc/apt/sources.list file, this can be done\nautomatically. If you have made modifications to this file, you should do it\nmanually. Would you like to do this [a]utomatically, [m]anually, or [s]kip? '
     local modify_apt_sources
     read -r modify_apt_sources
-    if [ "$modify_apt_sources" = "a" ]; then
+    if [[ $modify_apt_sources =~ ^([aA][uU][tT][oO][mM][aA][tT][iI][cC][aA][lL][lL][yY]|[aA])$ ]]; then
         if [[ $use_backports =~ ^([yY][eE][sS]|[yY])$ ]]; then
             use_backports="y"
             sed -i 's/deb http:\/\/deb.debian.org\/debian buster main/deb http:\/\/deb.debian.org\/debian buster main contrib non-free/g' /etc/apt/sources.list
@@ -155,7 +155,7 @@ install_nvidia_tools() {
             fi
         fi
         printf '\n/etc/apt/sources.list modified.\n'
-    elif [ "$modify_apt_sources" = "m" ]; then
+    elif [[ $modify_apt_sources =~ ^([mM][aA][nN][uU][aA][lL][lL][yY]|[mM])$ ]]; then
         if [[ $use_backports =~ ^([yY][eE][sS]|[yY])$ ]]; then
             use_backports="y"
             printf '\nOpen /etc/apt/sources.list with your preferred text editor, and add/append the\nfollowing lines:\n'
@@ -174,7 +174,7 @@ install_nvidia_tools() {
         local appended_apt_sources
         # shellcheck disable=SC2034  # Unused variable left for readability
         read -r appended_apt_sources
-    elif [ "$modify_apt_sources" = "s" ]; then
+    elif [[ $modify_apt_sources =~ ^([sS][kK][iI][pP]|[sS])$ ]]; then
         printf '\nSkipping apt sources modification...\n'
     fi
     printf '\nYou should update apt, would you like to do that now [y/n]? '
@@ -377,7 +377,7 @@ install_amd_tools() {
     printf '\nIn order to proceed with the installation of the necessary packages to update\nyour graphics drivers, you need to allow non-free packages in your apt sources.\nIf you have not modified your /etc/apt/sources.list file, this can be done\nautomatically. If you have made modifications to this file, you should do it\nmanually. Would you like to do this [a]utomatically, [m]anually, or [s]kip? '
     local modify_apt_sources
     read -r modify_apt_sources
-    if [ "$modify_apt_sources" = "a" ]; then
+    if [[ $modify_apt_sources =~ ^([aA][uU][tT][oO][mM][aA][tT][iI][cC][aA][lL][lL][yY]|[aA])$ ]]; then
         if [ $debian_version = "buster" ]; then
             sed -i 's/deb http:\/\/deb.debian.org\/debian buster main/deb http:\/\/deb.debian.org\/debian buster main contrib non-free/g' /etc/apt/sources.list
         elif [ $debian_version = "bullseye/sid" ]; then
@@ -391,7 +391,7 @@ install_amd_tools() {
             fi
         fi
         printf '\n/etc/apt/sources.list modified.\n'
-    elif [ "$modify_apt_sources" = "m" ]; then
+    elif [[ $modify_apt_sources =~ ^([mM][aA][nN][uU][aA][lL][lL][yY]|[mM])$ ]]; then
         if [ $debian_version = "buster" ]; then
             printf '\nOpen /etc/apt/sources.list with your preferred text editor, and add/append the\nline:\n'
             printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian buster main contrib non-free"
@@ -405,7 +405,7 @@ install_amd_tools() {
         local appended_apt_sources
         # shellcheck disable=SC2034  # Unused variable left for readability
         read -r appended_apt_sources
-    elif [ "$modify_apt_sources" = "s" ]; then
+    elif [[ $modify_apt_sources =~ ^([sS][kK][iI][pP]|[sS])$ ]]; then
         printf '\nSkipping apt sources modification...\n'
     fi
     printf '\nYou should update apt, would you like to do that now [y/n]? '
@@ -419,7 +419,7 @@ install_amd_tools() {
     local install_amd_driver
     read -r install_amd_driver
     if [[ $install_amd_driver =~ ^([yY][eE][sS]|[yY])$ ]]; then
-        apt-get install firmware-linux-nonfree libgl1-mesa-dri xserver-xorg-video-amdgpu
+        apt-get install firmware-linux-nonfree libgl1-mesa-dri libglx-mesa0 xserver-xorg-video-all
         printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
         printf 'It is recommended that you install Vulkan as well in order to get better\nperformance in applications that use it (such as Lutris and Wine). Would you\nlike to do that now [y/n]? '
         local install_vulkan_amd
@@ -466,7 +466,7 @@ install_amd_tools_gui() {
         apt-get update
     fi
     if zenity --width="$gui_width" --height="$gui_height" --question --text="You are ready to install the non-free Linux firmware (required for the AMD\ rivers), the Mesa graphics library, and AMD drivers. Would you like to do that now?"; then
-        apt-get install firmware-linux-nonfree libgl1-mesa-dri xserver-xorg-video-amdgpu
+        apt-get install firmware-linux-nonfree libgl1-mesa-dri libglx-mesa0 xserver-xorg-video-all
         if zenity --width="$gui_width" --height="$gui_height" --question --text="It is recommended that you install Vulkan as well in order to get better performance in applications that use it (such as Lutris and Wine). Would you like to do that now?"; then
             apt-get install mesa-vulkan-drivers libvulkan1 vulkan-tools vulkan-utils vulkan-validationlayers
         fi
@@ -501,7 +501,7 @@ setup_steam() {
                 local install_amd_i368_drivers
                 read -r install_amd_i368_drivers
                 if [[ $install_amd_i368_drivers =~ ^([yY][eE][sS]|[yY])$ ]]; then
-                    apt-get install libgl1:i386 mesa-vulkan-drivers:i386
+                    apt-get install libgl1:i386 libglx-mesa0:i386 mesa-vulkan-drivers:i386 libgl1-mesa-dri:i386
                     printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
                 fi
             fi
@@ -530,7 +530,7 @@ setup_steam_gui() {
                 fi
             elif [ "$gpu" = "AMD" ]; then
                 if zenity --width="$gui_width" --height="$gui_height" --question --text="Since you enabled multi-arch, it is recommended that you install the following i386 graphics packages: libgl1:i386 and mesa-vulkan-drivers:i386, would you like to do that now?"; then
-                    apt-get install libgl1:i386 mesa-vulkan-drivers:i386
+                    apt-get install libgl1:i386 libglx-mesa0:i386 mesa-vulkan-drivers:i386 libgl1-mesa-dri:i386
                 fi
             fi
         fi
