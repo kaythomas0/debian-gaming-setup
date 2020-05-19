@@ -78,7 +78,7 @@ profile_script="./debian-gaming-setup"
     fi
 }
 
-@test "install_nvidia_tools correctly installs nvidia tools using buster-backports, automatic apt modification, and nvidia-driver" {
+@test "install_nvidia_tools correctly installs nvidia tools" {
     export debian_version="buster"
     source ${profile_script}
     # Don't update kernel headers, get to the step right before installing nvidia-driver

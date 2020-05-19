@@ -26,7 +26,7 @@ If you prefer to have a graphical user interface:
 Testing is done inside a Docker container
 
 ### Build the image
-1. `docker build --tag debian-bats:0.1 .`
+1. `docker build --no-cache --tag debian-bats:0.1 .`
 
 ### Run the tests
 1. `docker container run -it debian-bats:0.1 ./test/debian-gaming-setup.bats`
