@@ -111,3 +111,10 @@ profile_script="./debian-gaming-setup"
     assert_success
     assert_output --partial "If these installations ran successfully, then you have setup Wine."
 }
+
+@test "setup_wine installs wine development" {
+    source ${profile_script}
+    output="$({ echo "yes"; echo "development"; echo "no"; echo "yes"; echo "yes"; } | setup_wine)"
+    assert_success
+    assert_output --partial "If these installations ran successfully, then you have setup Wine."
+}
