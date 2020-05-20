@@ -118,3 +118,23 @@ profile_script="./debian-gaming-setup"
     assert_success
     assert_output --partial "If these installations ran successfully, then you have setup Wine."
 }
+
+@test "setup_wine installs wine staging" {
+    export debian_version="buster"
+    apt-get -y install wget
+    source ${profile_script}
+    output="$({ echo "yes"; echo "staging"; echo "yes"; echo "no"; echo "yes"; echo "yes"; } | setup_wine)"
+    assert_success
+    assert_output --partial "If these installations ran successfully, then you have setup Wine."
+    unset debian_version
+}
+
+@test "setup_lutris" {
+    export debian_version="buster"
+    apt-get -y install wget
+    source ${profile_script}
+    output="$({ echo "yes"; echo "yes"; echo "1"; echo "yes"; echo "yes"; } | setup_lutris)"
+    assert_success
+    assert_output --partial "If these installations ran successfully, then you have setup Lutris."
+    unset debian_version
+}
