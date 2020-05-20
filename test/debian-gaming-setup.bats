@@ -85,6 +85,7 @@ profile_script="./debian-gaming-setup"
     output="$({ echo "yes"; echo "automatically"; echo "yes"; echo "no"; echo "no"; echo "1"; echo "yes"; echo "yes"; echo "n"; } | install_nvidia_tools)"
     assert_success
     assert_output --partial "necessary Nvidia graphics drivers."
+    unset debian_version
 }
 
 @test "install_amd_tools gets to install drivers step" {
@@ -93,4 +94,14 @@ profile_script="./debian-gaming-setup"
     output="$({ echo "skip"; echo "yes"; echo "yes"; echo "n"; echo "n"; } | install_amd_tools)"
     assert_success
     assert_output --partial "necessary AMD graphics drivers."
+    unset debian_version
+}
+
+@test "setup_steam" {
+    export gpu="Nvidia"
+    source ${profile_script}
+    output="$({ echo "y"; echo "y"; echo "y"; echo "y"; echo "y"; } | setup_steam)"
+    assert_success
+    assert_output --partial "necessary AMD graphics drivers."
+    unset gpu
 }
