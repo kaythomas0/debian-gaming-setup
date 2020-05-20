@@ -594,21 +594,11 @@ setup_wine() {
                 wget -nc https://dl.winehq.org/wine-builds/winehq.key
                 apt-key add winehq.key
                 if [ $debian_version = "buster" ]; then
-                    printf '\nAdd the following line to your /etc/apt/sources.list file:\n'
-                    printf "\e[32m%s\e[0m\n" "deb https://dl.winehq.org/wine-builds/debian/ buster main"
-                    printf 'Press enter once you have added this line. '
-                    local added_winehq_repo
-                    # shellcheck disable=SC2034  # Unused variable left for readability
-                    read -r added_winehq_repo
+                    echo "deb https://dl.winehq.org/wine-builds/debian/ buster main" >>/etc/apt/sources.list
                     apt update
                     apt install --install-recommends winehq-staging
                 elif [ $debian_version = "bullseye/sid" ]; then
-                    printf '\nAdd the following line to your /etc/apt/sources.list file:\n'
-                    printf "\e[32m%s\e[0m\n" "deb https://dl.winehq.org/wine-builds/debian/ bullseye main"
-                    printf 'Press enter once you have added this line. '
-                    local added_winehq_repo
-                    # shellcheck disable=SC2034  # Unused variable left for readability
-                    read -r added_winehq_repo
+                    echo "deb https://dl.winehq.org/wine-builds/debian/ bullseye main" >>/etc/apt/sources.list
                     apt update
                     apt install --install-recommends winehq-staging
                 fi
@@ -650,13 +640,13 @@ setup_wine_gui() {
                 wget -nc https://dl.winehq.org/wine-builds/winehq.key
                 apt-key add winehq.key
                 if [ "$debian_version" = "buster" ]; then
-                    zenity --width="$gui_width" --height="$gui_height" --info --text="Add the following line to your /etc/apt/sources.list file:\ndeb https://dl.winehq.org/wine-builds/debian/ buster main\nPress enter once you have added this line."
+                    echo "deb https://dl.winehq.org/wine-builds/debian/ buster main" >>/etc/apt/sources.list
                     apt update
-                    apt install -install-recommends winehq-staging
+                    apt install --install-recommends winehq-staging
                 elif [ $debian_version = "bullseye/sid" ]; then
-                    zenity --width="$gui_width" --height="$gui_height" --info --text="Add the following line to your /etc/apt/sources.list file:\ndeb https://dl.winehq.org/wine-builds/debian/ bullseye main\nPress enter once you have added this line."
+                    echo "deb https://dl.winehq.org/wine-builds/debian/ bullseye main" >>/etc/apt/sources.list
                     apt update
-                    apt install -install-recommends winehq-staging
+                    apt install --install-recommends winehq-staging
                 fi
             fi
             zenity --width="$gui_width" --height="$gui_height" --info --text="If these installations ran successfully, then you have setup Wine."
