@@ -81,8 +81,7 @@ profile_script="./debian-gaming-setup"
 @test "install_nvidia_tools gets to install drivers step" {
     export debian_version="buster"
     source ${profile_script}
-    # Don't update kernel headers, get to the step right before installing nvidia-driver
-    output="$({ echo "yes"; echo "automatically"; echo "yes"; echo "no"; echo "no"; echo "1"; echo "yes"; echo "yes"; echo "n"; } | install_nvidia_tools)"
+    output="$({ echo "yes"; echo "automatically"; echo "yes"; echo "no"; echo "no"; echo "1"; echo "yes"; echo "yes"; echo "no"; } | install_nvidia_tools)"
     assert_success
     assert_output --partial "necessary Nvidia graphics drivers."
     unset debian_version
@@ -91,17 +90,24 @@ profile_script="./debian-gaming-setup"
 @test "install_amd_tools gets to install drivers step" {
     export debian_version="buster"
     source ${profile_script}
-    output="$({ echo "skip"; echo "yes"; echo "yes"; echo "n"; echo "n"; } | install_amd_tools)"
+    output="$({ echo "skip"; echo "yes"; echo "yes"; echo "no"; echo "no"; } | install_amd_tools)"
     assert_success
     assert_output --partial "necessary AMD graphics drivers."
     unset debian_version
 }
 
-@test "setup_steam" {
+@test "setup_steam gets to install steam step" {
     export gpu="Nvidia"
     source ${profile_script}
-    output="$({ echo "y"; echo "y"; echo "y"; echo "y"; echo "y"; } | setup_steam)"
+    output="$({ echo "yes"; echo "yes"; echo "yes"; echo "yes"; } | setup_steam)"
     assert_success
-    assert_output --partial "necessary AMD graphics drivers."
+    assert_output --partial "Would you like to install the steam package now"
     unset gpu
+}
+
+@test "setup_wine installs wine stable" {
+    source ${profile_script}
+    output="$({ echo "yes"; echo "stable"; echo "no"; echo "yes"; echo "yes"; } | setup_wine)"
+    assert_success
+    assert_output --partial "If these installations ran successfully, then you have setup Wine."
 }
