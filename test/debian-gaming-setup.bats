@@ -1,4 +1,5 @@
 #!/usr/bin/env ./test/libs/bats-core/bin/bats
+
 load 'libs/bats-support/load'
 load 'libs/bats-assert/load'
 
@@ -129,7 +130,7 @@ profile_script="./debian-gaming-setup"
     unset debian_version
 }
 
-@test "setup_lutris" {
+@test "setup_lutris gets to install lutris step" {
     export debian_version="buster"
     apt-get -y install wget
     source ${profile_script}
