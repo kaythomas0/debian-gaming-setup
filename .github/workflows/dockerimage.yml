@@ -13,7 +13,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: textbook/git-checkout-submodule-action@master
+    - name: Update submodules
+      run: git submodule update --remote
     - uses: actions/checkout@v2
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag debian-bats:$(date +%s)
