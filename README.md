@@ -1,3 +1,5 @@
+![Docker Bats Tests CI](https://github.com/KevinNThomas/debian-gaming-setup/workflows/Docker%20Bats%20Tests%20CI/badge.svg?branch=master)
+
 # debian-gaming-setup
 An interactive shell script for installing recommended tools to game efficiently on Debian.
 
