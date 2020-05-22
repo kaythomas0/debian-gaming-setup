@@ -21,6 +21,13 @@ If you prefer to have a graphical user interface:
 1. Install the `zenity` package: `apt install zenity`
 2. Run the script with the gui flag: `./debian-gaming-setup --gui`
 
+## Testing
+
+Tests are made using [Bats](https://github.com/bats-core/bats-core) (Bash Automated Testing System) and are ran inside a Debian Docker container
+
+### Build the image and run the tests
+1. `docker build .`
+
 ---
 
 [1] Navi GPUs may have problems as they are very new. Debian Testing or Unstable is recommended for Navi GPUs.
