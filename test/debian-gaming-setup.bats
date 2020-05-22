@@ -10,7 +10,7 @@ profile_script="./debian-gaming-setup"
     source ${profile_script}
     output="$({ echo "yes"; } | confirm_debian_version)"
     assert_success
-    assert_output --partial "It looks like your version of Debian is buster."
+    assert_output --partial "It looks like your version of Debian is busterrr."
     unset debian_version
 }
 
