@@ -2,9 +2,9 @@ name: Docker Bats Tests CI
 
 on:
   push:
-    branches: [ dev, master ]
+    branches: [ dev ]
   pull_request:
-    branches: [ dev, master ]
+    branches: [ master ]
 
 jobs:
      
