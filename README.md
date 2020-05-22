@@ -23,7 +23,7 @@ If you prefer to have a graphical user interface:
 
 ## Testing
 
-Testing is done inside a Docker container
+Tests are made using [Bats](https://github.com/bats-core/bats-core) (Bash Automated Testing System) and are ran inside a Debian Docker container
 
 ### Build the image and run the tests
 1. `docker build .`
