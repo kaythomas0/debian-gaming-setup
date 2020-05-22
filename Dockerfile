@@ -7,3 +7,5 @@ RUN apt-get update
 COPY . /debian-gaming-setup
 
 WORKDIR /debian-gaming-setup
+
+RUN ./test/debian-gaming-setup.bats
