@@ -15,6 +15,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Update submodules
-      run: git submodule update --remote
+      run: git submodule update --recursive --remote
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag debian-bats:$(date +%s)
