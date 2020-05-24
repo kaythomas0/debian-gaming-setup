@@ -87,7 +87,7 @@ grab_graphics_card() {
 
 gpu_prompt_gui() {
     local gpu_check
-    gpu_check="$(zenity --width="$gui_width" --height="$gui_list_height" --list --title="Are you running on an Nvidia or AMD graphics card?" --column="Debian Release" "Nvidia" "AMD")"
+    gpu_check="$(zenity --width="$gui_width" --height="$gui_list_height" --list --title="Are you running on an Nvidia or AMD graphics card?" --column="Graphics Card" "Nvidia" "AMD")"
     if [[ "$gpu_check" = "Nvidia" ]]; then
         gpu="Nvidia"
     elif [[ "$gpu_check" = "AMD" ]]; then
