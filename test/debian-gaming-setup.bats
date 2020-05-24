@@ -5,6 +5,24 @@ load 'libs/bats-assert/load'
 
 profile_script="./debian-gaming-setup"
 
+setup_bullseye_sources_file() {
+    echo 'deb http://deb.debian.org/debian bullseye main' >/etc/apt/sources.list
+    echo 'deb http://security.debian.org/debian-security bullseye/updates main' >>/etc/apt/sources.list
+    echo 'deb http://deb.debian.org/debian bullseye-updates main' >>/etc/apt/sources.list
+}
+
+setup_sid_sources_file() {
+    echo 'deb http://deb.debian.org/debian sid main' >/etc/apt/sources.list
+    echo 'deb http://security.debian.org/debian-security sid/updates main' >>/etc/apt/sources.list
+    echo 'deb http://deb.debian.org/debian sid-updates main' >>/etc/apt/sources.list
+}
+
+reset_sources_file() {
+    echo 'deb http://deb.debian.org/debian buster main' >/etc/apt/sources.list
+    echo 'deb http://security.debian.org/debian-security buster/updates main' >>/etc/apt/sources.list
+    echo 'deb http://deb.debian.org/debian buster-updates main' >>/etc/apt/sources.list
+}
+
 @test "confirm_debian_version confirms buster version" {
     export debian_version="buster"
     source ${profile_script}
@@ -85,6 +103,44 @@ profile_script="./debian-gaming-setup"
     output="$({ echo "yes"; echo "automatically"; echo "yes"; echo "no"; echo "no"; echo "1"; echo "yes"; echo "yes"; echo "no"; } | install_nvidia_tools)"
     assert_success
     assert_output --partial "necessary Nvidia graphics drivers."
+    unset debian_version
+}
+
+@test "install_nvidia_tools automatically modifies buster sources.list correctly" {
+    export debian_version="buster"
+    source ${profile_script}
+    output="$({ echo "yes"; echo "automatically"; } | install_nvidia_tools)"
+    if ! grep -q "deb http://deb.debian.org/debian buster-backports main contrib non-free" "/etc/apt/sources.list"; then
+        assert [ 0 -eq 1 ]
+    fi
+    if ! grep -q "deb http://deb.debian.org/debian buster main contrib non-free" "/etc/apt/sources.list"; then
+        assert [ 0 -eq 1 ]
+    fi
+    reset_sources_file
+    unset debian_version
+}
+
+@test "install_nvidia_tools automatically modifies bullseye sources.list correctly" {
+    export debian_version="bullseye/sid"
+    setup_bullseye_sources_file
+    source ${profile_script}
+    output="$({ echo "automatically"; echo "testing"; } | install_nvidia_tools)"
+    if ! grep -q "deb http://deb.debian.org/debian bullseye main contrib non-free" "/etc/apt/sources.list"; then
+        assert [ 0 -eq 1 ]
+    fi
+    reset_sources_file
+    unset debian_version
+}
+
+@test "install_nvidia_tools automatically modifies sid sources.list correctly" {
+    export debian_version="bullseye/sid"
+    setup_sid_sources_file
+    source ${profile_script}
+    output="$({ echo "automatically"; echo "unstable"; } | install_nvidia_tools)"
+    if ! grep -q "deb http://deb.debian.org/debian sid main contrib non-free" "/etc/apt/sources.list"; then
+        assert [ 0 -eq 1 ]
+    fi
+    reset_sources_file
     unset debian_version
 }
 
