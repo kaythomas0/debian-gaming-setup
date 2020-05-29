@@ -110,12 +110,9 @@ reset_sources_file() {
     export debian_version="buster"
     source ${profile_script}
     output="$({ echo "yes"; echo "automatically"; } | install_nvidia_tools)"
-    if ! grep -q "deb http://deb.debian.org/debian buster-backports main contrib non-free" "/etc/apt/sources.list"; then
-        assert [ 0 -eq 1 ]
-    fi
-    if ! grep -q "deb http://deb.debian.org/debian buster main contrib non-free" "/etc/apt/sources.list"; then
-        assert [ 0 -eq 1 ]
-    fi
+    grep -q "deb http://deb.debian.org/debian buster-backports main contrib non-free" "/etc/apt/sources.list"
+    grep -q "deb http://deb.debian.org/debian buster main contrib non-free" "/etc/apt/sources.list"
+    assert_success
     reset_sources_file
     unset debian_version
 }
@@ -125,9 +122,8 @@ reset_sources_file() {
     setup_bullseye_sources_file
     source ${profile_script}
     output="$({ echo "automatically"; echo "testing"; } | install_nvidia_tools)"
-    if ! grep -q "deb http://deb.debian.org/debian bullseye main contrib non-free" "/etc/apt/sources.list"; then
-        assert [ 0 -eq 1 ]
-    fi
+    grep -q "deb http://deb.debian.org/debian bullseye main contrib non-free" "/etc/apt/sources.list"
+    assert_success
     reset_sources_file
     unset debian_version
 }
@@ -137,9 +133,8 @@ reset_sources_file() {
     setup_sid_sources_file
     source ${profile_script}
     output="$({ echo "automatically"; echo "unstable"; } | install_nvidia_tools)"
-    if ! grep -q "deb http://deb.debian.org/debian sid main contrib non-free" "/etc/apt/sources.list"; then
-        assert [ 0 -eq 1 ]
-    fi
+    grep -q "deb http://deb.debian.org/debian sid main contrib non-free" "/etc/apt/sources.list"
+    assert_success
     reset_sources_file
     unset debian_version
 }
@@ -183,9 +178,8 @@ reset_sources_file() {
     export debian_version="buster"
     source ${profile_script}
     output="$({ echo "automatically"; } | install_amd_tools)"
-    if ! grep -q "deb http://deb.debian.org/debian buster main contrib non-free" "/etc/apt/sources.list"; then
-        assert [ 0 -eq 1 ]
-    fi
+    grep -q "deb http://deb.debian.org/debian buster main contrib non-free" "/etc/apt/sources.list"
+    assert_success
     reset_sources_file
     unset debian_version
 }
@@ -195,9 +189,8 @@ reset_sources_file() {
     setup_bullseye_sources_file
     source ${profile_script}
     output="$({ echo "automatically"; echo "testing"; } | install_amd_tools)"
-    if ! grep -q "deb http://deb.debian.org/debian bullseye main contrib non-free" "/etc/apt/sources.list"; then
-        assert [ 0 -eq 1 ]
-    fi
+    grep -q "deb http://deb.debian.org/debian bullseye main contrib non-free" "/etc/apt/sources.list"
+    assert_success
     reset_sources_file
     unset debian_version
 }
@@ -207,9 +200,8 @@ reset_sources_file() {
     setup_sid_sources_file
     source ${profile_script}
     output="$({ echo "automatically"; echo "unstable"; } | install_amd_tools)"
-    if ! grep -q "deb http://deb.debian.org/debian sid main contrib non-free" "/etc/apt/sources.list"; then
-        assert [ 0 -eq 1 ]
-    fi
+    grep -q "deb http://deb.debian.org/debian sid main contrib non-free" "/etc/apt/sources.list"
+    assert_success
     reset_sources_file
     unset debian_version
 }
@@ -259,6 +251,7 @@ reset_sources_file() {
     apt-get -y install wget
     source ${profile_script}
     output="$({ echo "yes"; echo "staging"; echo "yes"; echo "no"; echo "yes"; echo "yes"; } | setup_wine)"
+    grep -q "deb https://dl.winehq.org/wine-builds/debian/ buster main" "/etc/apt/sources.list"
     assert_success
     assert_output --partial "If these installations ran successfully, then you have setup Wine."
     unset debian_version
