@@ -23,6 +23,10 @@ reset_sources_file() {
     echo 'deb http://deb.debian.org/debian buster-updates main' >>/etc/apt/sources.list
 }
 
+setup_file() {
+    reset_sources_file
+}
+
 @test "confirm_debian_version confirms buster version" {
     export debian_version="buster"
     source ${profile_script}
