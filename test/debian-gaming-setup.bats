@@ -264,6 +264,16 @@ reset_sources_file() {
     unset debian_version
 }
 
+@test "setup_wine gives proper notice for how wine staging works" {
+    export debian_version="buster"
+    source ${profile_script}
+    output="$({ echo "yes"; echo "staging"; echo "no"; } | setup_wine)"
+    assert_success
+    assert_output --partial "Since Wine Staging is not in the official Debian repository"
+    assert_output --partial "Would you like to install [s]table or [d]evelopment?"
+    unset debian_version
+}
+
 @test "setup_lutris gets to install lutris step" {
     export debian_version="buster"
     apt-get -y install wget
