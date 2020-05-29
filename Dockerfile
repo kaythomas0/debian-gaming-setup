@@ -4,7 +4,7 @@ LABEL maintainer="kevin.t0517@gmail.com"
 
 RUN apt-get update
 
-RUN apt-get install shellcheck
+RUN apt-get -y install shellcheck
 
 COPY . /debian-gaming-setup
 
