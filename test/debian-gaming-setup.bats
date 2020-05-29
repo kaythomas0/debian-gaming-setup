@@ -153,6 +153,41 @@ reset_sources_file() {
     unset debian_version
 }
 
+@test "install_amd_tools automatically modifies buster sources.list correctly" {
+    export debian_version="buster"
+    source ${profile_script}
+    output="$({ echo "automatically"; } | install_amd_tools)"
+    if ! grep -q "deb http://deb.debian.org/debian buster main contrib non-free" "/etc/apt/sources.list"; then
+        assert [ 0 -eq 1 ]
+    fi
+    reset_sources_file
+    unset debian_version
+}
+
+@test "install_amd_tools automatically modifies bullseye sources.list correctly" {
+    export debian_version="bullseye/sid"
+    setup_bullseye_sources_file
+    source ${profile_script}
+    output="$({ echo "automatically"; echo "testing"; } | install_amd_tools)"
+    if ! grep -q "deb http://deb.debian.org/debian bullseye main contrib non-free" "/etc/apt/sources.list"; then
+        assert [ 0 -eq 1 ]
+    fi
+    reset_sources_file
+    unset debian_version
+}
+
+@test "install_amd_tools automatically modifies sid sources.list correctly" {
+    export debian_version="bullseye/sid"
+    setup_sid_sources_file
+    source ${profile_script}
+    output="$({ echo "automatically"; echo "unstable"; } | install_amd_tools)"
+    if ! grep -q "deb http://deb.debian.org/debian sid main contrib non-free" "/etc/apt/sources.list"; then
+        assert [ 0 -eq 1 ]
+    fi
+    reset_sources_file
+    unset debian_version
+}
+
 @test "setup_steam gets to install steam step" {
     export gpu="Nvidia"
     source ${profile_script}
