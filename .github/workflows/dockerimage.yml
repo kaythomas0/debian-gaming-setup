@@ -2,9 +2,7 @@ name: Bats & ShellCheck
 
 on:
   push:
-    branches: [ dev ]
-  pull_request:
-    branches: [ master ]
+    branches: [ dev, master ]
 
 jobs:
      
