@@ -246,12 +246,23 @@ reset_sources_file() {
     assert_output --partial "If these installations ran successfully, then you have setup Wine."
 }
 
-@test "setup_wine installs wine staging" {
+@test "setup_wine installs wine staging for buster" {
     export debian_version="buster"
     apt-get -y install wget
     source ${profile_script}
     output="$({ echo "yes"; echo "staging"; echo "yes"; echo "no"; echo "yes"; echo "yes"; } | setup_wine)"
     grep -q "deb https://dl.winehq.org/wine-builds/debian/ buster main" "/etc/apt/sources.list"
+    assert_success
+    assert_output --partial "If these installations ran successfully, then you have setup Wine."
+    unset debian_version
+}
+
+@test "setup_wine installs wine staging for bullseye/sid" {
+    export debian_version="bullseye/sid"
+    apt-get -y install wget
+    source ${profile_script}
+    output="$({ echo "yes"; echo "staging"; echo "yes"; echo "no"; echo "yes"; echo "yes"; } | setup_wine)"
+    grep -q "deb https://dl.winehq.org/wine-builds/debian/ bullseye main" "/etc/apt/sources.list"
     assert_success
     assert_output --partial "If these installations ran successfully, then you have setup Wine."
     unset debian_version
@@ -267,12 +278,55 @@ reset_sources_file() {
     unset debian_version
 }
 
-@test "setup_lutris gets to install lutris step" {
+@test "setup_lutris gets to install lutris step for buster" {
     export debian_version="buster"
     apt-get -y install wget
     source ${profile_script}
     output="$({ echo "yes"; echo "yes"; echo "1"; echo "yes"; echo "yes"; } | setup_lutris)"
+    grep -q "deb http://download.opensuse.org/repositories/home:/strycore/Debian_10/ /" "/etc/apt/sources.list.d/home:strycore.list"
     assert_success
     assert_output --partial "If these installations ran successfully, then you have setup Lutris."
+    unset debian_version
+}
+
+@test "setup_lutris gets to install lutris step for bullseye" {
+    export debian_version="bullseye/sid"
+    apt-get -y install wget
+    source ${profile_script}
+    output="$({ echo "yes"; echo "yes"; echo "1"; echo "testing"; echo "yes"; echo "yes"; } | setup_lutris)"
+    grep -q "deb http://download.opensuse.org/repositories/home:/strycore/Debian_Testing/ /" "/etc/apt/sources.list.d/home:strycore.list"
+    assert_success
+    assert_output --partial "If these installations ran successfully, then you have setup Lutris."
+    unset debian_version
+}
+
+@test "setup_lutris gets to install lutris step for sid" {
+    export debian_version="bullseye/sid"
+    apt-get -y install wget
+    source ${profile_script}
+    output="$({ echo "yes"; echo "yes"; echo "1"; echo "unstable"; echo "yes"; echo "yes"; } | setup_lutris)"
+    grep -q "deb http://download.opensuse.org/repositories/home:/strycore/Debian_Unstable/ /" "/etc/apt/sources.list.d/home:strycore.list"
+    assert_success
+    assert_output --partial "If these installations ran successfully, then you have setup Lutris."
+    unset debian_version
+}
+
+@test "setup_lutris shows instructions for .deb download" {
+    export debian_version="buster"
+    apt-get -y install wget
+    source ${profile_script}
+    output="$({ echo "yes"; echo "yes"; echo "2"; } | setup_lutris)"
+    assert_success
+    assert_output --partial "You can download the Lutris .deb file for your version of Debian directly"
+    unset debian_version
+}
+
+@test "setup_lutris shows instructions for tar.xz download" {
+    export debian_version="buster"
+    apt-get -y install wget
+    source ${profile_script}
+    output="$({ echo "yes"; echo "yes"; echo "3"; } | setup_lutris)"
+    assert_success
+    assert_output --partial "You can download the tar.xz package from Lutris and run the project directly"
     unset debian_version
 }
