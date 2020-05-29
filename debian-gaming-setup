@@ -87,7 +87,7 @@ grab_graphics_card() {
 
 gpu_prompt_gui() {
     local gpu_check
-    gpu_check="$(zenity --width="$gui_width" --height="$gui_list_height" --list --title="Are you running on an Nvidia or AMD graphics card?" --column="Debian Release" "Nvidia" "AMD")"
+    gpu_check="$(zenity --width="$gui_width" --height="$gui_list_height" --list --title="Are you running on an Nvidia or AMD graphics card?" --column="Graphics Card" "Nvidia" "AMD")"
     if [[ "$gpu_check" = "Nvidia" ]]; then
         gpu="Nvidia"
     elif [[ "$gpu_check" = "AMD" ]]; then
@@ -166,9 +166,9 @@ install_nvidia_tools() {
             printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian buster main contrib non-free"
         elif [ $debian_version = "bullseye/sid" ]; then
             printf '\nOpen /etc/apt/sources.list with your preferred text editor, and add/append\nthis line if you are on Testing:\n'
-            printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian/ bullseye main contrib non-free"
+            printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian bullseye main contrib non-free"
             printf 'Or this line if you are on Sid:\n'
-            printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian/ sid main contrib non-free"
+            printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian sid main contrib non-free"
         fi
         printf '\nOnce you have modified your sources, you are ready to install the required\ngraphics packages. Press enter once you have appended your apt source with\nnon-free.'
         local appended_apt_sources
@@ -301,7 +301,7 @@ install_nvidia_tools_gui() {
         elif [ $debian_version = "buster" ]; then
             zenity --width="$gui_width" --height="$gui_height" --info --text="Open /etc/apt/sources.list with your preferred text editor, and add/append the line:\ndeb http://deb.debian.org/debian buster main contrib non-free"
         elif [ $debian_version = "bullseye/sid" ]; then
-            zenity --width="$gui_width" --height="$gui_height" --info --text="Open /etc/apt/sources.list with your preferred text editor, and add/append this line if you are on Testing:\ndeb http://deb.debian.org/debian/ bullseye main contrib non-free\nOr this line if you are on Sid:\ndeb http://deb.debian.org/debian/ sid main contrib non-free"
+            zenity --width="$gui_width" --height="$gui_height" --info --text="Open /etc/apt/sources.list with your preferred text editor, and add/append this line if you are on Testing:\ndeb http://deb.debian.org/debian bullseye main contrib non-free\nOr this line if you are on Sid:\ndeb http://deb.debian.org/debian sid main contrib non-free"
         fi
         zenity --width="$gui_width" --height="$gui_height" --info --text="Once you have modified your sources, you are ready to install the required graphics packages. Press OK once you have appended your apt source with non-free."
     elif [ "$modify_apt_sources" = "Skip" ]; then
@@ -397,9 +397,9 @@ install_amd_tools() {
             printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian buster main contrib non-free"
         elif [ $debian_version = "bullseye/sid" ]; then
             printf '\nOpen /etc/apt/sources.list with your preferred text editor, and add/append\nthis line if you are on Testing:\n'
-            printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian/ bullseye main contrib non-free"
+            printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian bullseye main contrib non-free"
             printf 'Or this line if you are on Sid:\n'
-            printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian/ sid main contrib non-free"
+            printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian sid main contrib non-free"
         fi
         printf '\nOnce you have modified your sources, you are ready to install the required\ngraphics packages. Press enter once you have appended your apt source with\nnon-free.'
         local appended_apt_sources
@@ -456,7 +456,7 @@ install_amd_tools_gui() {
         if [ $debian_version = "buster" ]; then
             zenity --width="$gui_width" --height="$gui_height" --info --text="Open /etc/apt/sources.list with your preferred text editor, and add/append the line:\ndeb http://deb.debian.org/debian buster main contrib non-free"
         elif [ $debian_version = "bullseye/sid" ]; then
-            zenity --width="$gui_width" --height="$gui_height" --info --text="Open /etc/apt/sources.list with your preferred text editor, and add/append this line if you are on Testing:\ndeb http://deb.debian.org/debian/ bullseye main contrib non-free\nOr this line if you are on Sid:\ndeb http://deb.debian.org/debian/ sid main contrib non-free"
+            zenity --width="$gui_width" --height="$gui_height" --info --text="Open /etc/apt/sources.list with your preferred text editor, and add/append this line if you are on Testing:\ndeb http://deb.debian.org/debian bullseye main contrib non-free\nOr this line if you are on Sid:\ndeb http://deb.debian.org/debian sid main contrib non-free"
         fi
         zenity --width="$gui_width" --height="$gui_height" --info --text="Once you have modified your sources, you are ready to install the required graphics packages. Press OK once you have appended your apt source with non-free."
     elif [ "$modify_apt_sources" = "Skip" ]; then
