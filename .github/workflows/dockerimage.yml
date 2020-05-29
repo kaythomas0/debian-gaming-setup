@@ -1,4 +1,4 @@
-name: Docker Bats Tests CI
+name: Bats & ShellCheck
 
 on:
   push:
