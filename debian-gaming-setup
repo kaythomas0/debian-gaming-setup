@@ -788,7 +788,7 @@ setup_lutris_gui() {
 }
 
 main() {
-    if [ $gui = true ]; then
+    if [ "$gui" = true ]; then
         zenity --width="$gui_width" --height="$gui_height" --info --text="This script will help you get all the tools you need to start gaming on Debian."
     else
         printf 'This script will help you get all the tools you need to start gaming on Debian.\n'
