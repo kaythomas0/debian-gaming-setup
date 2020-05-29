@@ -16,7 +16,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: Pull submodules
       run: git submodule update --init --recursive
-    - name: Shellcheck
-      uses: ludeeus/action-shellcheck@0.1.0
+    - name: Run shellcheck
+      run: apt-get install -y shellcheck
+      run: shellcheck debian-gaming-setup
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag debian-bats:$(date +%s)
