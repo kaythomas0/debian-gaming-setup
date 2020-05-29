@@ -17,7 +17,6 @@ jobs:
     - name: Pull submodules
       run: git submodule update --init --recursive
     - name: Run shellcheck
-      run: apt-get install -y shellcheck
-      run: shellcheck debian-gaming-setup
+      run: apt-get install -y shellcheck && shellcheck debian-gaming-setup
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag debian-bats:$(date +%s)
