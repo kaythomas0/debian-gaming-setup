@@ -1,20 +1,33 @@
 #!/usr/bin/env bash
 
 confirm_debian_version() {
-    printf "\nIt looks like your version of Debian is %s. Is that correct [y/n]? " "$debian_version"
-    local version_confirmation
-    read -r version_confirmation
-    if [[ $version_confirmation =~ ^([nN][oO]|[nN])$ ]]; then
-        printf '\nAre you running [s]table, [t]esting, or [u]nstable? '
-        local version_input
-        read -r version_input
-        if [[ $version_input =~ ^([sS][tT][aA][bB][lL][eE]|[sS])$ ]]; then
-            debian_version="buster"
-        elif [[ $version_input =~ ^([tT][eE][sS][tT][iI][nN][gG]|[tT])$ ]] || [[ $version_input =~ ^([uU][nN][sS][tT][aA][bB][lL][eE]|[uU])$ ]]; then
-            debian_version="bullseye/sid"
+    while :; do
+        printf "\nIt looks like your version of Debian is %s. Is that correct [y/n]? " "$debian_version"
+        local version_confirmation
+        read -r version_confirmation
+        if [[ $version_confirmation =~ ^([yY][eE][sS]|[yY])$ ]]; then
+            break
+        elif [[ $version_confirmation =~ ^([nN][oO]|[nN])$ ]]; then
+            while :; do
+                printf '\nAre you running [s]table, [t]esting, or [u]nstable? '
+                local version_input
+                read -r version_input
+                if [[ $version_input =~ ^([sS][tT][aA][bB][lL][eE]|[sS])$ ]]; then
+                    debian_version="buster"
+                    break
+                elif [[ $version_input =~ ^([tT][eE][sS][tT][iI][nN][gG]|[tT])$ ]] || [[ $version_input =~ ^([uU][nN][sS][tT][aA][bB][lL][eE]|[uU])$ ]]; then
+                    debian_version="bullseye/sid"
+                    break
+                else
+                    printf '\nInvalid input.\n'
+                fi
+            done
+            printf "\nOkay, you are running %s.\n" $debian_version
+            break
+        else
+            printf '\nInvalid input.\n'
         fi
-        printf "\nOkay, you are running %s.\n" $debian_version
-    fi
+    done
 }
 
 confirm_debian_version_gui() {
@@ -31,14 +44,20 @@ confirm_debian_version_gui() {
 }
 
 gpu_prompt() {
-    printf '\nAre you running on an [n]vidia or [a]md graphics card? '
-    local gpu_check
-    read -r gpu_check
-    if [[ $gpu_check =~ ^([nN][vV][iI][dD][iI][aA]|[nN])$ ]]; then
-        gpu="Nvidia"
-    elif [[ $gpu_check =~ ^([aA][mM][dD]|[aA])$ ]]; then
-        gpu="AMD"
-    fi
+    while :; do
+        printf '\nAre you running on an [n]vidia or [a]md graphics card? '
+        local gpu_check
+        read -r gpu_check
+        if [[ $gpu_check =~ ^([nN][vV][iI][dD][iI][aA]|[nN])$ ]]; then
+            gpu="Nvidia"
+            break
+        elif [[ $gpu_check =~ ^([aA][mM][dD]|[aA])$ ]]; then
+            gpu="AMD"
+            break
+        else
+            printf '\nInvalid input.\n'
+        fi
+    done
 }
 
 grab_graphics_card() {
@@ -46,39 +65,61 @@ grab_graphics_card() {
     if ! (lspci --version) >/dev/null 2>&1; then
         gpu_prompt
     elif [[ "$(lspci | grep -i 'vga\|3d\|2d')" =~ [nN][vV][iI][dD][iI][aA] ]]; then
-        printf '\nNvidia graphics card detected. Are you running an nvidia graphics card [y/n]? '
-        local nvidia_check_1
-        read -r nvidia_check_1
-        if [[ $nvidia_check_1 =~ ^([nN][oO]|[nN])$ ]]; then
-            printf '\nAre you running an AMD graphics card [y/n]? '
-            local amd_check_1
-            read -r amd_check_1
-            if [[ $amd_check_1 =~ ^([nN][oO]|[nN])$ ]]; then
-                printf '\nSorry, this script only supports Nvidia and AMD graphics cards.\n'
-                exit 0
-            else
-                gpu="AMD"
-            fi
-        else
-            gpu="Nvidia"
-        fi
-    elif [[ "$(lspci | grep -i 'vga\|3d\|2d')" =~ [aA][mM][dD] ]]; then
-        printf '\nAMD graphics card detected. Are you running an AMD graphics card [y/n]? '
-        local amd_check_2
-        read -r amd_check_2
-        if [[ $amd_check_2 =~ ^([nN][oO]|[nN])$ ]]; then
-            printf '\nAre you running an Nvidia graphics card [y/n]? '
-            local nvidia_check_2
-            read -r nvidia_check_2
-            if [[ $nvidia_check_2 =~ ^([nN][oO]|[nN])$ ]]; then
-                printf '\nSorry, this script only supports Nvidia and AMD graphics cards.\n'
-                exit 0
-            else
+        while :; do
+            printf '\nNvidia graphics card detected. Are you running an nvidia graphics card [y/n]? '
+            local nvidia_check_1
+            read -r nvidia_check_1
+            if [[ $nvidia_check_1 =~ ^([yY][eE][sS]|[yY])$ ]]; then
                 gpu="Nvidia"
+                break
+            elif [[ $nvidia_check_1 =~ ^([nN][oO]|[nN])$ ]]; then
+                while :; do
+                    printf '\nAre you running an AMD graphics card [y/n]? '
+                    local amd_check_1
+                    read -r amd_check_1
+                    if [[ $amd_check_1 =~ ^([yY][eE][sS]|[yY])$ ]]; then
+                        gpu="AMD"
+                        break
+                    elif [[ $amd_check_1 =~ ^([nN][oO]|[nN])$ ]]; then
+                        printf '\nSorry, this script only supports Nvidia and AMD graphics cards.\n'
+                        exit 0
+                    else
+                        printf '\nInvalid input.\n'
+                    fi
+                done
+                break
+            else
+                printf '\nInvalid input.\n'
             fi
-        else
-            gpu="AMD"
-        fi
+        done
+    elif [[ "$(lspci | grep -i 'vga\|3d\|2d')" =~ [aA][mM][dD] ]]; then
+        while :; do
+            printf '\nAMD graphics card detected. Are you running an AMD graphics card [y/n]? '
+            local amd_check_2
+            read -r amd_check_2
+            if [[ $amd_check_2 =~ ^([yY][eE][sS]|[yY])$ ]]; then
+                gpu="AMD"
+                break
+            elif [[ $amd_check_2 =~ ^([nN][oO]|[nN])$ ]]; then
+                while :; do
+                    printf '\nAre you running an Nvidia graphics card [y/n]? '
+                    local nvidia_check_2
+                    read -r nvidia_check_2
+                    if [[ $nvidia_check_2 =~ ^([yY][eE][sS]|[yY])$ ]]; then
+                        gpu="Nvidia"
+                        break
+                    elif [[ $nvidia_check_2 =~ ^([nN][oO]|[nN])$ ]]; then
+                        printf '\nSorry, this script only supports Nvidia and AMD graphics cards.\n'
+                        exit 0
+                    else
+                        printf '\nInvalid input.\n'
+                    fi
+                done
+                break
+            else
+                printf '\nInvalid input.\n'
+            fi
+        done
     else
         gpu_prompt
     fi
@@ -129,10 +170,21 @@ grab_graphics_card_gui() {
 
 install_nvidia_tools() {
     if [ $debian_version = "buster" ]; then
-        printf '\nSince you are running Stable, it is recommended that you use buster-backports\nto install your graphics drivers in order to get the latest versions.\n'
-        printf '\nWould you like to use buster-backports to install your graphics drivers [y/n]? '
-        local use_backports
-        read -r use_backports
+        while :; do
+            printf '\nSince you are running Stable, it is recommended that you use buster-backports\nto install your graphics drivers in order to get the latest versions.\n'
+            printf '\nWould you like to use buster-backports to install your graphics drivers [y/n]? '
+            local use_backports
+            read -r use_backports
+            if [[ $use_backports =~ ^([yY][eE][sS]|[yY])$ ]]; then
+                use_backports="y"
+                break
+            elif [[ $use_backports =~ ^([nN][oO]|[nN])$ ]]; then
+                use_backports="n"
+                break
+            else
+                printf '\nInvalid input.\n'
+            fi
+        done
     fi
     printf '\nIn order to proceed with the installation of the necessary packages to update\nyour graphics drivers, you need to allow non-free packages in your apt sources.\nIf you have not modified your /etc/apt/sources.list file, this can be done\nautomatically. If you have made modifications to this file, you should do it\nmanually. Would you like to do this [a]utomatically, [m]anually, or [s]kip? '
     local modify_apt_sources
