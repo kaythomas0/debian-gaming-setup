@@ -113,7 +113,7 @@ setup_file() {
 @test "install_nvidia_tools automatically modifies buster sources.list correctly" {
     export debian_version="buster"
     source ${profile_script}
-    output="$({ echo "yes"; echo "automatically"; } | install_nvidia_tools)"
+    output="$({ echo "yes"; echo "automatically"; echo "yes"; echo "no"; echo "no"; echo "1"; echo "yes"; echo "yes"; echo "no"; } | install_nvidia_tools)"
     grep -q "deb http://deb.debian.org/debian buster-backports main contrib non-free" "/etc/apt/sources.list"
     grep -q "deb http://deb.debian.org/debian buster main contrib non-free" "/etc/apt/sources.list"
     assert_success
@@ -125,7 +125,7 @@ setup_file() {
     export debian_version="bullseye/sid"
     setup_bullseye_sources_file
     source ${profile_script}
-    output="$({ echo "automatically"; echo "testing"; } | install_nvidia_tools)"
+    output="$({ echo "yes"; echo "automatically"; echo "testing"; echo "yes"; echo "no"; echo "no"; echo "1"; echo "yes"; echo "yes"; echo "no"; } | install_nvidia_tools)"
     grep -q "deb http://deb.debian.org/debian bullseye main contrib non-free" "/etc/apt/sources.list"
     assert_success
     reset_sources_file
@@ -136,7 +136,7 @@ setup_file() {
     export debian_version="bullseye/sid"
     setup_sid_sources_file
     source ${profile_script}
-    output="$({ echo "automatically"; echo "unstable"; } | install_nvidia_tools)"
+    output="$({ echo "yes"; echo "automatically"; echo "unstable"; echo "yes"; echo "no"; echo "no"; echo "1"; echo "yes"; echo "yes"; echo "no"; } | install_nvidia_tools)"
     grep -q "deb http://deb.debian.org/debian sid main contrib non-free" "/etc/apt/sources.list"
     assert_success
     reset_sources_file
@@ -146,7 +146,7 @@ setup_file() {
 @test "install_nvidia_tools correctly shows manual steps to modify backports sources.list" {
     export debian_version="buster"
     source ${profile_script}
-    output="$({ echo "yes"; echo "manually"; } | install_nvidia_tools)"
+    output="$({ echo "yes"; echo "manually"; echo ""; echo "yes"; echo "no"; echo "no"; echo "1"; echo "yes"; echo "yes"; echo "no"; } | install_nvidia_tools)"
     assert_output --partial "deb http://deb.debian.org/debian buster-backports main contrib non-free"
     assert_output --partial "deb http://deb.debian.org/debian buster main contrib non-free"
     unset debian_version
@@ -155,7 +155,7 @@ setup_file() {
 @test "install_nvidia_tools correctly shows manual steps to modify buster sources.list" {
     export debian_version="buster"
     source ${profile_script}
-    output="$({ echo "no"; echo "manually"; } | install_nvidia_tools)"
+    output="$({ echo "no"; echo "manually"; echo ""; echo "yes"; echo "no"; echo "no"; echo "1"; echo "yes"; echo "yes"; echo "no"; } | install_nvidia_tools)"
     assert_output --partial "deb http://deb.debian.org/debian buster main contrib non-free"
     unset debian_version
 }
@@ -163,7 +163,7 @@ setup_file() {
 @test "install_nvidia_tools correctly shows manual steps to modify bullseye/sid sources.list" {
     export debian_version="bullseye/sid"
     source ${profile_script}
-    output="$({ echo "manually"; } | install_nvidia_tools)"
+    output="$({ echo "manually"; echo ""; echo "yes"; echo "no"; echo "no"; echo "1"; echo "yes"; echo "yes"; echo "no"; } | install_nvidia_tools)"
     assert_output --partial "deb http://deb.debian.org/debian bullseye main contrib non-free"
     assert_output --partial "deb http://deb.debian.org/debian sid main contrib non-free"
     unset debian_version

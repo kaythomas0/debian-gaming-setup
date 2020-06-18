@@ -287,66 +287,117 @@ install_nvidia_tools() {
     printf 'The nvidia-detect package can be used to identify the GPU and required driver\npackage. Would you like to install and run this package now [y/n]? '
     local install_nvidia_detect
     read -r install_nvidia_detect
-    if [[ $install_nvidia_detect =~ ^([yY][eE][sS]|[yY])$ ]]; then
-        apt-get install nvidia-detect
-        nvidia-detect
-        printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
-        printf 'Did nvidia-detect recommend you install the [1]nvidia-driver,\n[2]nvidia-legacy-390xx-driver, or [3]nvidia-legacy-340xx-driver package? '
-        local driver_package
-        read -r driver_package
-    else
-        printf '\nYou can install the [1]nvidia-driver, [2]nvidia-legacy-390xx-driver,\nor [3]nvidia-legacy-340xx-driver package.\n'
-        printf '[1]nvidia-driver is for support of GeForce 600 series and newer GPUs.\n'
-        printf '[2]nvidia-legacy-390xx-driver is for support of GeForce 400 and 500 series.\n'
-        printf '[3]nvidia-legacy-340xx-driver is for support of GeForce 8 through 300 series\nGPUs.\n'
-        printf 'Which package would you like to install? '
-        local driver_package
-        read -r driver_package
-    fi
-    printf '\nYou should install your selected driver package to update your graphics drivers,\nwould you like to do that now [y/n]? '
-    local install_nvidia_driver
-    read -r install_nvidia_driver
-    if [[ $install_nvidia_driver =~ ^([yY][eE][sS]|[yY])$ ]]; then
-        if [ "$driver_package" = "1" ]; then
-            printf '\nIt is recommended that you install nvidia-vulkan-icd as well in order to get\nbetter performance in applications that use Vulkan (such as Lutris and Wine).\nWould you like to do that as well [y/n]? '
-            local install_vulkan_nvidia
-            read -r install_vulkan_nvidia
-            if [ $use_backports = "y" ]; then
-                apt-get update
-                apt-get install -t buster-backports nvidia-driver
-                if [[ $install_vulkan_nvidia =~ ^([yY][eE][sS]|[yY])$ ]]; then
-                    apt-get install -t buster-backports nvidia-vulkan-icd
-                fi
-                printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
-            else
-                apt-get update
-                apt-get install nvidia-driver
-                if [[ $install_vulkan_nvidia =~ ^([yY][eE][sS]|[yY])$ ]]; then
-                    apt-get install nvidia-vulkan-icd
-                fi
-                printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
-            fi
-        elif [ "$driver_package" = "2" ]; then
-            apt-get update
-            apt-get install nvidia-legacy-390xx-driver
+    while :; do
+        if [[ $install_nvidia_detect =~ ^([yY][eE][sS]|[yY])$ ]]; then
+            apt-get install nvidia-detect
+            nvidia-detect
             printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
-        elif [ "$driver_package" = "3" ]; then
-            apt-get update
-            apt-get install nvidia-legacy-340xx-driver
-            printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
-            printf 'You need to create an xorg configuration file. This can be done automatically\nright now, would you like to do that [y/n]? '
-            local create_xorg_conf
-            read -r create_xorg_conf
-            if [[ $create_xorg_conf =~ ^([yY][eE][sS]|[yY])$ ]]; then
-                mkdir -p /etc/X11/xorg.conf.d
-                echo -e 'Section "Device"\n\tIdentifier "My GPU"\n\tDriver "nvidia"\nEndSection' >/etc/X11/xorg.conf.d/20-nvidia.conf
-                printf 'Xorg configuration file created.'
-            fi
+            while :; do
+                printf 'Did nvidia-detect recommend you install the [1]nvidia-driver,\n[2]nvidia-legacy-390xx-driver, or [3]nvidia-legacy-340xx-driver package? '
+                local driver_package
+                read -r driver_package
+                if [ "$driver_package" != "1" ] && [ "$driver_package" != "2" ] && [ "$driver_package" != "3" ]; then
+                    printf '\nInvalid input.\n'
+                else
+                    break
+                fi
+            done
+            break
+        elif [[ $install_nvidia_detect =~ ^([nN][oO]|[nN])$ ]]; then
+            while :; do
+                printf '\nYou can install the [1]nvidia-driver, [2]nvidia-legacy-390xx-driver,\nor [3]nvidia-legacy-340xx-driver package.\n'
+                printf '[1]nvidia-driver is for support of GeForce 600 series and newer GPUs.\n'
+                printf '[2]nvidia-legacy-390xx-driver is for support of GeForce 400 and 500 series.\n'
+                printf '[3]nvidia-legacy-340xx-driver is for support of GeForce 8 through 300 series\nGPUs.\n'
+                printf 'Which package would you like to install? '
+                local driver_package
+                read -r driver_package
+                if [ "$driver_package" != "1" ] && [ "$driver_package" != "2" ] && [ "$driver_package" != "3" ]; then
+                    printf '\nInvalid input.\n'
+                else
+                    break
+                fi
+            done
+            break
+        else
+            printf '\nInvalid input.\n'
         fi
-        printf '\nIf these installations ran successfully, then you have installed all the\nnecessary Nvidia graphics drivers.\n'
-    else
-        printf '\nNvidia graphics drivers installation aborted.\n'
-    fi
+    done
+    while :; do
+        printf '\nYou should install your selected driver package to update your graphics drivers,\nwould you like to do that now [y/n]? '
+        local install_nvidia_driver
+        read -r install_nvidia_driver
+        if [[ $install_nvidia_driver =~ ^([yY][eE][sS]|[yY])$ ]]; then
+            if [ "$driver_package" = "1" ]; then
+                while :; do
+                    printf '\nIt is recommended that you install nvidia-vulkan-icd as well in order to get\nbetter performance in applications that use Vulkan (such as Lutris and Wine).\nWould you like to do that as well [y/n]? '
+                    local install_vulkan_nvidia
+                    read -r install_vulkan_nvidia
+                    if [[ $install_vulkan_nvidia =~ ^([yY][eE][sS]|[yY])$ ]]; then
+                        if [ $use_backports = "y" ]; then
+                            apt-get update
+                            apt-get install -t buster-backports nvidia-driver
+                            apt-get install -t buster-backports nvidia-vulkan-icd
+                            printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
+                        else
+                            apt-get update
+                            apt-get install nvidia-driver
+                            apt-get install nvidia-vulkan-icd
+                            printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
+                        fi
+                        break
+                    elif [[ $install_vulkan_nvidia =~ ^([nN][oO]|[nN])$ ]]; then
+                        if [ $use_backports = "y" ]; then
+                            apt-get update
+                            apt-get install -t buster-backports nvidia-driver
+                            printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
+                        else
+                            apt-get update
+                            apt-get install nvidia-driver
+                            printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
+                        fi
+                        break
+                    else
+                        printf '\nInvalid input.\n'
+                    fi
+                done
+                printf '\nIf these installations ran successfully, then you have installed all the\nnecessary Nvidia graphics drivers.\n'
+                break
+            elif [ "$driver_package" = "2" ]; then
+                apt-get update
+                apt-get install nvidia-legacy-390xx-driver
+                printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
+                printf '\nIf these installations ran successfully, then you have installed all the\nnecessary Nvidia graphics drivers.\n'
+                break
+            elif [ "$driver_package" = "3" ]; then
+                apt-get update
+                apt-get install nvidia-legacy-340xx-driver
+                printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
+                while :; do
+                    printf 'You need to create an xorg configuration file. This can be done automatically\nright now, would you like to do that [y/n]? '
+                    local create_xorg_conf
+                    read -r create_xorg_conf
+                    if [[ $create_xorg_conf =~ ^([yY][eE][sS]|[yY])$ ]]; then
+                        mkdir -p /etc/X11/xorg.conf.d
+                        echo -e 'Section "Device"\n\tIdentifier "My GPU"\n\tDriver "nvidia"\nEndSection' >/etc/X11/xorg.conf.d/20-nvidia.conf
+                        printf 'Xorg configuration file created.'
+                        break
+                    elif [[ $create_xorg_conf =~ ^([nN][oO]|[nN])$ ]]; then
+                        break
+                    else
+                        printf '\nInvalid input.\n'
+                    fi
+                done
+                printf '\nIf these installations ran successfully, then you have installed all the\nnecessary Nvidia graphics drivers.\n'
+                break
+            fi
+        elif [[ $install_nvidia_driver =~ ^([nN][oO]|[nN])$ ]]; then
+            printf '\nNvidia graphics drivers installation aborted.\n'
+            break
+        else
+            printf '\nInvalid input.\n'
+        fi
+    done
 }
 
 install_nvidia_tools_gui() {
