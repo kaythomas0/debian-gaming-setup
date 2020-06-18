@@ -181,7 +181,7 @@ setup_file() {
 @test "install_amd_tools automatically modifies buster sources.list correctly" {
     export debian_version="buster"
     source ${profile_script}
-    output="$({ echo "automatically"; } | install_amd_tools)"
+    output="$({ echo "automatically"; echo "no"; echo "no"; } | install_amd_tools)"
     grep -q "deb http://deb.debian.org/debian buster main contrib non-free" "/etc/apt/sources.list"
     assert_success
     reset_sources_file
@@ -192,7 +192,7 @@ setup_file() {
     export debian_version="bullseye/sid"
     setup_bullseye_sources_file
     source ${profile_script}
-    output="$({ echo "automatically"; echo "testing"; } | install_amd_tools)"
+    output="$({ echo "automatically"; echo "testing"; echo "no"; echo "no"; } | install_amd_tools)"
     grep -q "deb http://deb.debian.org/debian bullseye main contrib non-free" "/etc/apt/sources.list"
     assert_success
     reset_sources_file
@@ -203,7 +203,7 @@ setup_file() {
     export debian_version="bullseye/sid"
     setup_sid_sources_file
     source ${profile_script}
-    output="$({ echo "automatically"; echo "unstable"; } | install_amd_tools)"
+    output="$({ echo "automatically"; echo "unstable"; echo "no"; echo "no"; } | install_amd_tools)"
     grep -q "deb http://deb.debian.org/debian sid main contrib non-free" "/etc/apt/sources.list"
     assert_success
     reset_sources_file
@@ -213,7 +213,7 @@ setup_file() {
 @test "install_amd_tools correctly shows manual steps to modify buster sources.list" {
     export debian_version="buster"
     source ${profile_script}
-    output="$({ echo "manually"; } | install_amd_tools)"
+    output="$({ echo "manually"; echo ""; echo "no"; echo "no"; } | install_amd_tools)"
     assert_output --partial "deb http://deb.debian.org/debian buster main contrib non-free"
     unset debian_version
 }
@@ -221,7 +221,7 @@ setup_file() {
 @test "install_amd_tools correctly shows manual steps to modify bullseye/sid sources.list" {
     export debian_version="bullseye/sid"
     source ${profile_script}
-    output="$({ echo "manually"; } | install_amd_tools)"
+    output="$({ echo "manually"; echo ""; echo "no"; echo "no"; } | install_amd_tools)"
     assert_output --partial "deb http://deb.debian.org/debian bullseye main contrib non-free"
     assert_output --partial "deb http://deb.debian.org/debian sid main contrib non-free"
     unset debian_version

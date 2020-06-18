@@ -198,14 +198,20 @@ install_nvidia_tools() {
             elif [ $debian_version = "buster" ]; then
                 sed -i 's/deb http:\/\/deb.debian.org\/debian buster main/deb http:\/\/deb.debian.org\/debian buster main contrib non-free/g' /etc/apt/sources.list
             elif [ $debian_version = "bullseye/sid" ]; then
-                printf '\nAre you running Debian [t]esting or [u]nstable? '
-                local testing_or_unstable
-                read -r testing_or_unstable
-                if [[ $testing_or_unstable =~ ^([tT][eE][sS][tT][iI][nN][gG]|[tT])$ ]]; then
-                    sed -i 's/deb http:\/\/deb.debian.org\/debian bullseye main/deb http:\/\/deb.debian.org\/debian bullseye main contrib non-free/g' /etc/apt/sources.list
-                elif [[ $testing_or_unstable =~ ^([uU][nN][sS][tT][aA][bB][lL][eE]|[uU])$ ]]; then
-                    sed -i 's/deb http:\/\/deb.debian.org\/debian sid main/deb http:\/\/deb.debian.org\/debian sid main contrib non-free/g' /etc/apt/sources.list
-                fi
+                while :; do
+                    printf '\nAre you running Debian [t]esting or [u]nstable? '
+                    local testing_or_unstable
+                    read -r testing_or_unstable
+                    if [[ $testing_or_unstable =~ ^([tT][eE][sS][tT][iI][nN][gG]|[tT])$ ]]; then
+                        sed -i 's/deb http:\/\/deb.debian.org\/debian bullseye main/deb http:\/\/deb.debian.org\/debian bullseye main contrib non-free/g' /etc/apt/sources.list
+                        break
+                    elif [[ $testing_or_unstable =~ ^([uU][nN][sS][tT][aA][bB][lL][eE]|[uU])$ ]]; then
+                        sed -i 's/deb http:\/\/deb.debian.org\/debian sid main/deb http:\/\/deb.debian.org\/debian sid main contrib non-free/g' /etc/apt/sources.list
+                        break
+                    else
+                        printf '\nInvalid input.\n'
+                    fi
+                done
             fi
             printf '\n/etc/apt/sources.list modified.\n'
             break
@@ -507,64 +513,97 @@ install_nvidia_tools_gui() {
 }
 
 install_amd_tools() {
-    printf '\nIn order to proceed with the installation of the necessary packages to update\nyour graphics drivers, you need to allow non-free packages in your apt sources.\nIf you have not modified your /etc/apt/sources.list file, this can be done\nautomatically. If you have made modifications to this file, you should do it\nmanually. Would you like to do this [a]utomatically, [m]anually, or [s]kip? '
-    local modify_apt_sources
-    read -r modify_apt_sources
-    if [[ $modify_apt_sources =~ ^([aA][uU][tT][oO][mM][aA][tT][iI][cC][aA][lL][lL][yY]|[aA])$ ]]; then
-        if [ $debian_version = "buster" ]; then
-            sed -i 's/deb http:\/\/deb.debian.org\/debian buster main/deb http:\/\/deb.debian.org\/debian buster main contrib non-free/g' /etc/apt/sources.list
-        elif [ $debian_version = "bullseye/sid" ]; then
-            printf '\nAre you running Debian [t]esting or [u]nstable? '
-            local testing_or_unstable
-            read -r testing_or_unstable
-            if [[ $testing_or_unstable =~ ^([tT][eE][sS][tT][iI][nN][gG]|[tT])$ ]]; then
-                sed -i 's/deb http:\/\/deb.debian.org\/debian bullseye main/deb http:\/\/deb.debian.org\/debian bullseye main contrib non-free/g' /etc/apt/sources.list
-            elif [[ $testing_or_unstable =~ ^([uU][nN][sS][tT][aA][bB][lL][eE]|[uU])$ ]]; then
-                sed -i 's/deb http:\/\/deb.debian.org\/debian sid main/deb http:\/\/deb.debian.org\/debian sid main contrib non-free/g' /etc/apt/sources.list
+    while :; do
+        printf '\nIn order to proceed with the installation of the necessary packages to update\nyour graphics drivers, you need to allow non-free packages in your apt sources.\nIf you have not modified your /etc/apt/sources.list file, this can be done\nautomatically. If you have made modifications to this file, you should do it\nmanually. Would you like to do this [a]utomatically, [m]anually, or [s]kip? '
+        local modify_apt_sources
+        read -r modify_apt_sources
+        if [[ $modify_apt_sources =~ ^([aA][uU][tT][oO][mM][aA][tT][iI][cC][aA][lL][lL][yY]|[aA])$ ]]; then
+            if [ $debian_version = "buster" ]; then
+                sed -i 's/deb http:\/\/deb.debian.org\/debian buster main/deb http:\/\/deb.debian.org\/debian buster main contrib non-free/g' /etc/apt/sources.list
+            elif [ $debian_version = "bullseye/sid" ]; then
+                while :; do
+                    printf '\nAre you running Debian [t]esting or [u]nstable? '
+                    local testing_or_unstable
+                    read -r testing_or_unstable
+                    if [[ $testing_or_unstable =~ ^([tT][eE][sS][tT][iI][nN][gG]|[tT])$ ]]; then
+                        sed -i 's/deb http:\/\/deb.debian.org\/debian bullseye main/deb http:\/\/deb.debian.org\/debian bullseye main contrib non-free/g' /etc/apt/sources.list
+                        break
+                    elif [[ $testing_or_unstable =~ ^([uU][nN][sS][tT][aA][bB][lL][eE]|[uU])$ ]]; then
+                        sed -i 's/deb http:\/\/deb.debian.org\/debian sid main/deb http:\/\/deb.debian.org\/debian sid main contrib non-free/g' /etc/apt/sources.list
+                        break
+                    else
+                        printf '\nInvalid input.\n'
+                    fi
+                done
             fi
+            printf '\n/etc/apt/sources.list modified.\n'
+            break
+        elif [[ $modify_apt_sources =~ ^([mM][aA][nN][uU][aA][lL][lL][yY]|[mM])$ ]]; then
+            if [ $debian_version = "buster" ]; then
+                printf '\nOpen /etc/apt/sources.list with your preferred text editor, and add/append the\nline:\n'
+                printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian buster main contrib non-free"
+            elif [ $debian_version = "bullseye/sid" ]; then
+                printf '\nOpen /etc/apt/sources.list with your preferred text editor, and add/append\nthis line if you are on Testing:\n'
+                printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian bullseye main contrib non-free"
+                printf 'Or this line if you are on Sid:\n'
+                printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian sid main contrib non-free"
+            fi
+            printf '\nOnce you have modified your sources, you are ready to install the required\ngraphics packages. Press enter once you have appended your apt source with\nnon-free.'
+            local appended_apt_sources
+            # shellcheck disable=SC2034  # Unused variable left for readability
+            read -r appended_apt_sources
+            break
+        elif [[ $modify_apt_sources =~ ^([sS][kK][iI][pP]|[sS])$ ]]; then
+            printf '\nSkipping apt sources modification...\n'
+            break
+        else
+            printf '\nInvalid input.\n'
         fi
-        printf '\n/etc/apt/sources.list modified.\n'
-    elif [[ $modify_apt_sources =~ ^([mM][aA][nN][uU][aA][lL][lL][yY]|[mM])$ ]]; then
-        if [ $debian_version = "buster" ]; then
-            printf '\nOpen /etc/apt/sources.list with your preferred text editor, and add/append the\nline:\n'
-            printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian buster main contrib non-free"
-        elif [ $debian_version = "bullseye/sid" ]; then
-            printf '\nOpen /etc/apt/sources.list with your preferred text editor, and add/append\nthis line if you are on Testing:\n'
-            printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian bullseye main contrib non-free"
-            printf 'Or this line if you are on Sid:\n'
-            printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian sid main contrib non-free"
-        fi
-        printf '\nOnce you have modified your sources, you are ready to install the required\ngraphics packages. Press enter once you have appended your apt source with\nnon-free.'
-        local appended_apt_sources
-        # shellcheck disable=SC2034  # Unused variable left for readability
-        read -r appended_apt_sources
-    elif [[ $modify_apt_sources =~ ^([sS][kK][iI][pP]|[sS])$ ]]; then
-        printf '\nSkipping apt sources modification...\n'
-    fi
-    printf '\nYou should update apt, would you like to do that now [y/n]? '
-    local update_apt_2
-    read -r update_apt_2
-    if [[ $update_apt_2 =~ ^([yY][eE][sS]|[yY])$ ]]; then
-        apt-get update
-        printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
-    fi
-    printf 'You are ready to install the non-free Linux firmware (required for the AMD\ndrivers), the Mesa graphics library, and AMD drivers. Would you like to do that\nnow [y/n]? '
-    local install_amd_driver
-    read -r install_amd_driver
-    if [[ $install_amd_driver =~ ^([yY][eE][sS]|[yY])$ ]]; then
-        apt-get install firmware-linux-nonfree libgl1-mesa-dri libglx-mesa0 xserver-xorg-video-all
-        printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
-        printf 'It is recommended that you install Vulkan as well in order to get better\nperformance in applications that use it (such as Lutris and Wine). Would you\nlike to do that now [y/n]? '
-        local install_vulkan_amd
-        read -r install_vulkan_amd
-        if [[ $install_vulkan_amd =~ ^([yY][eE][sS]|[yY])$ ]]; then
-            apt-get install mesa-vulkan-drivers libvulkan1 vulkan-tools vulkan-utils vulkan-validationlayers
+    done
+    while :; do
+        printf '\nYou should update apt, would you like to do that now [y/n]? '
+        local update_apt_2
+        read -r update_apt_2
+        if [[ $update_apt_2 =~ ^([yY][eE][sS]|[yY])$ ]]; then
+            apt-get update
             printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
+            break
+        elif [[ $update_apt_2 =~ ^([nN][oO]|[nN])$ ]]; then
+            break
+        else
+            printf '\nInvalid input.\n'
         fi
-        printf 'If these installations ran successfully, then you have installed all the\nnecessary AMD graphics drivers.\n'
-    else
-        printf '\nAMD graphics drivers installation aborted.\n'
-    fi
+    done
+    while :; do
+        printf 'You are ready to install the non-free Linux firmware (required for the AMD\ndrivers), the Mesa graphics library, and AMD drivers. Would you like to do that\nnow [y/n]? '
+        local install_amd_driver
+        read -r install_amd_driver
+        if [[ $install_amd_driver =~ ^([yY][eE][sS]|[yY])$ ]]; then
+            apt-get install firmware-linux-nonfree libgl1-mesa-dri libglx-mesa0 xserver-xorg-video-all
+            printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
+            while :; do
+                printf 'It is recommended that you install Vulkan as well in order to get better\nperformance in applications that use it (such as Lutris and Wine). Would you\nlike to do that now [y/n]? '
+                local install_vulkan_amd
+                read -r install_vulkan_amd
+                if [[ $install_vulkan_amd =~ ^([yY][eE][sS]|[yY])$ ]]; then
+                    apt-get install mesa-vulkan-drivers libvulkan1 vulkan-tools vulkan-utils vulkan-validationlayers
+                    printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
+                    break
+                elif [[ $install_vulkan_amd =~ ^([nN][oO]|[nN])$ ]]; then
+                    break
+                else
+                    printf '\nInvalid input.\n'
+                fi
+            done
+            printf 'If these installations ran successfully, then you have installed all the\nnecessary AMD graphics drivers.\n'
+            break
+        elif [[ $install_amd_driver =~ ^([nN][oO]|[nN])$ ]]; then
+            printf '\nAMD graphics drivers installation aborted.\n'
+            break
+        else
+            printf '\nInvalid input.\n'
+        fi
+    done
 }
 
 install_amd_tools_gui() {
