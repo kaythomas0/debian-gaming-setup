@@ -1,0 +1,12 @@
+image: docker:latest
+
+services:
+    - docker:dind
+
+before_script:
+    - apk update && apk add git
+
+docker-tests:
+    script:
+    - git submodule update --init --recursive
+    - docker build . --file Dockerfile --tag debian-bats:$(date +%s)
