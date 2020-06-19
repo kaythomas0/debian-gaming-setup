@@ -275,7 +275,7 @@ setup_file() {
 @test "setup_wine gives proper notice for how wine staging works" {
     export debian_version="buster"
     source ${profile_script}
-    output="$({ echo "yes"; echo "staging"; echo "no"; } | setup_wine)"
+    output="$({ echo "yes"; echo "staging"; echo "no"; echo "stable"; echo "no"; echo "yes"; echo "yes"; } | setup_wine)"
     assert_success
     assert_output --partial "Since Wine Staging is not in the official Debian repository"
     assert_output --partial "Would you like to install [s]table or [d]evelopment?"

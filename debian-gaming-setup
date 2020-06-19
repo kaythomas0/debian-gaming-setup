@@ -751,71 +751,111 @@ setup_steam_gui() {
 }
 
 setup_wine() {
-    printf '\nWine is a tool that allows you to run Windows applications on Linux. It is\nrequired for many applications such as Lutris. It is recommended that you\ninstall Wine, would you like to start the process of getting Wine installed now\n[y/n]? '
-    local install_wine
-    read -r install_wine
-    if [[ $install_wine =~ ^([yY][eE][sS]|[yY])$ ]]; then
-        printf '\nThere are three main branches of Wine: Stable, Development, and Staging. Stable\nis, as the name implies, the most stable branch, with the least amount of\nfeatures. Wine development is rapid, with new releases in the development\nbranch every two weeks or so. Staging contains bug fixes and features which\nhave not been integrated into the development branch yet. The idea of Wine\nStaging is to provide experimental features faster to end users and to give\ndevelopers the possibility to discuss and improve their patches before they are\nintegrated into the main branch.\n'
-        printf '\nWhich version of Wine would you like to install: [s]table, [d]evelopment, or\n[st]aging? '
-        local wine_version
-        read -r wine_version
-        if [[ $wine_version =~ ^([sS][tT][aA][gG][iI][nN][gG]|[sS][tT])$ ]]; then
-            wine_version="st"
-            printf '\nSince Wine Staging is not in the official Debian repository, installing it\nwould mean you need to add the Wine HQ repository key and use that repository\nto install and update Wine. If you do not want to do this, you can choose to\ninstall the stable or development branch of Wine. Are you okay installing Wine\nStaging from the Wine HQ repository [y/n]? '
-            local install_wine_staging
-            read -r install_wine_staging
-            if [[ $install_wine_staging =~ ^([nN][oO]|[nN])$ ]]; then
-                printf '\nWould you like to install [s]table or [d]evelopment? '
-                local wine_version_2
-                read -r wine_version_2
-                if [[ $wine_version_2 =~ ^([sS][tT][aA][bB][lL][eE]|[sS])$ ]]; then
+    while :; do
+        printf '\nWine is a tool that allows you to run Windows applications on Linux. It is\nrequired for many applications such as Lutris. It is recommended that you\ninstall Wine, would you like to start the process of getting Wine installed now\n[y/n]? '
+        local install_wine
+        read -r install_wine
+        if [[ $install_wine =~ ^([yY][eE][sS]|[yY])$ ]]; then
+            while :; do
+                printf '\nThere are three main branches of Wine: Stable, Development, and Staging. Stable\nis, as the name implies, the most stable branch, with the least amount of\nfeatures. Wine development is rapid, with new releases in the development\nbranch every two weeks or so. Staging contains bug fixes and features which\nhave not been integrated into the development branch yet. The idea of Wine\nStaging is to provide experimental features faster to end users and to give\ndevelopers the possibility to discuss and improve their patches before they are\nintegrated into the main branch.\n'
+                printf '\nWhich version of Wine would you like to install: [s]table, [d]evelopment, or\n[st]aging? '
+                local wine_version
+                read -r wine_version
+                if [[ $wine_version =~ ^([sS][tT][aA][gG][iI][nN][gG]|[sS][tT])$ ]]; then
+                    wine_version="st"
+                    while :; do
+                        printf '\nSince Wine Staging is not in the official Debian repository, installing it\nwould mean you need to add the Wine HQ repository key and use that repository\nto install and update Wine. If you do not want to do this, you can choose to\ninstall the stable or development branch of Wine. Are you okay installing Wine\nStaging from the Wine HQ repository [y/n]? '
+                        local install_wine_staging
+                        read -r install_wine_staging
+                        if [[ $install_wine_staging =~ ^([yY][eE][sS]|[yY])$ ]]; then
+                            break
+                        elif [[ $install_wine_staging =~ ^([nN][oO]|[nN])$ ]]; then
+                            while :; do
+                                printf '\nWould you like to install [s]table or [d]evelopment? '
+                                local wine_version_2
+                                read -r wine_version_2
+                                if [[ $wine_version_2 =~ ^([sS][tT][aA][bB][lL][eE]|[sS])$ ]]; then
+                                    wine_version="s"
+                                    break
+                                elif [[ $wine_version_2 =~ ^([dD][eE][vV][eE][lL][oO][pP][mM][eE][nN][tT]|[dD])$ ]]; then
+                                    wine_version="d"
+                                    break
+                                else
+                                    printf '\nInvalid input.\n'
+                                fi
+                            done
+                            break
+                        else
+                            printf '\nInvalid input.\n'
+                        fi
+                    done
+                    break
+                elif [[ $wine_version =~ ^([sS][tT][aA][bB][lL][eE]|[sS])$ ]]; then
                     wine_version="s"
-                elif [[ $wine_version_2 =~ ^([dD][eE][vV][eE][lL][oO][pP][mM][eE][nN][tT]|[dD])$ ]]; then
+                    break
+                elif [[ $wine_version =~ ^([dD][eE][vV][eE][lL][oO][pP][mM][eE][nN][tT]|[dD])$ ]]; then
                     wine_version="d"
+                    break
+                else
+                    printf '\nInvalid input.\n'
                 fi
-            fi
-        elif [[ $wine_version =~ ^([sS][tT][aA][bB][lL][eE]|[sS])$ ]]; then
-            wine_version="s"
-        elif [[ $wine_version =~ ^([dD][eE][vV][eE][lL][oO][pP][mM][eE][nN][tT]|[dD])$ ]]; then
-            wine_version="d"
-        fi
-        printf '\nIn order to install Wine, you need to enable multi-arch, which lets you install\nlibrary packages from multiple architectures on the same machine. Would you\nlike to do that now (you do not have to do this again if you have already done\nthis step when installing Steam) [y/n]? '
-        local enable_multi_arch_2
-        read -r enable_multi_arch_2
-        if [[ $enable_multi_arch_2 =~ ^([yY][eE][sS]|[yY])$ ]]; then
-            dpkg --add-architecture i386
-            apt-get update
-            printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
-        fi
-        printf '\nWould you like to install the necessary Wine package now [y/n]? '
-        local install_wine_package
-        read -r install_wine_package
-        if [[ $install_wine_package =~ ^([yY][eE][sS]|[yY])$ ]]; then
-            if [ $wine_version = "s" ]; then
-                apt-get install wine
-                printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
-            elif [ $wine_version = "d" ]; then
-                apt-get install wine-development
-                printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
-            elif [ $wine_version = "st" ]; then
-                wget -nc https://dl.winehq.org/wine-builds/winehq.key
-                apt-key add winehq.key
-                if [ $debian_version = "buster" ]; then
-                    echo "deb https://dl.winehq.org/wine-builds/debian/ buster main" >>/etc/apt/sources.list
-                    apt update
-                    apt install --install-recommends winehq-staging
-                elif [ $debian_version = "bullseye/sid" ]; then
-                    echo "deb https://dl.winehq.org/wine-builds/debian/ bullseye main" >>/etc/apt/sources.list
-                    apt update
-                    apt install --install-recommends winehq-staging
+            done
+            while :; do
+                printf '\nIn order to install Wine, you need to enable multi-arch, which lets you install\nlibrary packages from multiple architectures on the same machine. Would you\nlike to do that now (you do not have to do this again if you have already done\nthis step when installing Steam) [y/n]? '
+                local enable_multi_arch_2
+                read -r enable_multi_arch_2
+                if [[ $enable_multi_arch_2 =~ ^([yY][eE][sS]|[yY])$ ]]; then
+                    dpkg --add-architecture i386
+                    apt-get update
+                    printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
+                    break
+                elif [[ $enable_multi_arch_2 =~ ^([nN][oO]|[nN])$ ]]; then
+                    break
+                else
+                    printf '\nInvalid input.\n'
                 fi
-                printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
-            fi
-            printf 'If these installations ran successfully, then you have setup Wine.\n'
+            done
+            while :; do
+                printf '\nWould you like to install the necessary Wine package now [y/n]? '
+                local install_wine_package
+                read -r install_wine_package
+                if [[ $install_wine_package =~ ^([yY][eE][sS]|[yY])$ ]]; then
+                    if [ $wine_version = "s" ]; then
+                        apt-get install wine
+                        printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
+                    elif [ $wine_version = "d" ]; then
+                        apt-get install wine-development
+                        printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
+                    elif [ $wine_version = "st" ]; then
+                        wget -nc https://dl.winehq.org/wine-builds/winehq.key
+                        apt-key add winehq.key
+                        if [ $debian_version = "buster" ]; then
+                            echo "deb https://dl.winehq.org/wine-builds/debian/ buster main" >>/etc/apt/sources.list
+                            apt update
+                            apt install --install-recommends winehq-staging
+                        elif [ $debian_version = "bullseye/sid" ]; then
+                            echo "deb https://dl.winehq.org/wine-builds/debian/ bullseye main" >>/etc/apt/sources.list
+                            apt update
+                            apt install --install-recommends winehq-staging
+                        fi
+                        printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
+                    fi
+                    printf 'If these installations ran successfully, then you have setup Wine.\n'
+                    break
+                elif [[ $install_wine_package =~ ^([nN][oO]|[nN])$ ]]; then
+                    printf '\nWine installation aborted.\n'
+                    break
+                else
+                    printf '\nInvalid input.\n'
+                fi
+            done
+            break
+        elif [[ $install_wine =~ ^([nN][oO]|[nN])$ ]]; then
+            break
         else
-            printf '\nWine installation aborted.\n'
+            printf '\nInvalid input.\n'
         fi
-    fi
+    done
 }
 
 setup_wine_gui() {
