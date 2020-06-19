@@ -230,7 +230,7 @@ setup_file() {
 @test "setup_steam gets to install steam step" {
     export gpu="Nvidia"
     source ${profile_script}
-    output="$({ echo "yes"; echo "yes"; echo "yes"; echo "yes"; } | setup_steam)"
+    output="$({ echo "yes"; echo "yes"; echo "yes"; echo "yes"; echo "no"; } | setup_steam)"
     assert_success
     assert_output --partial "Would you like to install the steam package now"
     unset gpu

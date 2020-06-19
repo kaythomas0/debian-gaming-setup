@@ -649,46 +649,80 @@ install_amd_tools_gui() {
 }
 
 setup_steam() {
-    printf '\nSteam is a video game digital distribution service by Valve, and is the largest\ndigital distribution platform for PC gaming. It has official support for\nGNU/Linux, and has a custom version of Wine included for running Windows-only\ngames and software. It is recommended that you install Steam, would you like to\nstart the process of getting Steam installed now [y/n]? '
-    local install_steam
-    read -r install_steam
-    if [[ $install_steam =~ ^([yY][eE][sS]|[yY])$ ]]; then
-        printf '\nIn order to install Steam, you need to enable multi-arch, which lets you\ninstall library packages from multiple architectures on the same machine. Would\nyou like to do that now [y/n]? '
-        local enable_multi_arch_1
-        read -r enable_multi_arch_1
-        if [[ $enable_multi_arch_1 =~ ^([yY][eE][sS]|[yY])$ ]]; then
-            dpkg --add-architecture i386
-            apt-get update
-            printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
-            if [ "$gpu" = "Nvidia" ]; then
-                printf 'Since you enabled multi-arch, it is recommended that you install the following\ni386 graphics packages: nvidia-driver-libs-i386 and nvidia-vulkan-icd:i386,\nwould you like to do that now [y/n]? '
-                local install_nvidia_i368_drivers
-                read -r install_nvidia_i368_drivers
-                if [[ $install_nvidia_i368_drivers =~ ^([yY][eE][sS]|[yY])$ ]]; then
-                    apt-get install nvidia-driver-libs-i386 nvidia-vulkan-icd:i386
+    while :; do
+        printf '\nSteam is a video game digital distribution service by Valve, and is the largest\ndigital distribution platform for PC gaming. It has official support for\nGNU/Linux, and has a custom version of Wine included for running Windows-only\ngames and software. It is recommended that you install Steam, would you like to\nstart the process of getting Steam installed now [y/n]? '
+        local install_steam
+        read -r install_steam
+        if [[ $install_steam =~ ^([yY][eE][sS]|[yY])$ ]]; then
+            while :; do
+                printf '\nIn order to install Steam, you need to enable multi-arch, which lets you\ninstall library packages from multiple architectures on the same machine. Would\nyou like to do that now [y/n]? '
+                local enable_multi_arch_1
+                read -r enable_multi_arch_1
+                if [[ $enable_multi_arch_1 =~ ^([yY][eE][sS]|[yY])$ ]]; then
+                    dpkg --add-architecture i386
+                    apt-get update
                     printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
+                    if [ "$gpu" = "Nvidia" ]; then
+                        while :; do
+                            printf 'Since you enabled multi-arch, it is recommended that you install the following\ni386 graphics packages: nvidia-driver-libs-i386 and nvidia-vulkan-icd:i386,\nwould you like to do that now [y/n]? '
+                            local install_nvidia_i368_drivers
+                            read -r install_nvidia_i368_drivers
+                            if [[ $install_nvidia_i368_drivers =~ ^([yY][eE][sS]|[yY])$ ]]; then
+                                apt-get install nvidia-driver-libs-i386 nvidia-vulkan-icd:i386
+                                printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
+                                break
+                            elif [[ $install_nvidia_i368_drivers =~ ^([nN][oO]|[nN])$ ]]; then
+                                break
+                            else
+                                printf '\nInvalid input.\n'
+                            fi
+                        done
+                    elif [ "$gpu" = "AMD" ]; then
+                        while :; do
+                            printf 'Since you enabled multi-arch, it is recommended that you install the following\ni386 graphics packages: libgl1:i386 and mesa-vulkan-drivers:i386, would you\nlike to do that now [y/n]? '
+                            local install_amd_i368_drivers
+                            read -r install_amd_i368_drivers
+                            if [[ $install_amd_i368_drivers =~ ^([yY][eE][sS]|[yY])$ ]]; then
+                                apt-get install libgl1:i386 libglx-mesa0:i386 mesa-vulkan-drivers:i386 libgl1-mesa-dri:i386
+                                printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
+                                break
+                            elif [[ $install_amd_i368_drivers =~ ^([nN][oO]|[nN])$ ]]; then
+                                break
+                            else
+                                printf '\nInvalid input.\n'
+                            fi
+                        done
+                        break
+                    fi
+                elif [[ $enable_multi_arch_1 =~ ^([nN][oO]|[nN])$ ]]; then
+                    break
+                else
+                    printf '\nInvalid input.\n'
                 fi
-            elif [ "$gpu" = "AMD" ]; then
-                printf 'Since you enabled multi-arch, it is recommended that you install the following\ni386 graphics packages: libgl1:i386 and mesa-vulkan-drivers:i386, would you\nlike to do that now [y/n]? '
-                local install_amd_i368_drivers
-                read -r install_amd_i368_drivers
-                if [[ $install_amd_i368_drivers =~ ^([yY][eE][sS]|[yY])$ ]]; then
-                    apt-get install libgl1:i386 libglx-mesa0:i386 mesa-vulkan-drivers:i386 libgl1-mesa-dri:i386
+            done
+            while :; do
+                printf 'Would you like to install the steam package now [y/n]? '
+                local install_steam_package
+                read -r install_steam_package
+                if [[ $install_steam_package =~ ^([yY][eE][sS]|[yY])$ ]]; then
+                    apt-get install steam
                     printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
+                    printf 'If these installations ran successfully, then you have setup Steam.\n'
+                    break
+                elif [[ $install_steam_package =~ ^([nN][oO]|[nN])$ ]]; then
+                    printf '\nSteam installation aborted.\n'
+                    break
+                else
+                    printf '\nInvalid input.\n'
                 fi
-            fi
-        fi
-        printf 'Would you like to install the steam package now [y/n]? '
-        local install_steam_package
-        read -r install_steam_package
-        if [[ $install_steam_package =~ ^([yY][eE][sS]|[yY])$ ]]; then
-            apt-get install steam
-            printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
-            printf 'If these installations ran successfully, then you have setup Steam.\n'
+            done
+            break
+        elif [[ $install_steam =~ ^([nN][oO]|[nN])$ ]]; then
+            break
         else
-            printf '\nSteam installation aborted.\n'
+            printf '\nInvalid input.\n'
         fi
-    fi
+    done
 }
 
 setup_steam_gui() {
