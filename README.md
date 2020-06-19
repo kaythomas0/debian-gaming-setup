@@ -1,5 +1,3 @@
-![Bats & ShellCheck](https://github.com/KevinNThomas/debian-gaming-setup/workflows/Bats%20&%20ShellCheck/badge.svg?branch=master)
-
 # debian-gaming-setup
 An interactive shell script for installing recommended tools to game efficiently on Debian.
 
@@ -11,7 +9,7 @@ An interactive shell script for installing recommended tools to game efficiently
 
 ## Setting up the script
 1. In your terminal, navigate to where you want this script downloaded
-2. Clone the repo: `git clone git@github.com:KevinNThomas/debian-gaming-setup.git`
+2. Clone the repo
 3. Go into the directory: `cd debian-gaming-setup`
 4. Make the script executeable: `chmod +x debian-gaming-setup`
 
@@ -27,8 +25,9 @@ If you prefer to have a graphical user interface:
 
 Tests are made using [Bats](https://github.com/bats-core/bats-core) (Bash Automated Testing System) and are ran inside a Debian Docker container
 
-### Build the image and run the tests
-1. `docker build .`
+1. Follow the steps in the "Setting up the script" section above
+2. Add the submodules for testing: `git submodule update --init --recursive`
+1. Run the tests inside the docker container: `docker build .`
 
 ---
 
