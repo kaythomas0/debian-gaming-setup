@@ -1,2 +1,6 @@
+image: docker:latest
+
 docker-tests:
-    script: docker build . --file Dockerfile --tag debian-bats:$(date +%s)
+    script:
+    - git submodule update --init --recursive
+    - docker build . --file Dockerfile --tag debian-bats:$(date +%s)
