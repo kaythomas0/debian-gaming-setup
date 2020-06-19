@@ -1,6 +1,8 @@
 # debian-gaming-setup
 An interactive shell script for installing recommended tools to game efficiently on Debian.
 
+[![pipeline status](https://gitlab.com/KevinNThomas/debian-gaming-setup/badges/master/pipeline.svg)](https://gitlab.com/KevinNThomas/debian-gaming-setup/commits/master)
+
 ## Requirements
 * Debian 10 - Stable (Buster), Debian 11 - Testing (Bullseye), or Debian Unstable (Sid)
 * AMD64 (x86-64) CPU Architecture
