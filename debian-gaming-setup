@@ -904,80 +904,127 @@ setup_wine_gui() {
 }
 
 setup_lutris() {
-    printf '\nLutris is a FOSS game manager for Linux-based operating systems. It uses Wine\nand other tools like DXVK to make managing and running games much easier on\nLinux. It is recommended that you install Lutris, would you like to start the\nprocess of getting Lutris installed now [y/n]? '
-    local install_lutris
-    read -r install_lutris
-    if [[ $install_lutris =~ ^([yY][eE][sS]|[yY])$ ]]; then
-        printf '\nLutris requires you have Wine installed on your system. If you do not have\nWine, you will not be able to continue with this installation process. Do you\nhave Wine installed on your system [y/n]? '
-        local installed_wine
-        read -r installed_wine
-        if [[ $installed_wine =~ ^([yY][eE][sS]|[yY])$ ]]; then
-            printf '\nLutris is not in the official Debian repository. According to the Lutris\nwebsite, the way to install Lutris from an auto-updating repository is using\nthe openSUSE Build Service Repository, which requires adding a key for this\nrepository. If this is not something you want to do, you can also download the\n.deb file from the openSUSE website and install Lutris using that, or download\nthe tar.xz package from Lutris and run the project directly from the extracted\narchive.\n'
-            printf '\nWould you like to [1]use the openSUSE Build Service Repository, [2]download and\ninstall the .deb file from the openSUSE website, or [3]download the tar.xz\npackage from Lutris and run the project directly from the extracted archive? '
-            local lutris_installation_choice
-            read -r lutris_installation_choice
-            if [ "$lutris_installation_choice" = "1" ]; then
-                if [ $debian_version = "buster" ]; then
-                    printf '\nWould you like to add the\nhttp://download.opensuse.org/repositories/home:/strycore/Debian_10/ repository\nand key to your apt sources, and install Lutris now [y/n]? '
-                    local install_lutris_package
-                    read -r install_lutris_package
-                    if [[ $install_lutris_package =~ ^([yY][eE][sS]|[yY])$ ]]; then
-                        echo 'deb http://download.opensuse.org/repositories/home:/strycore/Debian_10/ /' >/etc/apt/sources.list.d/home:strycore.list
-                        wget -nv https://download.opensuse.org/repositories/home:strycore/Debian_10/Release.key -O Release.key
-                        apt-key add - <Release.key
-                        apt-get update
-                        apt-get install lutris
-                        printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
-                        printf 'If these installations ran successfully, then you have setup Lutris.\n'
-                    else
-                        printf '\nLutris installation aborted.\n'
-                    fi
-                elif [ $debian_version = "bullseye/sid" ]; then
-                    printf '\nAre you running Debian [t]esting or [u]nstable? '
-                    local testing_or_unstable
-                    read -r testing_or_unstable
-                    if [[ $testing_or_unstable =~ ^([tT][eE][sS][tT][iI][nN][gG]|[tT])$ ]]; then
-                        printf '\nWould you like to add the http://download.opensuse.org/repositories/home:/strycore/Debian_Testing/\n repository and key to your apt sources, and install Lutris now [y/n]? '
-                        local install_lutris_package
-                        read -r install_lutris_package
-                        if [[ $install_lutris_package =~ ^([yY][eE][sS]|[yY])$ ]]; then
-                            echo 'deb http://download.opensuse.org/repositories/home:/strycore/Debian_Testing/ /' >/etc/apt/sources.list.d/home:strycore.list
-                            wget -nv https://download.opensuse.org/repositories/home:strycore/Debian_Testing/Release.key -O Release.key
-                            apt-key add - <Release.key
-                            apt-get update
-                            apt-get install lutris
-                            printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
-                            printf 'If these installations ran successfully, then you have setup Lutris.\n'
+    while :; do
+        printf '\nLutris is a FOSS game manager for Linux-based operating systems. It uses Wine\nand other tools like DXVK to make managing and running games much easier on\nLinux. It is recommended that you install Lutris, would you like to start the\nprocess of getting Lutris installed now [y/n]? '
+        local install_lutris
+        read -r install_lutris
+        if [[ $install_lutris =~ ^([yY][eE][sS]|[yY])$ ]]; then
+            while :; do
+                printf '\nLutris requires you have Wine installed on your system. If you do not have\nWine, you will not be able to continue with this installation process. Do you\nhave Wine installed on your system [y/n]? '
+                local installed_wine
+                read -r installed_wine
+                if [[ $installed_wine =~ ^([yY][eE][sS]|[yY])$ ]]; then
+                    while :; do
+                        printf '\nLutris is not in the official Debian repository. According to the Lutris\nwebsite, the way to install Lutris from an auto-updating repository is using\nthe openSUSE Build Service Repository, which requires adding a key for this\nrepository. If this is not something you want to do, you can also download the\n.deb file from the openSUSE website and install Lutris using that, or download\nthe tar.xz package from Lutris and run the project directly from the extracted\narchive.\n'
+                        printf '\nWould you like to [1]use the openSUSE Build Service Repository, [2]download and\ninstall the .deb file from the openSUSE website, or [3]download the tar.xz\npackage from Lutris and run the project directly from the extracted archive? '
+                        local lutris_installation_choice
+                        read -r lutris_installation_choice
+                        if [ "$lutris_installation_choice" = "1" ]; then
+                            if [ $debian_version = "buster" ]; then
+                                while :; do
+                                    printf '\nWould you like to add the\nhttp://download.opensuse.org/repositories/home:/strycore/Debian_10/ repository\nand key to your apt sources, and install Lutris now [y/n]? '
+                                    local install_lutris_package
+                                    read -r install_lutris_package
+                                    if [[ $install_lutris_package =~ ^([yY][eE][sS]|[yY])$ ]]; then
+                                        echo 'deb http://download.opensuse.org/repositories/home:/strycore/Debian_10/ /' >/etc/apt/sources.list.d/home:strycore.list
+                                        wget -nv https://download.opensuse.org/repositories/home:strycore/Debian_10/Release.key -O Release.key
+                                        apt-key add - <Release.key
+                                        apt-get update
+                                        apt-get install lutris
+                                        printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
+                                        printf 'If these installations ran successfully, then you have setup Lutris.\n'
+                                        break
+                                    elif [[ $install_lutris_package =~ ^([nN][oO]|[nN])$ ]]; then
+                                        printf '\nLutris installation aborted.\n'
+                                        break
+                                    else
+                                        printf '\nInvalid input.\n'
+                                    fi
+                                done
+                                break
+                            elif [ $debian_version = "bullseye/sid" ]; then
+                                while :; do
+                                    printf '\nAre you running Debian [t]esting or [u]nstable? '
+                                    local testing_or_unstable
+                                    read -r testing_or_unstable
+                                    if [[ $testing_or_unstable =~ ^([tT][eE][sS][tT][iI][nN][gG]|[tT])$ ]]; then
+                                        while :; do
+                                            printf '\nWould you like to add the http://download.opensuse.org/repositories/home:/strycore/Debian_Testing/\n repository and key to your apt sources, and install Lutris now [y/n]? '
+                                            local install_lutris_package
+                                            read -r install_lutris_package
+                                            if [[ $install_lutris_package =~ ^([yY][eE][sS]|[yY])$ ]]; then
+                                                echo 'deb http://download.opensuse.org/repositories/home:/strycore/Debian_Testing/ /' >/etc/apt/sources.list.d/home:strycore.list
+                                                wget -nv https://download.opensuse.org/repositories/home:strycore/Debian_Testing/Release.key -O Release.key
+                                                apt-key add - <Release.key
+                                                apt-get update
+                                                apt-get install lutris
+                                                printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
+                                                printf 'If these installations ran successfully, then you have setup Lutris.\n'
+                                                break
+                                            elif [[ $install_lutris_package =~ ^([nN][oO]|[nN])$ ]]; then
+                                                printf '\nLutris installation aborted.\n'
+                                                break
+                                            else
+                                                printf '\nInvalid input.\n'
+                                            fi
+                                        done
+                                        break
+                                    elif [[ $testing_or_unstable =~ ^([uU][nN][sS][tT][aA][bB][lL][eE]|[uU])$ ]]; then
+                                        while :; do
+                                            printf '\nWould you like to add the http://download.opensuse.org/repositories/home:/strycore/Debian_Unstable/\n repository and key to your apt sources, and install Lutris now [y/n]? '
+                                            local install_lutris_package
+                                            read -r install_lutris_package
+                                            if [[ $install_lutris_package =~ ^([yY][eE][sS]|[yY])$ ]]; then
+                                                echo 'deb http://download.opensuse.org/repositories/home:/strycore/Debian_Unstable/ /' >/etc/apt/sources.list.d/home:strycore.list
+                                                wget -nv https://download.opensuse.org/repositories/home:strycore/Debian_Unstable/Release.key -O Release.key
+                                                apt-key add - <Release.key
+                                                apt-get update
+                                                apt-get install lutris
+                                                printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
+                                                printf 'If these installations ran successfully, then you have setup Lutris.\n'
+                                                break
+                                            elif [[ $install_lutris_package =~ ^([nN][oO]|[nN])$ ]]; then
+                                                printf 'Lutris installation aborted.\n'
+                                                break
+                                            else
+                                                printf '\nInvalid input.\n'
+                                            fi
+                                        done
+                                        break
+                                    else
+                                        printf '\nInvalid input.\n'
+                                    fi
+                                done
+                                break
+                            fi
+                        elif [ "$lutris_installation_choice" = "2" ]; then
+                            printf '\nYou can download the Lutris .deb file for your version of Debian directly from\nthe openSUSE build service site here:\nhttps://software.opensuse.org/download.html?project=home%%3Astrycore&package=lutris\n'
+                            printf '\nGo to the link, click "Grab binary packages directly", and download the Lutris\n.deb file for your version of Debian.\n'
+                            printf 'Navigate to the directory where you downloaded the .deb file, and install it by\nrunning the following command (replacing the version number with the version\nyou downloaded):\n'
+                            printf "\e[32m%s\e[0m\n" "sudo apt install ./lutris_0.5.6_amd64"
+                            break
+                        elif [ "$lutris_installation_choice" = "3" ]; then
+                            printf '\nYou can download the tar.xz package from Lutris and run the project directly\nfrom the extracted archive. To do that, go to the Lutris download page here:\nhttps://lutris.net/downloads/, navigate to the "Tarball" section, and follow\nthe instructions there.\n'
+                            break
                         else
-                            printf '\nLutris installation aborted.\n'
+                            printf '\nInvalid input.\n'
                         fi
-                    elif [[ $testing_or_unstable =~ ^([uU][nN][sS][tT][aA][bB][lL][eE]|[uU])$ ]]; then
-                        printf '\nWould you like to add the http://download.opensuse.org/repositories/home:/strycore/Debian_Unstable/\n repository and key to your apt sources, and install Lutris now [y/n]? '
-                        local install_lutris_package
-                        read -r install_lutris_package
-                        if [[ $install_lutris_package =~ ^([yY][eE][sS]|[yY])$ ]]; then
-                            echo 'deb http://download.opensuse.org/repositories/home:/strycore/Debian_Unstable/ /' >/etc/apt/sources.list.d/home:strycore.list
-                            wget -nv https://download.opensuse.org/repositories/home:strycore/Debian_Unstable/Release.key -O Release.key
-                            apt-key add - <Release.key
-                            apt-get update
-                            apt-get install lutris
-                            printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
-                            printf 'If these installations ran successfully, then you have setup Lutris.\n'
-                        else
-                            printf 'Lutris installation aborted.\n'
-                        fi
-                    fi
+                    done
+                    break
+                elif [[ $installed_wine =~ ^([nN][oO]|[nN])$ ]]; then
+                    printf 'Lutris installation aborted.\n'
+                    break
+                else
+                    printf '\nInvalid input.\n'
                 fi
-            elif [ "$lutris_installation_choice" = "2" ]; then
-                printf '\nYou can download the Lutris .deb file for your version of Debian directly from\nthe openSUSE build service site here:\nhttps://software.opensuse.org/download.html?project=home%%3Astrycore&package=lutris\n'
-                printf '\nGo to the link, click "Grab binary packages directly", and download the Lutris\n.deb file for your version of Debian.\n'
-                printf 'Navigate to the directory where you downloaded the .deb file, and install it by\nrunning the following command (replacing the version number with the version\nyou downloaded):\n'
-                printf "\e[32m%s\e[0m\n" "sudo apt install ./lutris_0.5.6_amd64"
-            elif [ "$lutris_installation_choice" = "3" ]; then
-                printf '\nYou can download the tar.xz package from Lutris and run the project directly\nfrom the extracted archive. To do that, go to the Lutris download page here:\nhttps://lutris.net/downloads/, navigate to the "Tarball" section, and follow\nthe instructions there.\n'
-            fi
+            done
+            break
+        elif [[ $install_lutris =~ ^([nN][oO]|[nN])$ ]]; then
+            break
+        else
+            printf '\nInvalid input.\n'
         fi
-    fi
+    done
 }
 
 setup_lutris_gui() {
