@@ -1,6 +1,6 @@
 FROM debian
 
-LABEL maintainer="kevin.t0517@gmail.com"
+LABEL maintainer="me@kevinthomas.dev"
 
 RUN echo "deb http://deb.debian.org/debian buster-backports main contrib non-free" >>/etc/apt/sources.list
 
