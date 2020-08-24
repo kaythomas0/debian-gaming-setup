@@ -9,11 +9,12 @@ An interactive shell script for installing recommended tools to game efficiently
 * For Nvidia GPUs: GeForce 8 through 300, 400, 500, and 600 and newer
 * For AMD GPUs: GCN 1.2 ("GCN 3rd generation") or newer. This is most chips released after June 2015[1]
 
-## Download the script
+## Downloading the script
 * You can download the script from the latest release here: https://gitlab.com/KevinNThomas/debian-gaming-setup/-/releases
 
 ## Running the script
-* `sudo ./debian-gaming-setup`
+* Make the script executable: `chmod +x debian-gaming-setup`
+* Run the script with sudo permissions: `sudo ./debian-gaming-setup`
 
 ### GUI mode (recommended for users not comfortable with the terminal)
 If you prefer to have a graphical user interface:
