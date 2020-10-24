@@ -831,12 +831,12 @@ setup_wine() {
                         apt-key add winehq.key
                         if [ $debian_version = "buster" ]; then
                             echo "deb https://dl.winehq.org/wine-builds/debian/ buster main" >>/etc/apt/sources.list
-                            apt update
-                            apt install --install-recommends winehq-staging
+                            apt-get update
+                            apt-get install --install-recommends winehq-staging
                         elif [ $debian_version = "bullseye/sid" ]; then
                             echo "deb https://dl.winehq.org/wine-builds/debian/ bullseye main" >>/etc/apt/sources.list
-                            apt update
-                            apt install --install-recommends winehq-staging
+                            apt-get update
+                            apt-get install --install-recommends winehq-staging
                         fi
                         printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
                     fi
@@ -888,12 +888,12 @@ setup_wine_gui() {
                 apt-key add winehq.key
                 if [ "$debian_version" = "buster" ]; then
                     echo "deb https://dl.winehq.org/wine-builds/debian/ buster main" >>/etc/apt/sources.list
-                    apt update
-                    apt install --install-recommends winehq-staging
+                    apt-get update
+                    apt-get install --install-recommends winehq-staging
                 elif [ $debian_version = "bullseye/sid" ]; then
                     echo "deb https://dl.winehq.org/wine-builds/debian/ bullseye main" >>/etc/apt/sources.list
-                    apt update
-                    apt install --install-recommends winehq-staging
+                    apt-get update
+                    apt-get install --install-recommends winehq-staging
                 fi
             fi
             zenity --width="$gui_width" --height="$gui_height" --info --text="If these installations ran successfully, then you have setup Wine."
