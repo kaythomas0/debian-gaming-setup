@@ -34,9 +34,9 @@ confirm_debian_version_gui() {
     if ! zenity --width="$gui_width" --height="$gui_height" --question --text="It looks like your version of Debian is $debian_version. Is that correct?"; then
         local version_input
         version_input="$(zenity --width="$gui_width" --height="$gui_list_height" --list --title="Which version of Debian are you running?" --column="Debian Release" "Stable (Buster)" "Testing (Bullseye)" "Unstable (Sid)")"
-        if [ "$version_input" = "Stable (Buster)" ]; then
+        if [[ "$version_input" = "Stable (Buster)" ]]; then
             debian_version="buster"
-        elif [ "$version_input" = "Testing (Bullseye)" ] || [ "$version_input" = "Unstable (Sid)" ]; then
+        elif [[ "$version_input" = "Testing (Bullseye)" ]] || [[ "$version_input" = "Unstable (Sid)" ]]; then
             debian_version="bullseye/sid"
         fi
         zenity --width="$gui_width" --height="$gui_height" --info --text="Okay, you are running $debian_version."
@@ -169,7 +169,7 @@ grab_graphics_card_gui() {
 }
 
 install_nvidia_tools() {
-    if [ $debian_version = "buster" ]; then
+    if [[ $debian_version = "buster" ]]; then
         while :; do
             printf '\nSince you are running Stable, it is recommended that you use buster-backports\nto install your graphics drivers in order to get the latest versions.\n'
             printf '\nWould you like to use buster-backports to install your graphics drivers [y/n]? '
@@ -191,13 +191,13 @@ install_nvidia_tools() {
         local modify_apt_sources
         read -r modify_apt_sources
         if [[ $modify_apt_sources =~ ^([aA][uU][tT][oO][mM][aA][tT][iI][cC][aA][lL][lL][yY]|[aA])$ ]]; then
-            if [ $use_backports = "y" ]; then
+            if [[ $use_backports = "y" ]]; then
                 use_backports="y"
                 sed -i 's/deb http:\/\/deb.debian.org\/debian buster main/deb http:\/\/deb.debian.org\/debian buster main contrib non-free/g' /etc/apt/sources.list
                 echo "deb http://deb.debian.org/debian buster-backports main contrib non-free" >>/etc/apt/sources.list
-            elif [ $debian_version = "buster" ]; then
+            elif [[ $debian_version = "buster" ]]; then
                 sed -i 's/deb http:\/\/deb.debian.org\/debian buster main/deb http:\/\/deb.debian.org\/debian buster main contrib non-free/g' /etc/apt/sources.list
-            elif [ $debian_version = "bullseye/sid" ]; then
+            elif [[ $debian_version = "bullseye/sid" ]]; then
                 while :; do
                     printf '\nAre you running Debian [t]esting or [u]nstable? '
                     local testing_or_unstable
@@ -221,10 +221,10 @@ install_nvidia_tools() {
                 printf '\nOpen /etc/apt/sources.list with your preferred text editor, and add/append the\nfollowing lines:\n'
                 printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian buster-backports main contrib non-free"
                 printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian buster main contrib non-free"
-            elif [ $debian_version = "buster" ]; then
+            elif [[ $debian_version = "buster" ]]; then
                 printf '\nOpen /etc/apt/sources.list with your preferred text editor, and add/append the\nline:\n'
                 printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian buster main contrib non-free"
-            elif [ $debian_version = "bullseye/sid" ]; then
+            elif [[ $debian_version = "bullseye/sid" ]]; then
                 printf '\nOpen /etc/apt/sources.list with your preferred text editor, and add/append\nthis line if you are on Testing:\n'
                 printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian bullseye main contrib non-free"
                 printf 'Or this line if you are on Sid:\n'
@@ -302,7 +302,7 @@ install_nvidia_tools() {
                 printf 'Did nvidia-detect recommend you install the [1]nvidia-driver,\n[2]nvidia-legacy-390xx-driver, or [3]nvidia-legacy-340xx-driver package? '
                 local driver_package
                 read -r driver_package
-                if [ "$driver_package" != "1" ] && [ "$driver_package" != "2" ] && [ "$driver_package" != "3" ]; then
+                if [[ "$driver_package" != "1" ]] && [[ "$driver_package" != "2" ]] && [[ "$driver_package" != "3" ]]; then
                     printf '\nInvalid input.\n'
                 else
                     break
@@ -318,7 +318,7 @@ install_nvidia_tools() {
                 printf 'Which package would you like to install? '
                 local driver_package
                 read -r driver_package
-                if [ "$driver_package" != "1" ] && [ "$driver_package" != "2" ] && [ "$driver_package" != "3" ]; then
+                if [[ "$driver_package" != "1" ]] && [[ "$driver_package" != "2" ]] && [[ "$driver_package" != "3" ]]; then
                     printf '\nInvalid input.\n'
                 else
                     break
@@ -334,13 +334,13 @@ install_nvidia_tools() {
         local install_nvidia_driver
         read -r install_nvidia_driver
         if [[ $install_nvidia_driver =~ ^([yY][eE][sS]|[yY])$ ]]; then
-            if [ "$driver_package" = "1" ]; then
+            if [[ "$driver_package" = "1" ]]; then
                 while :; do
                     printf '\nIt is recommended that you install nvidia-vulkan-icd as well in order to get\nbetter performance in applications that use Vulkan (such as Lutris and Wine).\nWould you like to do that as well [y/n]? '
                     local install_vulkan_nvidia
                     read -r install_vulkan_nvidia
                     if [[ $install_vulkan_nvidia =~ ^([yY][eE][sS]|[yY])$ ]]; then
-                        if [ $use_backports = "y" ]; then
+                        if [[ $use_backports = "y" ]]; then
                             apt-get update
                             apt-get install -t buster-backports nvidia-driver
                             apt-get install -t buster-backports nvidia-vulkan-icd
@@ -353,7 +353,7 @@ install_nvidia_tools() {
                         fi
                         break
                     elif [[ $install_vulkan_nvidia =~ ^([nN][oO]|[nN])$ ]]; then
-                        if [ $use_backports = "y" ]; then
+                        if [[ $use_backports = "y" ]]; then
                             apt-get update
                             apt-get install -t buster-backports nvidia-driver
                             printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
@@ -369,13 +369,13 @@ install_nvidia_tools() {
                 done
                 printf '\nIf these installations ran successfully, then you have installed all the\nnecessary Nvidia graphics drivers.\n'
                 break
-            elif [ "$driver_package" = "2" ]; then
+            elif [[ "$driver_package" = "2" ]]; then
                 apt-get update
                 apt-get install nvidia-legacy-390xx-driver
                 printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
                 printf '\nIf these installations ran successfully, then you have installed all the\nnecessary Nvidia graphics drivers.\n'
                 break
-            elif [ "$driver_package" = "3" ]; then
+            elif [[ "$driver_package" = "3" ]]; then
                 apt-get update
                 apt-get install nvidia-legacy-340xx-driver
                 printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
@@ -407,7 +407,7 @@ install_nvidia_tools() {
 }
 
 install_nvidia_tools_gui() {
-    if [ $debian_version = "buster" ]; then
+    if [[ $debian_version = "buster" ]]; then
         zenity --width="$gui_width" --height="$gui_height" --info --text="Since you are running Stable, it is recommended that you use buster-backports to install your graphics drivers in order to get the latest versions."
         local use_backports
         if zenity --width="$gui_width" --height="$gui_height" --question --text="Would you like to use buster-backports to install your graphics drivers?"; then
@@ -417,13 +417,13 @@ install_nvidia_tools_gui() {
     zenity --width="$gui_width" --height="$gui_height" --info --text="In order to proceed with the installation of the necessary packages to update your graphics drivers, you need to allow non-free packages in your apt sources. If you have not modified your /etc/apt/sources.list file, this can be done automatically. If you have made modifications to this file, you should do it manually."
     local modify_apt_sources
     modify_apt_sources="$(zenity --width="$gui_width" --height="$gui_list_height" --list --title="How would you like to update your sources.list file?" --column="Update Method" --column="Note" "Automatically" "If you have not modified your sources.list file" "Manually" "If you have modified your sources.list file" "Skip" "If you don't want to modify your sources.list file")"
-    if [ "$modify_apt_sources" = "Automatically" ]; then
-        if [ "$use_backports" = "y" ]; then
+    if [[ "$modify_apt_sources" = "Automatically" ]]; then
+        if [[ "$use_backports" = "y" ]]; then
             sed -i 's/deb http:\/\/deb.debian.org\/debian buster main/deb http:\/\/deb.debian.org\/debian buster main contrib non-free/g' /etc/apt/sources.list
             echo "deb http://deb.debian.org/debian buster-backports main contrib non-free" >>/etc/apt/sources.list
-        elif [ $debian_version = "buster" ]; then
+        elif [[ $debian_version = "buster" ]]; then
             sed -i 's/deb http:\/\/deb.debian.org\/debian buster main/deb http:\/\/deb.debian.org\/debian buster main contrib non-free/g' /etc/apt/sources.list
-        elif [ $debian_version = "bullseye/sid" ]; then
+        elif [[ $debian_version = "bullseye/sid" ]]; then
             printf '\nAre you running Debian [t]esting or [u]nstable? '
             local testing_or_unstable
             read -r testing_or_unstable
@@ -434,23 +434,23 @@ install_nvidia_tools_gui() {
             fi
         fi
         zenity --width="$gui_width" --height="$gui_height" --info --text="/etc/apt/sources.list modified."
-    elif [ "$modify_apt_sources" = "Manually" ]; then
-        if [ "$use_backports" = "y" ]; then
+    elif [[ "$modify_apt_sources" = "Manually" ]]; then
+        if [[ "$use_backports" = "y" ]]; then
             zenity --width="$gui_width" --height="$gui_height" --info --text="Open /etc/apt/sources.list with your preferred text editor, and add/append the following lines:\ndeb http://deb.debian.org/debian buster-backports main contrib non-free\ndeb http://deb.debian.org/debian buster main contrib non-free"
-        elif [ $debian_version = "buster" ]; then
+        elif [[ $debian_version = "buster" ]]; then
             zenity --width="$gui_width" --height="$gui_height" --info --text="Open /etc/apt/sources.list with your preferred text editor, and add/append the line:\ndeb http://deb.debian.org/debian buster main contrib non-free"
-        elif [ $debian_version = "bullseye/sid" ]; then
+        elif [[ $debian_version = "bullseye/sid" ]]; then
             zenity --width="$gui_width" --height="$gui_height" --info --text="Open /etc/apt/sources.list with your preferred text editor, and add/append this line if you are on Testing:\ndeb http://deb.debian.org/debian bullseye main contrib non-free\nOr this line if you are on Sid:\ndeb http://deb.debian.org/debian sid main contrib non-free"
         fi
         zenity --width="$gui_width" --height="$gui_height" --info --text="Once you have modified your sources, you are ready to install the required graphics packages. Press OK once you have appended your apt source with non-free."
-    elif [ "$modify_apt_sources" = "Skip" ]; then
+    elif [[ "$modify_apt_sources" = "Skip" ]]; then
         zenity --width="$gui_width" --height="$gui_height" --info --text="Skipping apt sources modification..."
     fi
     if zenity --width="$gui_width" --height="$gui_height" --question --text="You should update apt, would you like to do that now?"; then
         apt-get update
     fi
     if zenity --width="$gui_width" --height="$gui_height" --question --text="You should update your linux kernel headers before installing your graphics drivers, would you like to do that now?"; then
-        if [ $debian_version = "buster" ]; then
+        if [[ $debian_version = "buster" ]]; then
             if zenity --width="$gui_width" --height="$gui_height" --question --text="Are you using the linux kernel from buster-backports (by default, a standard installation of Debian Stable would not use the linux kernel from buster-backports)?"; then
                 local use_kernel_backports
                 use_kernel_backports="y"
@@ -458,7 +458,7 @@ install_nvidia_tools_gui() {
         else
             use_kernel_backports="n"
         fi
-        if [ "$use_kernel_backports" = "y" ]; then
+        if [[ "$use_kernel_backports" = "y" ]]; then
             apt-get install -t buster-backports linux-headers-"$(uname -r | sed 's/[^-]*-[^-]*-//')"
         else
             apt-get install linux-headers-"$(uname -r | sed 's/[^-]*-[^-]*-//')"
@@ -474,9 +474,9 @@ install_nvidia_tools_gui() {
         driver_package="$(zenity --width="$gui_width" --height="$gui_list_height" --list --title="Which driver package would you like to install?" --column="Package" --column="Info" "nvidia-driver" "GeForce 600 series and newer" "nvidia-legacy-390xx-driver" "GeForce 400 and 500 series" "nvidia-legacy-340xx-driver" "GeForce 8 through 300 series")"
     fi
     if zenity --width="$gui_width" --height="$gui_height" --question --text="You should install your selected driver package to update your graphics drivers, would you like to do that now?"; then
-        if [ "$driver_package" = "nvidia-driver" ]; then
+        if [[ "$driver_package" = "nvidia-driver" ]]; then
             if zenity --width="$gui_width" --height="$gui_height" --question --text="It is recommended that you install nvidia-vulkan-icd as well in order to get better performance in applications that use Vulkan (such as Lutris and Wine). Would you like to do that as well?"; then
-                if [ $use_backports = "y" ]; then
+                if [[ $use_backports = "y" ]]; then
                     apt-get update
                     apt-get install -t buster-backports nvidia-driver
                     apt-get install -t buster-backports nvidia-vulkan-icd
@@ -486,7 +486,7 @@ install_nvidia_tools_gui() {
                     apt-get install nvidia-vulkan-icd
                 fi
             else
-                if [ $use_backports = "y" ]; then
+                if [[ $use_backports = "y" ]]; then
                     apt-get update
                     apt-get install -t buster-backports nvidia-driver
                 else
@@ -494,10 +494,10 @@ install_nvidia_tools_gui() {
                     apt-get install nvidia-driver
                 fi
             fi
-        elif [ "$driver_package" = "nvidia-legacy-390xx-driver" ]; then
+        elif [[ "$driver_package" = "nvidia-legacy-390xx-driver" ]]; then
             apt-get update
             apt-get install nvidia-legacy-390xx-driver
-        elif [ "$driver_package" = "nvidia-legacy-340xx-driver" ]; then
+        elif [[ "$driver_package" = "nvidia-legacy-340xx-driver" ]]; then
             apt-get update
             apt-get install nvidia-legacy-340xx-driver
             if zenity --width="$gui_width" --height="$gui_height" --question --text="You need to create an xorg configuration file. This can be done automatically\nright now, would you like to do that?"; then
@@ -518,9 +518,9 @@ install_amd_tools() {
         local modify_apt_sources
         read -r modify_apt_sources
         if [[ $modify_apt_sources =~ ^([aA][uU][tT][oO][mM][aA][tT][iI][cC][aA][lL][lL][yY]|[aA])$ ]]; then
-            if [ $debian_version = "buster" ]; then
+            if [[ $debian_version = "buster" ]]; then
                 sed -i 's/deb http:\/\/deb.debian.org\/debian buster main/deb http:\/\/deb.debian.org\/debian buster main contrib non-free/g' /etc/apt/sources.list
-            elif [ $debian_version = "bullseye/sid" ]; then
+            elif [[ $debian_version = "bullseye/sid" ]]; then
                 while :; do
                     printf '\nAre you running Debian [t]esting or [u]nstable? '
                     local testing_or_unstable
@@ -539,10 +539,10 @@ install_amd_tools() {
             printf '\n/etc/apt/sources.list modified.\n'
             break
         elif [[ $modify_apt_sources =~ ^([mM][aA][nN][uU][aA][lL][lL][yY]|[mM])$ ]]; then
-            if [ $debian_version = "buster" ]; then
+            if [[ $debian_version = "buster" ]]; then
                 printf '\nOpen /etc/apt/sources.list with your preferred text editor, and add/append the\nline:\n'
                 printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian buster main contrib non-free"
-            elif [ $debian_version = "bullseye/sid" ]; then
+            elif [[ $debian_version = "bullseye/sid" ]]; then
                 printf '\nOpen /etc/apt/sources.list with your preferred text editor, and add/append\nthis line if you are on Testing:\n'
                 printf "\e[32m%s\e[0m\n" "deb http://deb.debian.org/debian bullseye main contrib non-free"
                 printf 'Or this line if you are on Sid:\n'
@@ -610,10 +610,10 @@ install_amd_tools_gui() {
     zenity --width="$gui_width" --height="$gui_height" --info --text="In order to proceed with the installation of the necessary packages to update your graphics drivers, you need to allow non-free packages in your apt sources. If you have not modified your /etc/apt/sources.list file, this can be done automatically. If you have made modifications to this file, you should do it manually."
     local modify_apt_sources
     modify_apt_sources="$(zenity --width="$gui_width" --height="$gui_list_height" --list --title="How would you like to update your sources.list file?" --column="Update Method" --column="Note" "Automatically" "If you have not modified your sources.list file" "Manually" "If you have modified your sources.list file" "Skip" "If you don't want to modify your sources.list file")"
-    if [ "$modify_apt_sources" = "Automatically" ]; then
+    if [[ "$modify_apt_sources" = "Automatically" ]]; then
         if [ $debian_version = "buster" ]; then
             sed -i 's/deb http:\/\/deb.debian.org\/debian buster main/deb http:\/\/deb.debian.org\/debian buster main contrib non-free/g' /etc/apt/sources.list
-        elif [ $debian_version = "bullseye/sid" ]; then
+        elif [[ $debian_version = "bullseye/sid" ]]; then
             printf '\nAre you running Debian [t]esting or [u]nstable? '
             local testing_or_unstable
             read -r testing_or_unstable
@@ -624,14 +624,14 @@ install_amd_tools_gui() {
             fi
         fi
         zenity --width="$gui_width" --height="$gui_height" --info --text="/etc/apt/sources.list modified."
-    elif [ "$modify_apt_sources" = "Manually" ]; then
-        if [ $debian_version = "buster" ]; then
+    elif [[ "$modify_apt_sources" = "Manually" ]]; then
+        if [[ $debian_version = "buster" ]]; then
             zenity --width="$gui_width" --height="$gui_height" --info --text="Open /etc/apt/sources.list with your preferred text editor, and add/append the line:\ndeb http://deb.debian.org/debian buster main contrib non-free"
-        elif [ $debian_version = "bullseye/sid" ]; then
+        elif [[ $debian_version = "bullseye/sid" ]]; then
             zenity --width="$gui_width" --height="$gui_height" --info --text="Open /etc/apt/sources.list with your preferred text editor, and add/append this line if you are on Testing:\ndeb http://deb.debian.org/debian bullseye main contrib non-free\nOr this line if you are on Sid:\ndeb http://deb.debian.org/debian sid main contrib non-free"
         fi
         zenity --width="$gui_width" --height="$gui_height" --info --text="Once you have modified your sources, you are ready to install the required graphics packages. Press OK once you have appended your apt source with non-free."
-    elif [ "$modify_apt_sources" = "Skip" ]; then
+    elif [[ "$modify_apt_sources" = "Skip" ]]; then
         zenity --width="$gui_width" --height="$gui_height" --info --text="Skipping apt sources modification..."
     fi
     if zenity --width="$gui_width" --height="$gui_height" --question --text="You should update apt, would you like to do that now?"; then
@@ -662,7 +662,7 @@ setup_steam() {
                     dpkg --add-architecture i386
                     apt-get update
                     printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
-                    if [ "$gpu" = "Nvidia" ]; then
+                    if [[ "$gpu" = "Nvidia" ]]; then
                         while :; do
                             printf 'Since you enabled multi-arch, it is recommended that you install the following\ni386 graphics packages: nvidia-driver-libs-i386 and nvidia-vulkan-icd:i386,\nwould you like to do that now [y/n]? '
                             local install_nvidia_i368_drivers
@@ -678,7 +678,7 @@ setup_steam() {
                             fi
                         done
                         break
-                    elif [ "$gpu" = "AMD" ]; then
+                    elif [[ "$gpu" = "AMD" ]]; then
                         while :; do
                             printf 'Since you enabled multi-arch, it is recommended that you install the following\ni386 graphics packages: libgl1:i386 and mesa-vulkan-drivers:i386, would you\nlike to do that now [y/n]? '
                             local install_amd_i368_drivers
@@ -731,11 +731,11 @@ setup_steam_gui() {
         if zenity --width="$gui_width" --height="$gui_height" --question --text="In order to install Steam, you need to enable multi-arch, which lets you install library packages from multiple architectures on the same machine. Would you like to do that now?"; then
             dpkg --add-architecture i386
             apt-get update
-            if [ "$gpu" = "Nvidia" ]; then
+            if [[ "$gpu" = "Nvidia" ]]; then
                 if zenity --width="$gui_width" --height="$gui_height" --question --text="Since you enabled multi-arch, it is recommended that you install the following i386 graphics packages: nvidia-driver-libs-i386 and nvidia-vulkan-icd:i386, would you like to do that now?"; then
                     apt-get install nvidia-driver-libs-i386 nvidia-vulkan-icd:i386
                 fi
-            elif [ "$gpu" = "AMD" ]; then
+            elif [[ "$gpu" = "AMD" ]]; then
                 if zenity --width="$gui_width" --height="$gui_height" --question --text="Since you enabled multi-arch, it is recommended that you install the following i386 graphics packages: libgl1:i386 and mesa-vulkan-drivers:i386, would you like to do that now?"; then
                     apt-get install libgl1:i386 libglx-mesa0:i386 mesa-vulkan-drivers:i386 libgl1-mesa-dri:i386
                 fi
@@ -820,20 +820,20 @@ setup_wine() {
                 local install_wine_package
                 read -r install_wine_package
                 if [[ $install_wine_package =~ ^([yY][eE][sS]|[yY])$ ]]; then
-                    if [ $wine_version = "s" ]; then
+                    if [[ $wine_version = "s" ]]; then
                         apt-get install wine
                         printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
-                    elif [ $wine_version = "d" ]; then
+                    elif [[ $wine_version = "d" ]]; then
                         apt-get install wine-development
                         printf "\e[33m%s\e[0m\n" "--------------------------------------------------------------------------------"
-                    elif [ $wine_version = "st" ]; then
+                    elif [[ $wine_version = "st" ]]; then
                         wget -nc https://dl.winehq.org/wine-builds/winehq.key
                         apt-key add winehq.key
-                        if [ $debian_version = "buster" ]; then
+                        if [[ $debian_version = "buster" ]]; then
                             echo "deb https://dl.winehq.org/wine-builds/debian/ buster main" >>/etc/apt/sources.list
                             apt-get update
                             apt-get install --install-recommends winehq-staging
-                        elif [ $debian_version = "bullseye/sid" ]; then
+                        elif [[ $debian_version = "bullseye/sid" ]]; then
                             echo "deb https://dl.winehq.org/wine-builds/debian/ bullseye main" >>/etc/apt/sources.list
                             apt-get update
                             apt-get install --install-recommends winehq-staging
@@ -863,13 +863,13 @@ setup_wine_gui() {
         zenity --width="$gui_width" --height="$gui_height" --info --text="There are three main branches of Wine: Stable, Development, and Staging. Stable is, as the name implies, the most stable branch, with the least amount of features. Wine development is rapid, with new releases in the development branch every two weeks or so. Staging contains bug fixes and features which have not been integrated into the development branch yet. The idea of Wine Staging is to provide experimental features faster to end users and to give developers the possibility to discuss and improve their patches before they are integrated into the main branch."
         local wine_version
         wine_version="$(zenity --width="$gui_width" --height="$gui_list_height" --list --title="Which version of Wine would you like to install?" --column="Wine Branch" "Stable" "Development" "Staging")"
-        if [ "$wine_version" = "Staging" ]; then
+        if [[ "$wine_version" = "Staging" ]]; then
             if ! zenity --width="$gui_width" --height="$gui_height" --question --text="Since Wine Staging is not in the official Debian repository, installing it would mean you need to add the Wine HQ repository key and use that repository to install and update Wine. If you do not want to do this, you can choose to install the stable or development branch of Wine. Are you okay installing Wine Staging from the Wine HQ repository?"; then
                 local wine_version_2
                 wine_version_2="$(zenity --width="$gui_width" --height="$gui_list_height" --list --title="Would you like to install Stable or Development?" --column="Wine Branch" "Stable" "Development")"
-                if [ "$wine_version_2" = "Stable" ]; then
+                if [[ "$wine_version_2" = "Stable" ]]; then
                     wine_version="Stable"
-                elif [ "$wine_version_2" = "Development" ]; then
+                elif [[ "$wine_version_2" = "Development" ]]; then
                     wine_version="Development"
                 fi
             fi
@@ -879,18 +879,18 @@ setup_wine_gui() {
             apt-get update
         fi
         if zenity --width="$gui_width" --height="$gui_height" --question --text="Would you like to install the necessary Wine package now?"; then
-            if [ "$wine_version" = "Stable" ]; then
+            if [[ "$wine_version" = "Stable" ]]; then
                 apt-get install wine
-            elif [ "$wine_version" = "Development" ]; then
+            elif [[ "$wine_version" = "Development" ]]; then
                 apt-get install wine-development
-            elif [ "$wine_version" = "Staging" ]; then
+            elif [[ "$wine_version" = "Staging" ]]; then
                 wget -nc https://dl.winehq.org/wine-builds/winehq.key
                 apt-key add winehq.key
-                if [ "$debian_version" = "buster" ]; then
+                if [[ "$debian_version" = "buster" ]]; then
                     echo "deb https://dl.winehq.org/wine-builds/debian/ buster main" >>/etc/apt/sources.list
                     apt-get update
                     apt-get install --install-recommends winehq-staging
-                elif [ $debian_version = "bullseye/sid" ]; then
+                elif [[ $debian_version = "bullseye/sid" ]]; then
                     echo "deb https://dl.winehq.org/wine-builds/debian/ bullseye main" >>/etc/apt/sources.list
                     apt-get update
                     apt-get install --install-recommends winehq-staging
@@ -919,8 +919,8 @@ setup_lutris() {
                         printf '\nWould you like to [1]use the openSUSE Build Service Repository, [2]download and\ninstall the .deb file from the openSUSE website, or [3]download the tar.xz\npackage from Lutris and run the project directly from the extracted archive? '
                         local lutris_installation_choice
                         read -r lutris_installation_choice
-                        if [ "$lutris_installation_choice" = "1" ]; then
-                            if [ $debian_version = "buster" ]; then
+                        if [[ "$lutris_installation_choice" = "1" ]]; then
+                            if [[ $debian_version = "buster" ]]; then
                                 while :; do
                                     printf '\nWould you like to add the\nhttp://download.opensuse.org/repositories/home:/strycore/Debian_10/ repository\nand key to your apt sources, and install Lutris now [y/n]? '
                                     local install_lutris_package
@@ -942,7 +942,7 @@ setup_lutris() {
                                     fi
                                 done
                                 break
-                            elif [ $debian_version = "bullseye/sid" ]; then
+                            elif [[ $debian_version = "bullseye/sid" ]]; then
                                 while :; do
                                     printf '\nAre you running Debian [t]esting or [u]nstable? '
                                     local testing_or_unstable
@@ -997,13 +997,13 @@ setup_lutris() {
                                 done
                                 break
                             fi
-                        elif [ "$lutris_installation_choice" = "2" ]; then
+                        elif [[ "$lutris_installation_choice" = "2" ]]; then
                             printf '\nYou can download the Lutris .deb file for your version of Debian directly from\nthe openSUSE build service site here:\nhttps://software.opensuse.org/download.html?project=home%%3Astrycore&package=lutris\n'
                             printf '\nGo to the link, click "Grab binary packages directly", and download the Lutris\n.deb file for your version of Debian.\n'
                             printf 'Navigate to the directory where you downloaded the .deb file, and install it by\nrunning the following command (replacing the version number with the version\nyou downloaded):\n'
                             printf "\e[32m%s\e[0m\n" "sudo apt install ./lutris_0.5.6_amd64"
                             break
-                        elif [ "$lutris_installation_choice" = "3" ]; then
+                        elif [[ "$lutris_installation_choice" = "3" ]]; then
                             printf '\nYou can download the tar.xz package from Lutris and run the project directly\nfrom the extracted archive. To do that, go to the Lutris download page here:\nhttps://lutris.net/downloads/, navigate to the "Tarball" section, and follow\nthe instructions there.\n'
                             break
                         else
@@ -1033,8 +1033,8 @@ setup_lutris_gui() {
             zenity --width="$gui_width" --height="$gui_height" --info --text="Lutris is not in the official Debian repository. According to the Lutris website, the way to install Lutris from an auto-updating repository is using the openSUSE Build Service Repository, which requires adding a key for this repository. If this is not something you want to do, you can also download the .deb file from the openSUSE website and install Lutris using that, or download the tar.xz package from Lutris and run the project directly from the extracted archive."
             local lutris_installation_choice
             lutris_installation_choice="$(zenity --width="$gui_width" --height="$gui_list_height" --list --title="How would you like to install Lutris?" --column="Lutris Installation" "Use the openSUSE Build Service Repository" "Download and install the .deb file from the openSUSE website" "Download the tar.xz package from Lutris and run the project directly")"
-            if [ "$lutris_installation_choice" = "Use the openSUSE Build Service Repository" ]; then
-                if [ "$debian_version" = "buster" ]; then
+            if [[ "$lutris_installation_choice" = "Use the openSUSE Build Service Repository" ]]; then
+                if [[ "$debian_version" = "buster" ]]; then
                     if zenity --width="$gui_width" --height="$gui_height" --question --text="Would you like to add the http://download.opensuse.org/repositories/home:/strycore/Debian_10/ repository and key to your apt sources, and install Lutris now?"; then
                         echo 'deb http://download.opensuse.org/repositories/home:/strycore/Debian_10/ /' >/etc/apt/sources.list.d/home:strycore.list
                         wget -nv https://download.opensuse.org/repositories/home:strycore/Debian_10/Release.key -O Release.key
@@ -1045,10 +1045,10 @@ setup_lutris_gui() {
                     else
                         zenity --width="$gui_width" --height="$gui_height" --info --text="Lutris installation aborted."
                     fi
-                elif [ $debian_version = "bullseye/sid" ]; then
+                elif [[ $debian_version = "bullseye/sid" ]]; then
                     local testing_or_unstable
                     testing_or_unstable="$(zenity --width="$gui_width" --height="$gui_list_height" --list --title="Are you running Debian Testing or Unstable?" --column="Debian Version" "Testing" "Unstable")"
-                    if [ "$testing_or_unstable" = "Testing" ]; then
+                    if [[ "$testing_or_unstable" = "Testing" ]]; then
                         if zenity --width="$gui_width" --height="$gui_height" --question --text="Would you like to add the http://download.opensuse.org/repositories/home:/strycore/Debian_Testing/ repository and key to your apt sources, and install Lutris now?"; then
                             echo 'deb http://download.opensuse.org/repositories/home:/strycore/Debian_Testing/ /' >/etc/apt/sources.list.d/home:strycore.list
                             wget -nv https://download.opensuse.org/repositories/home:strycore/Debian_Testing/Release.key -O Release.key
@@ -1059,7 +1059,7 @@ setup_lutris_gui() {
                         else
                             zenity --width="$gui_width" --height="$gui_height" --info --text="Lutris installation aborted."
                         fi
-                    elif [ "$testing_or_unstable" = "Unstable" ]; then
+                    elif [[ "$testing_or_unstable" = "Unstable" ]]; then
                         if zenity --width="$gui_width" --height="$gui_height" --question --text="Would you like to add the http://download.opensuse.org/repositories/home:/strycore/Debian_Unstable/ repository and key to your apt sources, and install Lutris now?"; then
                             echo 'deb http://download.opensuse.org/repositories/home:/strycore/Debian_Unstable/ /' >/etc/apt/sources.list.d/home:strycore.list
                             wget -nv https://download.opensuse.org/repositories/home:strycore/Debian_Unstable/Release.key -O Release.key
@@ -1072,9 +1072,9 @@ setup_lutris_gui() {
                         fi
                     fi
                 fi
-            elif [ "$lutris_installation_choice" = "Download and install the .deb file from the openSUSE website" ]; then
+            elif [[ "$lutris_installation_choice" = "Download and install the .deb file from the openSUSE website" ]]; then
                 zenity --width="$gui_width" --height="$gui_height" --info --text="You can download the Lutris .deb file for your version of Debian directly from the openSUSE build service site here:\nhttps://software.opensuse.org/download.html?project=home%3Astrycore&amp;package=lutris\nGo to the link, click 'Grab binary packages directly', and download the Lutris .deb file for your version of Debian. Navigate to the directory where you downloaded the .deb file, and install it by running the following command (replacing the version number with the version you downloaded):\nsudo apt install ./lutris_0.5.6_amd64"
-            elif [ "$lutris_installation_choice" = "Download the tar.xz package from Lutris and run the project directly" ]; then
+            elif [[ "$lutris_installation_choice" = "Download the tar.xz package from Lutris and run the project directly" ]]; then
                 zenity --width="$gui_width" --height="$gui_height" --info --text="You can download the tar.xz package from Lutris and run the project directly from the extracted archive. To do that, go to the Lutris download page here: https://lutris.net/downloads/, navigate to the 'Tarball' section, and follow the instructions there."
             fi
         fi
@@ -1082,7 +1082,7 @@ setup_lutris_gui() {
 }
 
 main() {
-    if [ "$gui" = true ]; then
+    if [[ "$gui" = true ]]; then
         zenity --width="$gui_width" --height="$gui_height" --info --text="This script will help you get all the tools you need to start gaming on Debian."
     else
         printf 'This script will help you get all the tools you need to start gaming on Debian.\n'
@@ -1094,7 +1094,7 @@ main() {
         debian_version="buster"
     fi
 
-    if [ "$gui" = true ]; then
+    if [[ "$gui" = true ]]; then
         confirm_debian_version_gui
     else
         confirm_debian_version
@@ -1102,29 +1102,29 @@ main() {
 
     # Grab graphics card
     gpu=""
-    if [ "$gui" = true ]; then
+    if [[ "$gui" = true ]]; then
         grab_graphics_card_gui
     else
         grab_graphics_card
     fi
 
     # Install graphics drivers
-    if [ "$gui" = true ]; then
+    if [[ "$gui" = true ]]; then
         zenity --width="$gui_width" --height="$gui_height" --info --text="To get the best gaming performance you should install the latest graphics drivers."
     else
         printf '\nTo get the best gaming performance you should install the latest graphics\ndrivers.\n'
     fi
 
     # Nvidia drivers
-    if [ "$gpu" = "Nvidia" ]; then
-        if [ "$gui" = true ]; then
+    if [[ "$gpu" = "Nvidia" ]]; then
+        if [[ "$gui" = true ]]; then
             install_nvidia_tools_gui
         else
             install_nvidia_tools
         fi
     # AMD drivers
-    elif [ "$gpu" = "AMD" ]; then
-        if [ "$gui" = true ]; then
+    elif [[ "$gpu" = "AMD" ]]; then
+        if [[ "$gui" = true ]]; then
             install_amd_tools_gui
         else
             install_amd_tools
@@ -1135,27 +1135,27 @@ main() {
     fi
 
     # Steam installation
-    if [ "$gui" = true ]; then
+    if [[ "$gui" = true ]]; then
         setup_steam_gui
     else
         setup_steam
     fi
 
     # Wine installation
-    if [ "$gui" = true ]; then
+    if [[ "$gui" = true ]]; then
         setup_wine_gui
     else
         setup_wine
     fi
 
     # Lutris installation
-    if [ "$gui" = true ]; then
+    if [[ "$gui" = true ]]; then
         setup_lutris_gui
     else
         setup_lutris
     fi
 
-    if [ "$gui" = true ]; then
+    if [[ "$gui" = true ]]; then
         zenity --width="$gui_width" --height="$gui_height" --info --text="If all these installations ran successfully, then you have setup all the recommended tools to get started gaming on Debian."
     else
         printf '\nIf all these installations ran successfully, then you have setup all the recommended\ntools to get started gaming on Debian.\n'
@@ -1164,7 +1164,7 @@ main() {
 }
 
 # Help flag
-if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+if [[ "$1" = "-h" ]] || [[ "$1" = "--help" ]]; then
     printf "Usage: debian-gaming-setup [OPTIONS]\n\n"
     printf "       Starts an interactive shell script for installing recommended\n"
     printf "       tools to game efficiently on Debian.\n\n"
@@ -1176,7 +1176,7 @@ fi
 
 # GUI flag
 gui=false
-if [ "$1" = "-g" ] || [ "$1" = "--gui" ]; then
+if [[ "$1" = "-g" ]] || [[ "$1" = "--gui" ]]; then
     if ! (zenity --version) >/dev/null 2>&1; then
         printf 'The zenity package is required to run with the gui flag.\nPlease install zenity by running:\nsudo apt install zenity\nAnd try again.\n'
         exit 1
