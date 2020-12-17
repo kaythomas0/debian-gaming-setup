@@ -293,23 +293,11 @@ setup_file() {
     unset debian_version
 }
 
-@test "setup_lutris gets to install lutris step for bullseye" {
+@test "setup_lutris gets to install lutris step for bullseye/sid" {
     export debian_version="bullseye/sid"
     apt-get -y install wget
     source ${profile_script}
-    output="$({ echo "yes"; echo "yes"; echo "1"; echo "testing"; echo "yes"; echo "yes"; } | setup_lutris)"
-    grep -q "deb http://download.opensuse.org/repositories/home:/strycore/Debian_Testing/ /" "/etc/apt/sources.list.d/home:strycore.list"
-    assert_success
-    assert_output --partial "If these installations ran successfully, then you have setup Lutris."
-    unset debian_version
-}
-
-@test "setup_lutris gets to install lutris step for sid" {
-    export debian_version="bullseye/sid"
-    apt-get -y install wget
-    source ${profile_script}
-    output="$({ echo "yes"; echo "yes"; echo "1"; echo "unstable"; echo "yes"; echo "yes"; } | setup_lutris)"
-    grep -q "deb http://download.opensuse.org/repositories/home:/strycore/Debian_Unstable/ /" "/etc/apt/sources.list.d/home:strycore.list"
+    output="$({ echo "yes"; echo "yes"; echo "yes"; echo "yes"; } | setup_lutris)"
     assert_success
     assert_output --partial "If these installations ran successfully, then you have setup Lutris."
     unset debian_version
